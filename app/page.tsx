@@ -1,65 +1,184 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <main className="min-h-screen bg-slate-950 text-white">
+      {/* Navigation */}
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
+        <div className="text-xl font-bold">
+          RusQuest
+        </div>
+
+        <div className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
+          <a href="#features" className="hover:text-white">
+            Features
+          </a>
+          <a href="#how-it-works" className="hover:text-white">
+            How it works
+          </a>
+          <a href="#worlds" className="hover:text-white">
+            Worlds
+          </a>
+        </div>
+
+        <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-slate-950 transition hover:bg-slate-200">
+          Start Learning
+        </button>
+      </nav>
+
+      {/* Hero */}
+      <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 md:grid-cols-2">
+        <div>
+          <div className="mb-6 inline-flex rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-200">
+            Gamified Russian for English speakers
+          </div>
+
+          <h1 className="max-w-2xl text-5xl font-bold leading-tight tracking-tight md:text-6xl">
+            Learn Russian through levels, mini-games, and daily progress.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
+            A modern game-like platform that helps beginners learn practical
+            Russian step by step through short lessons, XP, streaks, challenges,
+            and real-life situations.
           </p>
+
+          <div className="mt-8 flex flex-col gap-4 sm:flex-row">
+            <button className="rounded-full bg-cyan-400 px-7 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300">
+              Start World 1
+            </button>
+
+            <button className="rounded-full border border-white/20 px-7 py-3 font-semibold text-white transition hover:bg-white/10">
+              View Demo
+            </button>
+          </div>
+
+          <div className="mt-8 flex gap-6 text-sm text-slate-400">
+            <span>⚡ XP rewards</span>
+            <span>🔥 Daily streak</span>
+            <span>🏆 Achievements</span>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        {/* Game Card */}
+        <div className="rounded-3xl border border-white/10 bg-white/10 p-6 shadow-2xl backdrop-blur">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-300">World 1</p>
+              <h2 className="text-2xl font-bold">First Contact</h2>
+            </div>
+
+            <div className="rounded-full bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950">
+              240 XP
+            </div>
+          </div>
+
+          <div className="mb-6 h-3 overflow-hidden rounded-full bg-slate-800">
+            <div className="h-full w-2/5 rounded-full bg-cyan-400" />
+          </div>
+
+          <div className="space-y-4">
+            <LessonCard
+              number="1"
+              title="Say Hello"
+              description="Привет, Здравствуйте, Пока"
+              status="Completed"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <LessonCard
+              number="2"
+              title="Introduce Yourself"
+              description="Меня зовут..., Я..."
+              status="Unlocked"
+            />
+            <LessonCard
+              number="3"
+              title="Basic Questions"
+              description="Что? Кто? Где?"
+              status="Locked"
+              locked
+            />
+          </div>
+
+          <div className="mt-6 rounded-2xl bg-slate-900/80 p-4">
+            <p className="text-sm text-slate-400">Next challenge</p>
+            <p className="mt-1 font-semibold">Boss Level: First Conversation</p>
+          </div>
         </div>
-      </main>
+      </section>
+
+      {/* Features */}
+      <section id="features" className="mx-auto max-w-7xl px-6 py-16">
+        <h2 className="text-3xl font-bold">Built like a learning game</h2>
+
+        <div className="mt-8 grid gap-6 md:grid-cols-3">
+          <FeatureCard
+            icon="🎮"
+            title="Mini-games"
+            text="Practice Russian through matching, choices, ordering, and quick challenges."
+          />
+          <FeatureCard
+            icon="🗺️"
+            title="World progression"
+            text="Move through worlds, stages, and short lessons with clear goals."
+          />
+          <FeatureCard
+            icon="🔥"
+            title="Daily motivation"
+            text="Earn XP, keep your streak, unlock achievements, and return every day."
+          />
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function LessonCard({
+  number,
+  title,
+  description,
+  status,
+  locked = false,
+}: {
+  number: string;
+  title: string;
+  description: string;
+  status: string;
+  locked?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center gap-4 rounded-2xl border p-4 ${
+        locked
+          ? "border-white/5 bg-slate-900/50 opacity-50"
+          : "border-white/10 bg-slate-900/80"
+      }`}
+    >
+      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-cyan-400 font-bold text-slate-950">
+        {locked ? "🔒" : number}
+      </div>
+
+      <div className="flex-1">
+        <h3 className="font-semibold">{title}</h3>
+        <p className="text-sm text-slate-400">{description}</p>
+      </div>
+
+      <span className="text-xs text-slate-400">{status}</span>
+    </div>
+  );
+}
+
+function FeatureCard({
+  icon,
+  title,
+  text,
+}: {
+  icon: string;
+  title: string;
+  text: string;
+}) {
+  return (
+    <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
+      <div className="text-3xl">{icon}</div>
+      <h3 className="mt-4 text-xl font-bold">{title}</h3>
+      <p className="mt-3 leading-7 text-slate-300">{text}</p>
     </div>
   );
 }
