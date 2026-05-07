@@ -1,90 +1,14 @@
 "use client";
 
 import { Navigation } from "@/components/Navigation";
+import {
+  challengeQuestions,
+  challengeSettings,
+  type TextQuestion,
+  worldOne,
+} from "@/lib/learning-data";
 import Link from "next/link";
 import { useState } from "react";
-
-type ChoiceQuestion = {
-  type: "choice";
-  prompt: string;
-  display: string;
-  options: string[];
-  correctAnswer: string;
-  explanation: string;
-  points: number;
-};
-
-type TextQuestion = {
-  type: "text";
-  prompt: string;
-  display: string;
-  correctAnswer: string;
-  acceptedAnswers: string[];
-  explanation: string;
-  points: number;
-};
-
-type ChallengeQuestion = ChoiceQuestion | TextQuestion;
-
-const questions: ChallengeQuestion[] = [
-  {
-    type: "choice",
-    prompt: "The Gatekeeper says: Привет. What does it mean?",
-    display: "Привет",
-    options: ["Goodbye", "Hello", "Thank you", "Please"],
-    correctAnswer: "Hello",
-    explanation: "Привет is the common informal way to say Hello.",
-    points: 120,
-  },
-  {
-    type: "text",
-    prompt: "Type the English meaning of Спасибо.",
-    display: "Спасибо",
-    correctAnswer: "Thank you",
-    acceptedAnswers: ["thank you", "thanks"],
-    explanation: "Спасибо means Thank you or Thanks.",
-    points: 150,
-  },
-  {
-    type: "choice",
-    prompt: "Choose the phrase you would use for a polite greeting.",
-    display: "First Contact protocol",
-    options: ["Пока", "Здравствуйте", "Нет", "Кто"],
-    correctAnswer: "Здравствуйте",
-    explanation: "Здравствуйте is the polite/formal greeting.",
-    points: 160,
-  },
-  {
-    type: "choice",
-    prompt: "What is the correct answer to Как тебя зовут?",
-    display: "Как тебя зовут?",
-    options: ["Меня зовут Alex", "Я не понимаю", "До свидания", "Где?"],
-    correctAnswer: "Меня зовут Alex",
-    explanation: "Как тебя зовут? asks What is your name?",
-    points: 180,
-  },
-  {
-    type: "text",
-    prompt: "Type the English word for Да.",
-    display: "Да",
-    correctAnswer: "Yes",
-    acceptedAnswers: ["yes"],
-    explanation: "Да means Yes.",
-    points: 120,
-  },
-  {
-    type: "choice",
-    prompt: "Final clash: choose the correct survival phrase for I do not understand.",
-    display: "Boss shield phrase",
-    options: ["Я не понимаю", "Пожалуйста", "Спасибо", "Привет"],
-    correctAnswer: "Я не понимаю",
-    explanation: "Я не понимаю means I do not understand.",
-    points: 220,
-  },
-];
-
-const startingHearts = 3;
-const passScore = 650;
 
 export default function ChallengePage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -93,14 +17,14 @@ export default function ChallengePage() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [xp, setXp] = useState(0);
-  const [hearts, setHearts] = useState(startingHearts);
+  const [hearts, setHearts] = useState(challengeSettings.startingHearts);
   const [correctCount, setCorrectCount] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [lastAnswerWasCorrect, setLastAnswerWasCorrect] = useState(false);
 
-  const currentQuestion = questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
-  const finalPassed = score >= passScore && hearts > 0;
+  const currentQuestion = challengeQuestions[currentQuestionIndex];
+  const progress = ((currentQuestionIndex + 1) / challengeQuestions.length) * 100;
+  const finalPassed = score >= challengeSettings.passScore && hearts > 0;
   const resultTitle = finalPassed ? "Boss Defeated" : "Boss Survived";
   const resultMessage = finalPassed
     ? "You cleared World 1: First Contact and proved you can survive the first conversation."
@@ -144,7 +68,7 @@ export default function ChallengePage() {
   }
 
   function handleNext() {
-    const isLastQuestion = currentQuestionIndex === questions.length - 1;
+    const isLastQuestion = currentQuestionIndex === challengeQuestions.length - 1;
     const noHeartsLeft = hearts === 0;
 
     if (isLastQuestion || noHeartsLeft) {
@@ -166,7 +90,7 @@ export default function ChallengePage() {
     setIsAnswered(false);
     setScore(0);
     setXp(0);
-    setHearts(startingHearts);
+    setHearts(challengeSettings.startingHearts);
     setCorrectCount(0);
     setIsFinished(false);
     setLastAnswerWasCorrect(false);
@@ -203,7 +127,7 @@ export default function ChallengePage() {
                 <ResultStat title="Hearts" value={hearts.toString()} />
                 <ResultStat
                   title="Accuracy"
-                  value={`${correctCount}/${questions.length}`}
+                  value={`${correctCount}/${challengeQuestions.length}`}
                 />
               </div>
 
@@ -211,7 +135,7 @@ export default function ChallengePage() {
                 <div className="flex items-center justify-between gap-4 text-sm">
                   <span className="text-slate-400">Pass threshold</span>
                   <span className="font-bold text-yellow-300">
-                    {passScore} score + 1 heart
+                    {challengeSettings.passScore} score + 1 heart
                   </span>
                 </div>
                 <div className="mt-4 h-4 overflow-hidden rounded-full bg-slate-800">
@@ -219,7 +143,12 @@ export default function ChallengePage() {
                     className={`h-full rounded-full transition-all ${
                       finalPassed ? "bg-cyan-400" : "bg-red-400"
                     }`}
-                    style={{ width: `${Math.min((score / passScore) * 100, 100)}%` }}
+                    style={{
+                      width: `${Math.min(
+                        (score / challengeSettings.passScore) * 100,
+                        100,
+                      )}%`,
+                    }}
                   />
                 </div>
               </div>
@@ -255,10 +184,10 @@ export default function ChallengePage() {
               Back to Worlds
             </Link>
             <p className="mt-6 text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
-              Boss Level
+              {worldOne.bossTitle}
             </p>
             <h1 className="mt-3 text-4xl font-black md:text-6xl">
-              World 1: First Contact
+              {worldOne.subtitle}
             </h1>
             <p className="mt-4 max-w-2xl text-slate-400">
               Defeat the dialogue boss with greetings, survival phrases, and
@@ -276,7 +205,7 @@ export default function ChallengePage() {
         <div className="mb-8 rounded-3xl border border-white/10 bg-white/10 p-5">
           <div className="mb-3 flex items-center justify-between text-sm text-slate-400">
             <span>
-              Question {currentQuestionIndex + 1} of {questions.length}
+              Question {currentQuestionIndex + 1} of {challengeQuestions.length}
             </span>
             <span>{Math.round(progress)}%</span>
           </div>
@@ -396,7 +325,7 @@ export default function ChallengePage() {
                   : "bg-slate-800 text-slate-500"
               }`}
             >
-              {currentQuestionIndex === questions.length - 1 || hearts === 0
+              {currentQuestionIndex === challengeQuestions.length - 1 || hearts === 0
                 ? "Reveal Result"
                 : "Next Attack"}
             </button>
@@ -410,7 +339,7 @@ export default function ChallengePage() {
                 Б
               </div>
               <p className="mt-5 text-sm leading-6 text-slate-400">
-                Pass with {passScore} score and at least one heart to clear the
+                Pass with {challengeSettings.passScore} score and at least one heart to clear the
                 world boss.
               </p>
             </div>

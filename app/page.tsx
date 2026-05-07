@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/Navigation";
+import { worldOne } from "@/lib/learning-data";
 import Link from "next/link";
 
 export default function Home() {
@@ -58,43 +59,39 @@ export default function Home() {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-sm text-slate-300">World 1</p>
-              <h2 className="text-2xl font-bold">First Contact</h2>
+              <h2 className="text-2xl font-bold">{worldOne.title}</h2>
             </div>
 
             <div className="rounded-full bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950">
-              240 XP
+              {worldOne.xp} XP
             </div>
           </div>
 
           <div className="mb-6 h-3 overflow-hidden rounded-full bg-slate-800">
-            <div className="h-full w-2/5 rounded-full bg-cyan-400" />
+            <div
+              className="h-full rounded-full bg-cyan-400"
+              style={{ width: `${worldOne.progressPercent}%` }}
+            />
           </div>
 
           <div className="space-y-4">
-            <LessonCard
-              number="1"
-              title="Say Hello"
-              description="Привет, Здравствуйте, Пока"
-              status="Completed"
-            />
-            <LessonCard
-              number="2"
-              title="Introduce Yourself"
-              description="Меня зовут..., Я..."
-              status="Unlocked"
-            />
-            <LessonCard
-              number="3"
-              title="Basic Questions"
-              description="Что? Кто? Где?"
-              status="Locked"
-              locked
-            />
+            {worldOne.lessons.map((lesson) => (
+              <LessonCard
+                key={lesson.id}
+                number={lesson.number}
+                title={lesson.title}
+                description={lesson.description}
+                status={lesson.status}
+                locked={lesson.locked}
+              />
+            ))}
           </div>
 
           <div className="mt-6 rounded-2xl bg-slate-900/80 p-4">
             <p className="text-sm text-slate-400">Next challenge</p>
-            <p className="mt-1 font-semibold">Boss Level: First Conversation</p>
+            <p className="mt-1 font-semibold">
+              {worldOne.bossTitle}: First Conversation
+            </p>
           </div>
         </div>
       </section>

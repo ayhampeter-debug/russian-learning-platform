@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/Navigation";
+import { achievements, userProgress, worldOne } from "@/lib/learning-data";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -24,10 +25,20 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-4">
-          <StatCard title="Total XP" value="240" icon="⚡" />
-          <StatCard title="Current Streak" value="3 days" icon="🔥" />
-          <StatCard title="Hearts" value="5" icon="❤️" />
-          <StatCard title="Achievements" value="2" icon="🏆" />
+          <StatCard title="Total XP" value={userProgress.dashboardXp.toString()} icon="⚡" />
+          <StatCard
+            title="Current Streak"
+            value={`${userProgress.dashboardStreakDays} days`}
+            icon="🔥"
+          />
+          <StatCard title="Hearts" value={userProgress.hearts.toString()} icon="❤️" />
+          <StatCard
+            title="Achievements"
+            value={achievements
+              .filter((achievement) => achievement.status === "Unlocked")
+              .length.toString()}
+            icon="🏆"
+          />
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
@@ -35,34 +46,42 @@ export default function DashboardPage() {
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-400">Current world</p>
-                <h2 className="text-2xl font-bold">World 1: First Contact</h2>
+                <h2 className="text-2xl font-bold">{worldOne.subtitle}</h2>
               </div>
               <span className="rounded-full bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950">
-                Level 1
+                Level {userProgress.level}
               </span>
             </div>
 
             <div className="mb-3 flex justify-between text-sm text-slate-400">
               <span>Progress</span>
-              <span>40%</span>
+              <span>{worldOne.dashboardProgressPercent}%</span>
             </div>
 
             <div className="h-4 overflow-hidden rounded-full bg-slate-800">
-              <div className="h-full w-2/5 rounded-full bg-cyan-400" />
+              <div
+                className="h-full rounded-full bg-cyan-400"
+                style={{ width: `${worldOne.dashboardProgressPercent}%` }}
+              />
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-3">
-              <LessonMiniCard title="Say Hello" status="Completed" />
-              <LessonMiniCard title="Introduce Yourself" status="Unlocked" />
-              <LessonMiniCard title="Basic Questions" status="Locked" locked />
+              {worldOne.lessons.map((lesson) => (
+                <LessonMiniCard
+                  key={lesson.id}
+                  title={lesson.title}
+                  status={lesson.status}
+                  locked={lesson.locked}
+                />
+              ))}
             </div>
           </div>
 
           <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
             <p className="text-sm text-slate-400">Daily Challenge</p>
-            <h2 className="mt-2 text-2xl font-bold">5 quick questions</h2>
+            <h2 className="mt-2 text-2xl font-bold">{worldOne.dailyChallengeTitle}</h2>
             <p className="mt-3 text-slate-300">
-              Review greetings and basic Russian phrases to keep your streak alive.
+              {worldOne.dailyChallengeDescription}
             </p>
 
             <Link

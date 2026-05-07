@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/Navigation";
+import { worldOne } from "@/lib/learning-data";
 import Link from "next/link";
 
 export default function WorldsPage() {
@@ -18,71 +19,31 @@ export default function WorldsPage() {
         <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
           <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
-              <p className="text-sm text-slate-400">World 1</p>
-              <h2 className="text-3xl font-bold">First Contact</h2>
+              <p className="text-sm text-slate-400">World {worldOne.number}</p>
+              <h2 className="text-3xl font-bold">{worldOne.title}</h2>
               <p className="mt-2 text-slate-400">
-                Greetings, introductions, basic phrases, question words, and numbers 1–10.
+                {worldOne.description}
               </p>
             </div>
 
             <div className="rounded-full bg-yellow-400 px-5 py-2 font-bold text-slate-950">
-              40% Complete
+              {worldOne.progressPercent}% Complete
             </div>
           </div>
 
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            <StageCard
-              number="1"
-              title="Hello!"
-              description="Learn your first greetings: Привет, Здравствуйте, Пока."
-              status="Completed"
-              xp="80 XP"
-            />
-
-            <StageCard
-              number="2"
-              title="Who are you?"
-              description="Introduce yourself and ask someone's name."
-              status="Unlocked"
-              xp="100 XP"
-            />
-
-            <StageCard
-              number="3"
-              title="Survival Phrases"
-              description="Спасибо, пожалуйста, извините, не понимаю."
-              status="Locked"
-              xp="120 XP"
-              locked
-            />
-
-            <StageCard
-              number="4"
-              title="Question Basics"
-              description="Что? Кто? Где? Как? Learn essential question words."
-              status="Locked"
-              xp="120 XP"
-              locked
-            />
-
-            <StageCard
-              number="5"
-              title="Numbers 1–10"
-              description="Recognize and use the first Russian numbers."
-              status="Locked"
-              xp="150 XP"
-              locked
-            />
-
-            <StageCard
-              number="★"
-              title="Boss Level"
-              description="Complete your first basic Russian conversation."
-              status="Locked"
-              xp="200 XP"
-              locked
-              boss
-            />
+            {worldOne.stages.map((stage) => (
+              <StageCard
+                key={stage.id}
+                number={stage.number}
+                title={stage.title}
+                description={stage.description}
+                status={stage.status}
+                xp={`${stage.xp} XP`}
+                locked={stage.locked}
+                boss={stage.boss}
+              />
+            ))}
           </div>
         </div>
       </section>

@@ -1,72 +1,17 @@
 import { Navigation } from "@/components/Navigation";
+import {
+  achievements,
+  profileStats,
+  recentActivity,
+  userProgress,
+  worldOne,
+  type Achievement,
+  type ProfileStat,
+  type RecentActivity,
+} from "@/lib/learning-data";
 import Link from "next/link";
 
-type StatCardProps = {
-  title: string;
-  value: string;
-  accent: "cyan" | "yellow" | "red" | "green";
-};
-
-type Achievement = {
-  title: string;
-  description: string;
-  status: "Unlocked" | "In progress";
-};
-
-type Activity = {
-  title: string;
-  detail: string;
-  time: string;
-};
-
-const stats: StatCardProps[] = [
-  { title: "Total XP", value: "1,480", accent: "cyan" },
-  { title: "Current Streak", value: "7 days", accent: "red" },
-  { title: "Longest Streak", value: "14 days", accent: "yellow" },
-  { title: "Completed Lessons", value: "18", accent: "green" },
-  { title: "Completed Challenges", value: "6", accent: "cyan" },
-];
-
-const achievements: Achievement[] = [
-  {
-    title: "First Contact",
-    description: "Completed the first greeting lesson.",
-    status: "Unlocked",
-  },
-  {
-    title: "Streak Keeper",
-    description: "Practiced Russian for 7 days in a row.",
-    status: "Unlocked",
-  },
-  {
-    title: "Boss Challenger",
-    description: "Reached the World 1 boss challenge.",
-    status: "In progress",
-  },
-];
-
-const recentActivity: Activity[] = [
-  {
-    title: "Finished Say Hello",
-    detail: "Earned 80 XP in World 1.",
-    time: "Today",
-  },
-  {
-    title: "Daily Challenge",
-    detail: "Answered 5 quick review questions.",
-    time: "Yesterday",
-  },
-  {
-    title: "Unlocked Introduce Yourself",
-    detail: "Next lesson is ready to start.",
-    time: "2 days ago",
-  },
-  {
-    title: "Streak milestone",
-    detail: "Reached a 7 day learning streak.",
-    time: "This week",
-  },
-];
+type StatCardProps = ProfileStat;
 
 export default function ProfilePage() {
   return (
@@ -79,7 +24,7 @@ export default function ProfilePage() {
               Player profile
             </p>
             <h1 className="mt-3 text-4xl font-black md:text-6xl">
-              Alex Learner
+              {userProgress.userName}
             </h1>
             <p className="mt-4 max-w-2xl text-slate-400">
               Track your Russian journey through XP, streaks, achievements, and
@@ -96,7 +41,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5">
-          {stats.map((stat) => (
+          {profileStats.map((stat) => (
             <StatCard key={stat.title} {...stat} />
           ))}
         </div>
@@ -106,7 +51,7 @@ export default function ProfilePage() {
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
               <div>
                 <p className="text-sm text-slate-400">World 1 progress</p>
-                <h2 className="mt-2 text-3xl font-black">First Contact</h2>
+                <h2 className="mt-2 text-3xl font-black">{worldOne.title}</h2>
                 <p className="mt-3 max-w-2xl leading-7 text-slate-300">
                   Greetings, introductions, survival phrases, basic questions,
                   and the first conversation challenge.
@@ -114,17 +59,22 @@ export default function ProfilePage() {
               </div>
 
               <span className="w-fit rounded-full bg-yellow-400 px-5 py-2 text-sm font-black text-slate-950">
-                48% Complete
+                {userProgress.profileWorldProgressPercent}% Complete
               </span>
             </div>
 
             <div className="mt-8">
               <div className="mb-3 flex justify-between text-sm text-slate-400">
-                <span>12 of 25 steps cleared</span>
-                <span>480 XP earned</span>
+                <span>
+                  {userProgress.clearedSteps} of {userProgress.totalSteps} steps cleared
+                </span>
+                <span>{userProgress.profileWorldXp} XP earned</span>
               </div>
               <div className="h-4 overflow-hidden rounded-full bg-slate-800">
-                <div className="h-full w-[48%] rounded-full bg-cyan-400" />
+                <div
+                  className="h-full rounded-full bg-cyan-400"
+                  style={{ width: `${userProgress.profileWorldProgressPercent}%` }}
+                />
               </div>
             </div>
 
@@ -143,10 +93,10 @@ export default function ProfilePage() {
             <p className="text-sm text-slate-400">Learning identity</p>
             <div className="mt-5 flex items-center gap-5">
               <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl border border-cyan-400/30 bg-cyan-400 text-3xl font-black text-slate-950">
-                AL
+                {userProgress.initials}
               </div>
               <div>
-                <h2 className="text-2xl font-black">Alex Learner</h2>
+                <h2 className="text-2xl font-black">{userProgress.userName}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
                   Beginner path: English speaker learning practical Russian.
                 </p>
@@ -156,10 +106,10 @@ export default function ProfilePage() {
             <div className="mt-8 rounded-3xl border border-white/10 bg-slate-900/80 p-5">
               <p className="text-sm text-slate-400">Next goal</p>
               <p className="mt-2 text-xl font-bold">
-                Complete Introduce Yourself
+                {userProgress.nextGoalTitle}
               </p>
               <p className="mt-3 text-sm leading-6 text-slate-400">
-                Earn 100 XP and move closer to the World 1 boss challenge.
+                {userProgress.nextGoalDescription}
               </p>
             </div>
           </div>
@@ -173,14 +123,14 @@ export default function ProfilePage() {
                 <h2 className="mt-2 text-2xl font-black">Achievements</h2>
               </div>
               <span className="rounded-full bg-white/10 px-4 py-2 text-sm text-slate-300">
-                2 unlocked
+                {userProgress.unlockedAchievements} unlocked
               </span>
             </div>
 
             <div className="grid gap-4">
               {achievements.map((achievement) => (
                 <AchievementCard
-                  key={achievement.title}
+                  key={achievement.id}
                   achievement={achievement}
                 />
               ))}
@@ -276,7 +226,7 @@ function AchievementCard({ achievement }: { achievement: Achievement }) {
   );
 }
 
-function ActivityItem({ activity }: { activity: Activity }) {
+function ActivityItem({ activity }: { activity: RecentActivity }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-5">
       <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-start">
