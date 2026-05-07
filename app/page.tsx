@@ -1,31 +1,12 @@
+import { Navigation } from "@/components/Navigation";
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
-      {/* Navigation */}
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
-        <div className="text-xl font-bold">
-          RusQuest
-        </div>
-
-        <div className="hidden items-center gap-6 text-sm text-slate-300 md:flex">
-          <a href="#features" className="hover:text-white">
-            Features
-          </a>
-          <a href="#how-it-works" className="hover:text-white">
-            How it works
-          </a>
-          <a href="#worlds" className="hover:text-white">
-            Worlds
-          </a>
-        </div>
-
-        <button className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-slate-950 transition hover:bg-slate-200">
-          Start Learning
-        </button>
-      </nav>
+      <Navigation />
 
       {/* Hero */}
-      <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 md:grid-cols-2">
+      <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 pb-20 pt-10 md:grid-cols-2">
         <div>
           <div className="mb-6 inline-flex rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm text-cyan-200">
             Gamified Russian for English speakers

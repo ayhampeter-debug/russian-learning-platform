@@ -1,7 +1,10 @@
+import { Navigation } from "@/components/Navigation";
+
 export default function WorldsPage() {
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-8 text-white">
-      <section className="mx-auto max-w-7xl">
+    <main className="min-h-screen bg-slate-950 text-white">
+      <Navigation />
+      <section className="mx-auto max-w-7xl px-6 pb-8">
         <div className="mb-10">
           <p className="text-sm text-cyan-300">Choose your path</p>
           <h1 className="mt-2 text-4xl font-bold">Worlds & Stages</h1>

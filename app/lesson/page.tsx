@@ -1,5 +1,6 @@
 "use client";
 
+import { Navigation } from "@/components/Navigation";
 import { useState } from "react";
 
 const questions = [
@@ -71,19 +72,21 @@ export default function LessonPage() {
 
   if (isFinished) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 text-white">
-        <section className="w-full max-w-xl rounded-3xl border border-white/10 bg-white/10 p-8 text-center">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-yellow-400 text-4xl">
+      <main className="min-h-screen bg-slate-950 text-white">
+        <Navigation />
+        <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-xl items-center px-6 pb-8">
+          <div className="w-full rounded-3xl border border-white/10 bg-white/10 p-8 text-center">
+            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-yellow-400 text-4xl">
             🏆
           </div>
 
-          <h1 className="mt-6 text-4xl font-bold">Lesson Complete!</h1>
+            <h1 className="mt-6 text-4xl font-bold">Lesson Complete!</h1>
 
-          <p className="mt-4 text-slate-300">
+            <p className="mt-4 text-slate-300">
             Great job. You finished your first Russian mini-lesson.
           </p>
 
-          <div className="mt-8 grid grid-cols-2 gap-4">
+            <div className="mt-8 grid grid-cols-2 gap-4">
             <div className="rounded-2xl bg-slate-900/70 p-5">
               <p className="text-sm text-slate-400">XP earned</p>
               <p className="mt-1 text-3xl font-bold text-cyan-300">{xp}</p>
@@ -95,20 +98,22 @@ export default function LessonPage() {
             </div>
           </div>
 
-          <a
-            href="/dashboard"
-            className="mt-8 inline-flex rounded-full bg-cyan-400 px-7 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
-          >
+            <a
+              href="/dashboard"
+              className="mt-8 inline-flex rounded-full bg-cyan-400 px-7 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
+            >
             Back to Dashboard
-          </a>
+            </a>
+          </div>
         </section>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-8 text-white">
-      <section className="mx-auto max-w-3xl">
+    <main className="min-h-screen bg-slate-950 text-white">
+      <Navigation />
+      <section className="mx-auto max-w-3xl px-6 pb-8">
         <div className="mb-8 flex items-center justify-between gap-4">
           <a href="/worlds" className="text-sm text-slate-400 hover:text-white">
             ← Back

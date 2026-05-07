@@ -1,3 +1,5 @@
+import { Navigation } from "@/components/Navigation";
+
 type StatCardProps = {
   title: string;
   value: string;
@@ -67,8 +69,9 @@ const recentActivity: Activity[] = [
 
 export default function ProfilePage() {
   return (
-    <main className="min-h-screen bg-slate-950 px-6 py-8 text-white">
-      <section className="mx-auto max-w-7xl">
+    <main className="min-h-screen bg-slate-950 text-white">
+      <Navigation />
+      <section className="mx-auto max-w-7xl px-6 pb-8">
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">

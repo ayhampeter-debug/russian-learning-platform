@@ -1,0 +1,61 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+type NavItem = {
+  href: string;
+  label: string;
+};
+
+const navItems: NavItem[] = [
+  { href: "/", label: "Home" },
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/worlds", label: "Worlds" },
+  { href: "/lesson", label: "Lesson" },
+  { href: "/challenge", label: "Challenge" },
+  { href: "/profile", label: "Profile" },
+];
+
+export function Navigation() {
+  const pathname = usePathname();
+
+  return (
+    <nav className="mx-auto mb-10 w-full max-w-7xl px-6 pt-6">
+      <div className="rounded-3xl border border-white/10 bg-white/10 p-3 shadow-2xl shadow-cyan-950/20 backdrop-blur">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <Link
+            href="/"
+            className="flex items-center justify-between rounded-2xl bg-slate-950/70 px-4 py-3 transition hover:bg-slate-900"
+          >
+            <span className="text-lg font-black text-white">RusQuest</span>
+            <span className="rounded-full bg-cyan-400 px-3 py-1 text-xs font-black text-slate-950">
+              Learn RU
+            </span>
+          </Link>
+
+          <div className="grid grid-cols-2 gap-2 text-sm font-semibold text-slate-300 sm:grid-cols-3 lg:flex lg:items-center">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`rounded-2xl border px-4 py-3 text-center transition lg:px-5 ${
+                    isActive
+                      ? "border-cyan-400 bg-cyan-400 text-slate-950"
+                      : "border-white/10 bg-slate-900/70 hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}

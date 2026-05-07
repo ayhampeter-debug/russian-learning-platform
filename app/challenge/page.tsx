@@ -1,5 +1,6 @@
 "use client";
 
+import { Navigation } from "@/components/Navigation";
 import { useState } from "react";
 
 type ChoiceQuestion = {
@@ -172,8 +173,9 @@ export default function ChallengePage() {
 
   if (isFinished) {
     return (
-      <main className="min-h-screen bg-slate-950 px-6 py-8 text-white">
-        <section className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-4xl items-center justify-center">
+      <main className="min-h-screen bg-slate-950 text-white">
+        <Navigation />
+        <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-4xl items-center justify-center px-6 pb-8">
           <div className="w-full overflow-hidden rounded-3xl border border-white/10 bg-white/10 shadow-2xl shadow-cyan-950/40">
             <div
               className={`p-8 text-center ${
@@ -243,8 +245,9 @@ export default function ChallengePage() {
   }
 
   return (
-    <main className="min-h-screen overflow-hidden bg-slate-950 px-6 py-8 text-white">
-      <section className="mx-auto max-w-5xl">
+    <main className="min-h-screen overflow-hidden bg-slate-950 text-white">
+      <Navigation />
+      <section className="mx-auto max-w-5xl px-6 pb-8">
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
             <a href="/worlds" className="text-sm text-slate-400 hover:text-white">
