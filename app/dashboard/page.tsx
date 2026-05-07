@@ -1,5 +1,5 @@
 import { Navigation } from "@/components/Navigation";
-import { achievements, userProgress, worldOne } from "@/lib/learning-data";
+import { userProgress, worldOne } from "@/lib/learning-data";
 import Link from "next/link";
 
 export default function DashboardPage() {
@@ -25,18 +25,16 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-4">
-          <StatCard title="Total XP" value={userProgress.dashboardXp.toString()} icon="⚡" />
+          <StatCard title="Total XP" value={userProgress.totalXp.toLocaleString()} icon="⚡" />
           <StatCard
             title="Current Streak"
-            value={`${userProgress.dashboardStreakDays} days`}
+            value={`${userProgress.currentStreak} days`}
             icon="🔥"
           />
           <StatCard title="Hearts" value={userProgress.hearts.toString()} icon="❤️" />
           <StatCard
             title="Achievements"
-            value={achievements
-              .filter((achievement) => achievement.status === "Unlocked")
-              .length.toString()}
+            value={userProgress.achievementsEarned.length.toString()}
             icon="🏆"
           />
         </div>
@@ -55,13 +53,13 @@ export default function DashboardPage() {
 
             <div className="mb-3 flex justify-between text-sm text-slate-400">
               <span>Progress</span>
-              <span>{worldOne.dashboardProgressPercent}%</span>
+              <span>{userProgress.currentWorldProgressPercent}%</span>
             </div>
 
             <div className="h-4 overflow-hidden rounded-full bg-slate-800">
               <div
                 className="h-full rounded-full bg-cyan-400"
-                style={{ width: `${worldOne.dashboardProgressPercent}%` }}
+                style={{ width: `${userProgress.currentWorldProgressPercent}%` }}
               />
             </div>
 

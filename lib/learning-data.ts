@@ -83,17 +83,16 @@ export type UserProgress = {
   userName: string;
   initials: string;
   totalXp: number;
-  dashboardXp: number;
-  currentStreakDays: number;
-  dashboardStreakDays: number;
+  currentStreak: number;
+  longestStreak: number;
   hearts: number;
   level: number;
-  completedLessons: number;
-  completedChallenges: number;
-  longestStreakDays: number;
-  unlockedAchievements: number;
+  completedLessons: string[];
+  completedStages: string[];
+  completedChallenges: string[];
+  unlockedStages: string[];
+  achievementsEarned: string[];
   currentWorldProgressPercent: number;
-  profileWorldProgressPercent: number;
   clearedSteps: number;
   totalSteps: number;
   profileWorldXp: number;
@@ -362,17 +361,42 @@ export const userProgress: UserProgress = {
   userName: "Alex Learner",
   initials: "AL",
   totalXp: 1480,
-  dashboardXp: 240,
-  currentStreakDays: 7,
-  dashboardStreakDays: 3,
+  currentStreak: 7,
+  longestStreak: 14,
   hearts: 5,
   level: 1,
-  completedLessons: 18,
-  completedChallenges: 6,
-  longestStreakDays: 14,
-  unlockedAchievements: 2,
-  currentWorldProgressPercent: 40,
-  profileWorldProgressPercent: 48,
+  completedLessons: [
+    "say-hello",
+    "greetings-review",
+    "alphabet-basics",
+    "polite-hello",
+    "goodbye-phrases",
+    "yes-no",
+    "thank-you",
+    "basic-listening",
+    "name-intro",
+    "pronoun-practice",
+    "formal-greeting",
+    "casual-greeting",
+    "survival-words",
+    "mini-dialogue-1",
+    "numbers-intro",
+    "where-who",
+    "checkpoint-review",
+    "daily-practice-1",
+  ],
+  completedStages: ["hello"],
+  completedChallenges: [
+    "daily-greetings",
+    "daily-phrases",
+    "streak-check-1",
+    "streak-check-2",
+    "listening-sprint",
+    "first-contact-practice",
+  ],
+  unlockedStages: ["hello", "who-are-you"],
+  achievementsEarned: ["first-contact", "streak-keeper"],
+  currentWorldProgressPercent: 48,
   clearedSteps: 12,
   totalSteps: 25,
   profileWorldXp: 480,
@@ -382,11 +406,11 @@ export const userProgress: UserProgress = {
 };
 
 export const profileStats: ProfileStat[] = [
-  { title: "Total XP", value: "1,480", accent: "cyan" },
-  { title: "Current Streak", value: "7 days", accent: "red" },
-  { title: "Longest Streak", value: "14 days", accent: "yellow" },
-  { title: "Completed Lessons", value: "18", accent: "green" },
-  { title: "Completed Challenges", value: "6", accent: "cyan" },
+  { title: "Total XP", value: userProgress.totalXp.toLocaleString(), accent: "cyan" },
+  { title: "Current Streak", value: `${userProgress.currentStreak} days`, accent: "red" },
+  { title: "Longest Streak", value: `${userProgress.longestStreak} days`, accent: "yellow" },
+  { title: "Completed Lessons", value: userProgress.completedLessons.length.toString(), accent: "green" },
+  { title: "Completed Challenges", value: userProgress.completedChallenges.length.toString(), accent: "cyan" },
 ];
 
 export const recentActivity: RecentActivity[] = [

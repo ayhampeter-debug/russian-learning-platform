@@ -1,8 +1,20 @@
 import { Navigation } from "@/components/Navigation";
-import { worldOne } from "@/lib/learning-data";
+import { userProgress, worldOne, type StageStatus } from "@/lib/learning-data";
 import Link from "next/link";
 
 export default function WorldsPage() {
+  function getStageStatus(stageId: string): StageStatus {
+    if (userProgress.completedStages.includes(stageId)) {
+      return "Completed";
+    }
+
+    if (userProgress.unlockedStages.includes(stageId)) {
+      return "Unlocked";
+    }
+
+    return "Locked";
+  }
+
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <Navigation />
@@ -27,7 +39,7 @@ export default function WorldsPage() {
             </div>
 
             <div className="rounded-full bg-yellow-400 px-5 py-2 font-bold text-slate-950">
-              {worldOne.progressPercent}% Complete
+              {userProgress.currentWorldProgressPercent}% Complete
             </div>
           </div>
 
@@ -38,9 +50,8 @@ export default function WorldsPage() {
                 number={stage.number}
                 title={stage.title}
                 description={stage.description}
-                status={stage.status}
+                status={getStageStatus(stage.id)}
                 xp={`${stage.xp} XP`}
-                locked={stage.locked}
                 boss={stage.boss}
               />
             ))}
@@ -57,17 +68,17 @@ function StageCard({
   description,
   status,
   xp,
-  locked = false,
   boss = false,
 }: {
   number: string;
   title: string;
   description: string;
-  status: string;
+  status: StageStatus;
   xp: string;
-  locked?: boolean;
   boss?: boolean;
 }) {
+  const locked = status === "Locked";
+
   return (
     <div
       className={`rounded-3xl border p-6 transition ${

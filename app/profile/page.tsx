@@ -59,7 +59,7 @@ export default function ProfilePage() {
               </div>
 
               <span className="w-fit rounded-full bg-yellow-400 px-5 py-2 text-sm font-black text-slate-950">
-                {userProgress.profileWorldProgressPercent}% Complete
+                {userProgress.currentWorldProgressPercent}% Complete
               </span>
             </div>
 
@@ -73,7 +73,7 @@ export default function ProfilePage() {
               <div className="h-4 overflow-hidden rounded-full bg-slate-800">
                 <div
                   className="h-full rounded-full bg-cyan-400"
-                  style={{ width: `${userProgress.profileWorldProgressPercent}%` }}
+                  style={{ width: `${userProgress.currentWorldProgressPercent}%` }}
                 />
               </div>
             </div>
@@ -123,7 +123,7 @@ export default function ProfilePage() {
                 <h2 className="mt-2 text-2xl font-black">Achievements</h2>
               </div>
               <span className="rounded-full bg-white/10 px-4 py-2 text-sm text-slate-300">
-                {userProgress.unlockedAchievements} unlocked
+                {userProgress.achievementsEarned.length} unlocked
               </span>
             </div>
 
