@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/Navigation";
+import Link from "next/link";
 
 type StatCardProps = {
   title: string;
@@ -86,12 +87,12 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          <a
+          <Link
             href="/dashboard"
             className="inline-flex w-fit justify-center rounded-full bg-cyan-400 px-6 py-3 font-bold text-slate-950 transition hover:bg-cyan-300"
           >
             Back to Dashboard
-          </a>
+          </Link>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5">

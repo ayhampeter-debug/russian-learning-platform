@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/Navigation";
+import Link from "next/link";
 
 export default function WorldsPage() {
   return (
@@ -137,16 +138,21 @@ function StageCard({
 
       <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
         <span className="text-sm text-slate-400">{xp}</span>
-        <button
-          disabled={locked}
-          className={`rounded-full px-4 py-2 text-sm font-semibold ${
-            locked
-              ? "bg-slate-800 text-slate-500"
-              : "bg-cyan-400 text-slate-950 hover:bg-cyan-300"
-          }`}
-        >
-          {locked ? "Locked" : "Start"}
-        </button>
+        {locked ? (
+          <button
+            disabled
+            className="rounded-full bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-500"
+          >
+            Locked
+          </button>
+        ) : (
+          <Link
+            href={boss ? "/challenge" : "/lesson"}
+            className="rounded-full bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-300"
+          >
+            Start
+          </Link>
+        )}
       </div>
     </div>
   );

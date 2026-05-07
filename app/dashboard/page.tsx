@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/Navigation";
+import Link from "next/link";
 
 export default function DashboardPage() {
   return (
@@ -14,9 +15,12 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <button className="rounded-full bg-cyan-400 px-6 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300">
+          <Link
+            href="/lesson"
+            className="rounded-full bg-cyan-400 px-6 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-300"
+          >
             Continue Learning
-          </button>
+          </Link>
         </div>
 
         <div className="grid gap-6 md:grid-cols-4">
@@ -61,9 +65,12 @@ export default function DashboardPage() {
               Review greetings and basic Russian phrases to keep your streak alive.
             </p>
 
-            <button className="mt-6 w-full rounded-full bg-white px-5 py-3 font-semibold text-slate-950 transition hover:bg-slate-200">
+            <Link
+              href="/challenge"
+              className="mt-6 block w-full rounded-full bg-white px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-slate-200"
+            >
               Start Challenge
-            </button>
+            </Link>
           </div>
         </div>
       </section>

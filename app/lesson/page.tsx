@@ -1,6 +1,7 @@
 "use client";
 
 import { Navigation } from "@/components/Navigation";
+import Link from "next/link";
 import { useState } from "react";
 
 const questions = [
@@ -98,12 +99,12 @@ export default function LessonPage() {
             </div>
           </div>
 
-            <a
+            <Link
               href="/dashboard"
               className="mt-8 inline-flex rounded-full bg-cyan-400 px-7 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300"
             >
             Back to Dashboard
-            </a>
+            </Link>
           </div>
         </section>
       </main>
@@ -115,9 +116,9 @@ export default function LessonPage() {
       <Navigation />
       <section className="mx-auto max-w-3xl px-6 pb-8">
         <div className="mb-8 flex items-center justify-between gap-4">
-          <a href="/worlds" className="text-sm text-slate-400 hover:text-white">
+          <Link href="/worlds" className="text-sm text-slate-400 hover:text-white">
             ← Back
-          </a>
+          </Link>
 
           <div className="flex items-center gap-4 text-sm">
             <span className="rounded-full bg-yellow-400 px-4 py-2 font-bold text-slate-950">

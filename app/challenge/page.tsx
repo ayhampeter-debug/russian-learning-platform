@@ -1,6 +1,7 @@
 "use client";
 
 import { Navigation } from "@/components/Navigation";
+import Link from "next/link";
 import { useState } from "react";
 
 type ChoiceQuestion = {
@@ -224,12 +225,12 @@ export default function ChallengePage() {
               </div>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <a
+                <Link
                   href="/dashboard"
                   className="inline-flex flex-1 justify-center rounded-full bg-cyan-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-cyan-300"
                 >
                   Back to Dashboard
-                </a>
+                </Link>
                 <button
                   onClick={handleRetry}
                   className="inline-flex flex-1 justify-center rounded-full border border-white/10 bg-white/10 px-7 py-4 font-bold text-white transition hover:border-white/30 hover:bg-white/15"
@@ -250,9 +251,9 @@ export default function ChallengePage() {
       <section className="mx-auto max-w-5xl px-6 pb-8">
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
-            <a href="/worlds" className="text-sm text-slate-400 hover:text-white">
+            <Link href="/worlds" className="text-sm text-slate-400 hover:text-white">
               Back to Worlds
-            </a>
+            </Link>
             <p className="mt-6 text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
               Boss Level
             </p>

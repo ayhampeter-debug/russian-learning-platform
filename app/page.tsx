@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/Navigation";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -23,13 +24,26 @@ export default function Home() {
           </p>
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-            <button className="rounded-full bg-cyan-400 px-7 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300">
-              Start World 1
-            </button>
+            <Link
+              href="/dashboard"
+              className="rounded-full bg-cyan-400 px-7 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-300"
+            >
+              Start Learning
+            </Link>
 
-            <button className="rounded-full border border-white/20 px-7 py-3 font-semibold text-white transition hover:bg-white/10">
+            <Link
+              href="/worlds"
+              className="rounded-full bg-cyan-400 px-7 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-300"
+            >
+              Start World 1
+            </Link>
+
+            <Link
+              href="/lesson"
+              className="rounded-full border border-white/20 px-7 py-3 text-center font-semibold text-white transition hover:bg-white/10"
+            >
               View Demo
-            </button>
+            </Link>
           </div>
 
           <div className="mt-8 flex gap-6 text-sm text-slate-400">
