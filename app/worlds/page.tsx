@@ -18,27 +18,27 @@ export default function WorldsPage() {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <Navigation />
-      <section className="mx-auto max-w-7xl px-6 pb-8">
+      <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6">
         <div className="mb-10">
           <p className="text-sm text-cyan-300">Choose your path</p>
-          <h1 className="mt-2 text-4xl font-bold">Worlds & Stages</h1>
+          <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Worlds & Stages</h1>
           <p className="mt-3 max-w-2xl text-slate-400">
             Progress through Russian step by step. Complete lessons, pass boss
             challenges, and unlock the next stage.
           </p>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
+        <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
           <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <div>
               <p className="text-sm text-slate-400">World {worldOne.number}</p>
-              <h2 className="text-3xl font-bold">{worldOne.title}</h2>
+              <h2 className="text-2xl font-bold sm:text-3xl">{worldOne.title}</h2>
               <p className="mt-2 text-slate-400">
                 {worldOne.description}
               </p>
             </div>
 
-            <div className="rounded-full bg-yellow-400 px-5 py-2 font-bold text-slate-950">
+            <div className="w-fit rounded-full bg-yellow-400 px-5 py-2 font-bold text-slate-950">
               {summary.currentWorldProgressPercent}% Complete
             </div>
           </div>
@@ -125,7 +125,7 @@ function StageCard({
 
   return (
     <div
-      className={`rounded-3xl border p-6 transition ${
+      className={`min-w-0 rounded-2xl border p-4 transition sm:rounded-3xl sm:p-6 ${
         locked
           ? "border-white/5 bg-slate-900/45 opacity-60"
           : isCompleted
@@ -135,7 +135,7 @@ function StageCard({
               : "border-cyan-400/25 bg-slate-900/80 hover:border-cyan-300/60"
       }`}
     >
-      <div className="mb-5 flex items-center justify-between">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div
           className={`flex h-12 w-12 items-center justify-center rounded-2xl font-bold ${
             locked
@@ -164,19 +164,19 @@ function StageCard({
         </p>
       )}
 
-      <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
+      <div className="mt-5 flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-sm text-slate-400">{xp}</span>
         {locked || !href ? (
           <button
             disabled
-            className="cursor-not-allowed rounded-full border border-white/5 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-500"
+            className="w-full cursor-not-allowed rounded-full border border-white/5 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-500 sm:w-auto"
           >
             🔒 Locked
           </button>
         ) : (
           <Link
             href={href}
-            className={`rounded-full px-4 py-2 text-sm font-semibold text-slate-950 ${
+            className={`w-full rounded-full px-4 py-2 text-center text-sm font-semibold text-slate-950 sm:w-auto ${
               isCompleted
                 ? "bg-white hover:bg-slate-200"
                 : boss

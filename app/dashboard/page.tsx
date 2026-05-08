@@ -19,11 +19,11 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <Navigation />
-      <section className="mx-auto max-w-7xl px-6 pb-8">
+      <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
             <p className="text-sm text-cyan-300">Welcome back</p>
-            <h1 className="mt-2 text-4xl font-bold">Your Russian Journey</h1>
+            <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Your Russian Journey</h1>
             <p className="mt-3 text-slate-400">
               Continue your progress through short lessons, XP rewards, and daily challenges.
             </p>
@@ -36,13 +36,13 @@ export default function DashboardPage() {
                 resetProgress();
                 window.location.reload();
               }}
-              className="rounded-full border border-red-400/30 px-4 py-2 text-sm font-semibold text-red-200 transition hover:border-red-300/60 hover:bg-red-400/10"
+              className="w-full rounded-full border border-red-400/30 px-4 py-2 text-sm font-semibold text-red-200 transition hover:border-red-300/60 hover:bg-red-400/10 sm:w-auto"
             >
               Reset Progress
             </button>
             <Link
               href={summary.continueHref}
-              className="rounded-full bg-cyan-400 px-6 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-300"
+              className="w-full rounded-full bg-cyan-400 px-6 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
             >
               {summary.continueLabel}
             </Link>
@@ -77,13 +77,13 @@ export default function DashboardPage() {
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
-          <div className="rounded-3xl border border-white/10 bg-white/10 p-6 lg:col-span-2">
-            <div className="mb-6 flex items-center justify-between">
+          <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6 lg:col-span-2">
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-slate-400">Current world</p>
-                <h2 className="text-2xl font-bold">{worldOne.subtitle}</h2>
+                <h2 className="text-xl font-bold sm:text-2xl">{worldOne.subtitle}</h2>
               </div>
-              <span className="rounded-full bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950">
+              <span className="w-fit rounded-full bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950">
                 Level {Math.max(userProgress.level, Math.floor(progress.totalXp / 500))}
               </span>
             </div>
@@ -116,9 +116,9 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
+          <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
             <p className="text-sm text-slate-400">Daily Challenge</p>
-            <h2 className="mt-2 text-2xl font-bold">{worldOne.dailyChallengeTitle}</h2>
+            <h2 className="mt-2 text-xl font-bold sm:text-2xl">{worldOne.dailyChallengeTitle}</h2>
             <p className="mt-3 text-slate-300">
               {worldOne.dailyChallengeDescription}
             </p>
@@ -157,17 +157,17 @@ function StatCard({
   label: string;
 }) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
+    <div className="min-w-0 rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
       <div className="flex items-center gap-3">
         <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-2xl">
           {icon}
         </span>
-        <div>
+        <div className="min-w-0">
           <p className="font-semibold">{title}</p>
           <p className="text-sm text-slate-400">{label}</p>
         </div>
       </div>
-      <p className="mt-5 text-3xl font-bold">{value}</p>
+      <p className="mt-5 break-words text-2xl font-bold sm:text-3xl">{value}</p>
     </div>
   );
 }
@@ -183,7 +183,7 @@ function LessonMiniCard({
 }) {
   return (
     <div
-      className={`rounded-2xl border p-4 ${
+      className={`min-w-0 rounded-2xl border p-4 ${
         locked
           ? "border-white/5 bg-slate-900/40 opacity-50"
           : "border-white/10 bg-slate-900/70"

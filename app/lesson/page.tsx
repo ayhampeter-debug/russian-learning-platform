@@ -171,11 +171,11 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
     return (
       <main className="min-h-screen bg-slate-950 text-white">
         <Navigation />
-        <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-4xl items-center px-6 pb-8">
-          <div className="w-full overflow-hidden rounded-3xl border border-white/10 bg-white/10 shadow-2xl shadow-cyan-950/30">
-            <div className="bg-cyan-400 p-8 text-center text-slate-950">
-              <p className="text-sm font-black uppercase tracking-[0.35em]">Lesson Complete</p>
-              <h1 className="mt-3 text-4xl font-black md:text-6xl">{currentLesson.title} Cleared</h1>
+        <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-4xl items-center px-4 pb-8 sm:px-6">
+          <div className="w-full overflow-hidden rounded-2xl border border-white/10 bg-white/10 shadow-2xl shadow-cyan-950/30 sm:rounded-3xl">
+            <div className="bg-cyan-400 p-5 text-center text-slate-950 sm:p-8">
+              <p className="text-xs font-black uppercase tracking-[0.25em] sm:text-sm sm:tracking-[0.35em]">Lesson Complete</p>
+              <h1 className="mt-3 break-words text-3xl font-black md:text-6xl">{currentLesson.title} Cleared</h1>
               <p className="mx-auto mt-4 max-w-2xl font-semibold">
                 You practiced {currentLesson.description.toLowerCase()}
               </p>
@@ -216,16 +216,16 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
   return (
     <main className="min-h-screen overflow-hidden bg-slate-950 text-white">
       <Navigation />
-      <section className="mx-auto max-w-5xl px-6 pb-8">
+      <section className="mx-auto max-w-5xl px-4 pb-8 sm:px-6">
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
             <Link href="/worlds" className="text-sm text-slate-400 hover:text-white">
               Back to Worlds
             </Link>
-            <p className="mt-6 text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300 sm:text-sm sm:tracking-[0.3em]">
               Lesson {currentLesson.number}
             </p>
-            <h1 className="mt-3 text-4xl font-black md:text-6xl">{currentLesson.title}</h1>
+            <h1 className="mt-3 break-words text-3xl font-black sm:text-4xl md:text-6xl">{currentLesson.title}</h1>
             <p className="mt-3 max-w-2xl text-slate-400">{currentLesson.description}</p>
           </div>
 
@@ -235,7 +235,7 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
           </div>
         </div>
 
-        <div className="mb-8 rounded-3xl border border-white/10 bg-white/10 p-5">
+        <div className="mb-8 rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-5">
           <div className="mb-3 flex items-center justify-between text-sm text-slate-400">
             <span>
               Exercise {currentExerciseIndex + 1} of {lessonExercises.length}
@@ -251,13 +251,13 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[1fr_0.38fr]">
-          <div className={`rounded-3xl border p-6 shadow-2xl md:p-8 ${getExerciseFrame(currentExercise.type)}`}>
+          <div className={`min-w-0 rounded-2xl border p-4 shadow-2xl sm:rounded-3xl sm:p-6 md:p-8 ${getExerciseFrame(currentExercise.type)}`}>
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-400">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 sm:text-sm sm:tracking-[0.25em]">
                   {getExerciseLabel(currentExercise.type)}
                 </p>
-                <h2 className="mt-3 text-2xl font-bold md:text-3xl">{currentExercise.prompt}</h2>
+                <h2 className="mt-3 break-words text-xl font-bold sm:text-2xl md:text-3xl">{currentExercise.prompt}</h2>
               </div>
               <span className="w-fit rounded-full bg-yellow-400 px-4 py-2 text-sm font-black text-slate-950">
                 +{currentExercise.points} XP
@@ -309,7 +309,7 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
             </button>
           </div>
 
-          <aside className="rounded-3xl border border-white/10 bg-white/10 p-6">
+          <aside className="min-w-0 rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
             <p className="text-sm text-slate-400">Run status</p>
             <div className="mt-5 space-y-3">
               <SideStat label="Correct" value={correctCount.toString()} />
@@ -346,12 +346,12 @@ function LockedLesson({ lesson }: { lesson: Lesson }) {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <Navigation />
-      <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-3xl items-center px-6 pb-8">
-        <div className="w-full rounded-3xl border border-white/10 bg-white/10 p-8 text-center shadow-2xl shadow-cyan-950/30">
-          <p className="text-sm font-black uppercase tracking-[0.35em] text-slate-400">
+      <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-3xl items-center px-4 pb-8 sm:px-6">
+        <div className="w-full rounded-2xl border border-white/10 bg-white/10 p-5 text-center shadow-2xl shadow-cyan-950/30 sm:rounded-3xl sm:p-8">
+          <p className="text-xs font-black uppercase tracking-[0.25em] text-slate-400 sm:text-sm sm:tracking-[0.35em]">
             Lesson Locked
           </p>
-          <h1 className="mt-4 text-4xl font-black md:text-5xl">
+          <h1 className="mt-4 text-3xl font-black md:text-5xl">
             {lesson.title} is not available yet.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
@@ -359,7 +359,7 @@ function LockedLesson({ lesson }: { lesson: Lesson }) {
           </p>
           <Link
             href="/worlds"
-            className="mt-8 inline-flex justify-center rounded-full bg-cyan-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-cyan-300"
+            className="mt-8 inline-flex w-full justify-center rounded-full bg-cyan-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
           >
             Back to Worlds
           </Link>
@@ -403,10 +403,10 @@ function ExerciseView({
   if (exercise.type === "multipleChoice") {
     return (
       <>
-        <div className="mt-8 rounded-3xl border border-cyan-400/20 bg-slate-900/80 p-8 text-center">
-          <p className="text-sm uppercase tracking-[0.25em] text-slate-500">Russian</p>
-          <div className="mt-4 flex items-center justify-center gap-3">
-            <p className="text-5xl font-black">{normalizeRussianText(exercise.display)}</p>
+        <div className="mt-8 rounded-2xl border border-cyan-400/20 bg-slate-900/80 p-4 text-center sm:rounded-3xl sm:p-8">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500 sm:text-sm sm:tracking-[0.25em]">Russian</p>
+          <div className="mt-4 flex min-w-0 flex-wrap items-center justify-center gap-3">
+            <p className="break-words text-3xl font-black sm:text-5xl">{normalizeRussianText(exercise.display)}</p>
             <PronounceButton text={exercise.display} />
           </div>
         </div>
@@ -424,10 +424,10 @@ function ExerciseView({
   if (exercise.type === "fillBlank") {
     return (
       <>
-        <div className="mt-8 rounded-3xl border border-yellow-400/20 bg-slate-900/80 p-7 text-center">
-          <p className="text-xl font-bold leading-10 md:text-3xl">
+        <div className="mt-8 rounded-2xl border border-yellow-400/20 bg-slate-900/80 p-4 text-center sm:rounded-3xl sm:p-7">
+          <p className="break-words text-lg font-bold leading-9 md:text-3xl md:leading-10">
             {exercise.beforeBlank}{" "}
-            <span className="inline-flex min-w-28 justify-center border-b-4 border-yellow-300 px-4 text-yellow-200">
+            <span className="inline-flex min-w-20 justify-center border-b-4 border-yellow-300 px-2 text-yellow-200 sm:min-w-28 sm:px-4">
               {selectedAnswer ? normalizeRussianText(selectedAnswer) : "?"}
             </span>
             {exercise.afterBlank}
@@ -452,12 +452,12 @@ function ExerciseView({
 
     return (
       <div className="mt-8">
-        <div className="rounded-3xl border border-violet-400/20 bg-slate-900/80 p-6">
+        <div className="rounded-2xl border border-violet-400/20 bg-slate-900/80 p-4 sm:rounded-3xl sm:p-6">
           <p className="text-sm text-slate-400">English target</p>
-          <p className="mt-2 text-2xl font-black">{exercise.translation}</p>
+          <p className="mt-2 break-words text-xl font-black sm:text-2xl">{exercise.translation}</p>
         </div>
 
-        <div className="mt-5 min-h-24 rounded-3xl border border-dashed border-violet-300/40 bg-violet-400/10 p-4">
+        <div className="mt-5 min-h-24 rounded-2xl border border-dashed border-violet-300/40 bg-violet-400/10 p-3 sm:rounded-3xl sm:p-4">
           <div className="flex flex-wrap gap-3">
             {selectedWords.length === 0 ? (
               <span className="py-3 text-sm text-slate-500">Choose words below</span>
@@ -466,7 +466,7 @@ function ExerciseView({
                 <div key={selectedWord.index} className="flex items-center gap-2">
                   <button
                     onClick={() => onWordRemove(selectedWord.index)}
-                    className="rounded-2xl bg-violet-300 px-4 py-3 font-black text-slate-950 transition hover:bg-violet-200"
+                    className="max-w-full break-words rounded-2xl bg-violet-300 px-3 py-2 font-black text-slate-950 transition hover:bg-violet-200 sm:px-4 sm:py-3"
                   >
                     {normalizeRussianText(selectedWord.word)}
                   </button>
@@ -486,7 +486,7 @@ function ExerciseView({
                 <button
                   onClick={() => onWordClick(wordIndex)}
                   disabled={wasSelected || isAnswered}
-                  className={`rounded-2xl border px-5 py-4 font-bold transition ${
+                  className={`max-w-full break-words rounded-2xl border px-3 py-3 font-bold transition sm:px-5 sm:py-4 ${
                     wasSelected
                       ? "border-slate-800 bg-slate-800 text-slate-600"
                       : "border-white/10 bg-slate-900/80 hover:border-violet-300/60"
@@ -525,13 +525,13 @@ function ExerciseView({
                 <button
                   onClick={() => onRussianMatchSelect(pair.russian)}
                   disabled={isAnswered}
-                  className={`min-w-0 flex-1 rounded-2xl border p-4 text-left transition ${
+                    className={`min-w-0 flex-1 rounded-2xl border p-3 text-left transition sm:p-4 ${
                     selectedRussian === pair.russian
                       ? "border-emerald-300 bg-emerald-300/20"
                       : "border-white/10 bg-slate-900/80 hover:border-emerald-300/50"
                   }`}
                 >
-                  <span className="block text-xl font-black">
+                  <span className="block break-words text-lg font-black sm:text-xl">
                     {normalizeRussianText(pair.russian)}
                   </span>
                   <span className="mt-1 block text-sm text-slate-400">
@@ -549,7 +549,7 @@ function ExerciseView({
                 key={english}
                 onClick={() => onEnglishMatchSelect(english)}
                 disabled={isAnswered}
-                className={`w-full rounded-2xl border p-4 text-left font-bold transition ${
+                className={`w-full rounded-2xl border p-3 text-left font-bold transition sm:p-4 ${
                   selectedEnglish === english
                     ? "border-cyan-300 bg-cyan-300/20"
                     : "border-white/10 bg-slate-900/80 hover:border-cyan-300/50"
@@ -578,11 +578,11 @@ function ExerciseView({
 
   return (
     <>
-      <div className="mt-8 rounded-3xl border border-orange-300/20 bg-slate-900/80 p-7">
-        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-orange-200">
+      <div className="mt-8 rounded-2xl border border-orange-300/20 bg-slate-900/80 p-4 sm:rounded-3xl sm:p-7">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-orange-200 sm:text-sm sm:tracking-[0.25em]">
           Real-life situation
         </p>
-        <p className="mt-4 text-xl font-bold leading-8 text-slate-100">{exercise.situation}</p>
+        <p className="mt-4 break-words text-lg font-bold leading-8 text-slate-100 sm:text-xl">{exercise.situation}</p>
       </div>
       <ChoiceGrid
         options={exercise.options}
@@ -624,11 +624,11 @@ function ChoiceGrid({
         }
 
         return (
-          <div key={option} className="flex items-center gap-2">
+          <div key={option} className="flex min-w-0 items-center gap-2">
             <button
               onClick={() => onSelect(option)}
               disabled={isAnswered}
-              className={`min-w-0 flex-1 rounded-2xl border p-5 text-left font-semibold transition ${buttonStyle}`}
+              className={`min-w-0 flex-1 break-words rounded-2xl border p-4 text-left font-semibold transition sm:p-5 ${buttonStyle}`}
             >
               {normalizeRussianText(option)}
             </button>
@@ -655,9 +655,9 @@ function StatusPill({
   }[tone];
 
   return (
-    <div className={`rounded-2xl px-4 py-3 font-black ${toneClass}`}>
+    <div className={`rounded-2xl px-3 py-3 font-black sm:px-4 ${toneClass}`}>
       <p className="text-xs uppercase tracking-wider opacity-70">{label}</p>
-      <p className="mt-1 text-2xl">{value}</p>
+      <p className="mt-1 text-xl sm:text-2xl">{value}</p>
     </div>
   );
 }

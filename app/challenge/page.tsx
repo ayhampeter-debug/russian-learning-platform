@@ -259,19 +259,19 @@ export default function ChallengePage() {
     return (
       <main className="min-h-screen bg-slate-950 text-white">
         <Navigation />
-        <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-5xl items-center justify-center px-6 pb-8">
-          <div className="w-full overflow-hidden rounded-3xl border border-white/10 bg-slate-950 shadow-2xl shadow-cyan-950/40">
+        <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-5xl items-center justify-center px-4 pb-8 sm:px-6">
+          <div className="w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-950 shadow-2xl shadow-cyan-950/40 sm:rounded-3xl">
             <div
-              className={`border-b border-white/10 p-8 text-center ${
+              className={`border-b border-white/10 p-5 text-center sm:p-8 ${
                 finalPassed
                   ? "bg-cyan-400 text-slate-950"
                   : "bg-red-400 text-slate-950"
               }`}
             >
-              <p className="text-sm font-black uppercase tracking-[0.35em]">
+              <p className="text-xs font-black uppercase tracking-[0.25em] sm:text-sm sm:tracking-[0.35em]">
                 Final Stage Result
               </p>
-              <h1 className="mt-3 text-4xl font-black md:text-6xl">
+              <h1 className="mt-3 text-3xl font-black md:text-6xl">
                 {resultTitle}
               </h1>
               <p className="mx-auto mt-4 max-w-2xl font-semibold">
@@ -288,7 +288,7 @@ export default function ChallengePage() {
                 <ResultStat title="Accuracy" value={`${accuracy}%`} />
               </div>
 
-              <div className="mt-8 rounded-3xl border border-white/10 bg-white/10 p-6">
+              <div className="mt-8 rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <span className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-400">
                     Boss core integrity
@@ -335,16 +335,16 @@ export default function ChallengePage() {
   return (
     <main className="min-h-screen overflow-hidden bg-slate-950 text-white">
       <Navigation />
-      <section className="mx-auto max-w-6xl px-6 pb-8">
+      <section className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
         <div className="mb-8 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
             <Link href="/worlds" className="text-sm text-slate-400 hover:text-white">
               Back to Worlds
             </Link>
-            <p className="mt-6 text-sm font-semibold uppercase tracking-[0.3em] text-red-300">
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-red-300 sm:text-sm sm:tracking-[0.3em]">
               {worldOne.bossTitle} - Final Stage
             </p>
-            <h1 className="mt-3 text-4xl font-black md:text-6xl">
+            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
               First Contact Sentinel
             </h1>
             <p className="mt-4 max-w-2xl text-slate-400">
@@ -353,7 +353,7 @@ export default function ChallengePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 text-center">
+          <div className="grid grid-cols-3 gap-2 text-center sm:gap-3">
             <StatusPill label="XP" value={xp.toString()} tone="cyan" />
             <StatusPill label="Hearts" value={hearts.toString()} tone="red" />
             <StatusPill label="Score" value={score.toString()} tone="yellow" />
@@ -361,7 +361,7 @@ export default function ChallengePage() {
         </div>
 
         <div className="mb-8 grid gap-4 lg:grid-cols-[1fr_0.65fr]">
-          <div className="rounded-3xl border border-red-400/20 bg-red-400/10 p-5">
+          <div className="rounded-2xl border border-red-400/20 bg-red-400/10 p-4 sm:rounded-3xl sm:p-5">
             <div className="mb-3 flex items-center justify-between gap-4 text-sm">
               <span className="font-bold text-red-200">Boss Health</span>
               <span className="text-slate-300">
@@ -376,7 +376,7 @@ export default function ChallengePage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/10 p-5">
+          <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-5">
             <div className="mb-3 flex items-center justify-between text-sm text-slate-400">
               <span>
                 Attack {currentQuestionIndex + 1} of {bossQuestions.length}
@@ -394,16 +394,16 @@ export default function ChallengePage() {
 
         <div className="grid gap-6 lg:grid-cols-[1fr_0.48fr]">
           <div
-            className={`rounded-3xl border p-6 shadow-2xl md:p-8 ${getBossFrame(
+            className={`min-w-0 rounded-2xl border p-4 shadow-2xl sm:rounded-3xl sm:p-6 md:p-8 ${getBossFrame(
               currentQuestion.type,
             )}`}
           >
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-400">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 sm:text-sm sm:tracking-[0.25em]">
                   {currentQuestion.phase} - {getQuestionLabel(currentQuestion.type)}
                 </p>
-                <h2 className="mt-3 text-2xl font-bold md:text-3xl">
+                <h2 className="mt-3 break-words text-xl font-bold sm:text-2xl md:text-3xl">
                   {currentQuestion.prompt}
                 </h2>
               </div>
@@ -412,15 +412,15 @@ export default function ChallengePage() {
               </span>
             </div>
 
-            <div className="mt-8 rounded-3xl border border-white/10 bg-slate-950/80 p-6">
-              <p className="text-sm font-semibold uppercase tracking-[0.25em] text-red-200">
+            <div className="mt-8 rounded-2xl border border-white/10 bg-slate-950/80 p-4 sm:rounded-3xl sm:p-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-red-200 sm:text-sm sm:tracking-[0.25em]">
                 Boss action
               </p>
               <p className="mt-3 text-lg font-bold text-slate-200">
                 {currentQuestion.bossLine}
               </p>
-              <div className="mt-6 flex items-center justify-center gap-3 text-center">
-                <p className="text-4xl font-black md:text-6xl">
+              <div className="mt-6 flex min-w-0 flex-wrap items-center justify-center gap-3 text-center">
+                <p className="break-words text-3xl font-black sm:text-4xl md:text-6xl">
                   {normalizeRussianText(currentQuestion.display)}
                 </p>
                 {isRussianText(currentQuestion.display) && (
@@ -482,11 +482,11 @@ export default function ChallengePage() {
             </button>
           </div>
 
-          <aside className="rounded-3xl border border-white/10 bg-white/10 p-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-400">
+          <aside className="min-w-0 rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 sm:text-sm sm:tracking-[0.25em]">
               Encounter
             </p>
-            <div className="mt-5 rounded-3xl border border-red-300/20 bg-slate-950/80 p-6 text-center">
+            <div className="mt-5 rounded-2xl border border-red-300/20 bg-slate-950/80 p-4 text-center sm:rounded-3xl sm:p-6">
               <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full border-4 border-red-300 bg-red-400/10 text-6xl font-black text-red-200 shadow-2xl shadow-red-950/50">
                 Б
               </div>
@@ -520,12 +520,12 @@ function LockedBossChallenge() {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <Navigation />
-      <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-3xl items-center px-6 pb-8">
-        <div className="w-full rounded-3xl border border-white/10 bg-white/10 p-8 text-center shadow-2xl shadow-cyan-950/30">
-          <p className="text-sm font-black uppercase tracking-[0.35em] text-slate-400">
+      <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-3xl items-center px-4 pb-8 sm:px-6">
+        <div className="w-full rounded-2xl border border-white/10 bg-white/10 p-5 text-center shadow-2xl shadow-cyan-950/30 sm:rounded-3xl sm:p-8">
+          <p className="text-xs font-black uppercase tracking-[0.25em] text-slate-400 sm:text-sm sm:tracking-[0.35em]">
             Boss Locked
           </p>
-          <h1 className="mt-4 text-4xl font-black md:text-5xl">
+          <h1 className="mt-4 text-3xl font-black md:text-5xl">
             Finish every World 1 lesson first.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
@@ -533,7 +533,7 @@ function LockedBossChallenge() {
           </p>
           <Link
             href="/worlds"
-            className="mt-8 inline-flex justify-center rounded-full bg-cyan-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-cyan-300"
+            className="mt-8 inline-flex w-full justify-center rounded-full bg-cyan-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
           >
             Back to Worlds
           </Link>
@@ -702,11 +702,11 @@ function BossQuestionView({
 
     return (
       <div className="mt-8">
-        <div className="rounded-3xl border border-violet-300/20 bg-slate-900/80 p-5">
+        <div className="rounded-2xl border border-violet-300/20 bg-slate-900/80 p-4 sm:rounded-3xl sm:p-5">
           <p className="text-sm text-slate-400">Target</p>
-          <p className="mt-2 text-2xl font-black">{question.translation}</p>
+          <p className="mt-2 break-words text-xl font-black sm:text-2xl">{question.translation}</p>
         </div>
-        <div className="mt-5 min-h-24 rounded-3xl border border-dashed border-violet-300/40 bg-violet-400/10 p-4">
+        <div className="mt-5 min-h-24 rounded-2xl border border-dashed border-violet-300/40 bg-violet-400/10 p-3 sm:rounded-3xl sm:p-4">
           <div className="flex flex-wrap gap-3">
             {selectedWords.length === 0 ? (
               <span className="py-3 text-sm text-slate-500">
@@ -718,7 +718,7 @@ function BossQuestionView({
                   <button
                     onClick={() => onWordRemove(selectedWord.index)}
                     disabled={isAnswered}
-                    className="rounded-2xl bg-violet-300 px-4 py-3 font-black text-slate-950 transition hover:bg-violet-200 disabled:hover:bg-violet-300"
+                    className="max-w-full break-words rounded-2xl bg-violet-300 px-3 py-2 font-black text-slate-950 transition hover:bg-violet-200 disabled:hover:bg-violet-300 sm:px-4 sm:py-3"
                   >
                     {normalizeRussianText(selectedWord.word)}
                   </button>
@@ -737,7 +737,7 @@ function BossQuestionView({
                 <button
                   onClick={() => onWordClick(wordIndex)}
                   disabled={wasSelected || isAnswered}
-                  className={`rounded-2xl border px-5 py-4 font-bold transition ${
+                  className={`max-w-full break-words rounded-2xl border px-3 py-3 font-bold transition sm:px-5 sm:py-4 ${
                     wasSelected
                       ? "border-slate-800 bg-slate-800 text-slate-600"
                       : "border-white/10 bg-slate-900/80 hover:border-violet-300/60"
@@ -768,11 +768,11 @@ function BossQuestionView({
   return (
     <>
       {question.type === "scenario" && (
-        <div className="mt-8 rounded-3xl border border-orange-300/20 bg-slate-900/80 p-6">
-          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-orange-200">
+        <div className="mt-8 rounded-2xl border border-orange-300/20 bg-slate-900/80 p-4 sm:rounded-3xl sm:p-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-orange-200 sm:text-sm sm:tracking-[0.25em]">
             Arena scenario
           </p>
-          <p className="mt-4 text-xl font-bold leading-8 text-slate-100">
+          <p className="mt-4 break-words text-lg font-bold leading-8 text-slate-100 sm:text-xl">
             {question.situation}
           </p>
         </div>
@@ -817,11 +817,11 @@ function ChoiceGrid({
         }
 
         return (
-          <div key={option} className="flex items-center gap-2">
+          <div key={option} className="flex min-w-0 items-center gap-2">
             <button
               onClick={() => onSelect(option)}
               disabled={isAnswered}
-              className={`min-w-0 flex-1 rounded-2xl border p-5 text-left font-semibold transition ${buttonStyle}`}
+              className={`min-w-0 flex-1 break-words rounded-2xl border p-4 text-left font-semibold transition sm:p-5 ${buttonStyle}`}
             >
               {normalizeRussianText(option)}
             </button>
@@ -849,9 +849,9 @@ function StatusPill({
   }[tone];
 
   return (
-    <div className={`rounded-2xl px-4 py-3 font-black ${toneClass}`}>
+    <div className={`rounded-2xl px-2 py-3 font-black sm:px-4 ${toneClass}`}>
       <p className="text-xs uppercase tracking-wider opacity-70">{label}</p>
-      <p className="mt-1 text-2xl">{value}</p>
+      <p className="mt-1 text-xl sm:text-2xl">{value}</p>
     </div>
   );
 }

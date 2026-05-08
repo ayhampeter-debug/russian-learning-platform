@@ -43,13 +43,13 @@ export default function ProfilePage() {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <Navigation />
-      <section className="mx-auto max-w-7xl px-6 pb-8">
+      <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6">
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
               Player profile
             </p>
-            <h1 className="mt-3 text-4xl font-black md:text-6xl">
+            <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
               {userProgress.userName}
             </h1>
             <p className="mt-4 max-w-2xl text-slate-400">
@@ -60,7 +60,7 @@ export default function ProfilePage() {
 
           <Link
             href="/dashboard"
-            className="inline-flex w-fit justify-center rounded-full bg-cyan-400 px-6 py-3 font-bold text-slate-950 transition hover:bg-cyan-300"
+            className="inline-flex w-full justify-center rounded-full bg-cyan-400 px-6 py-3 font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-fit"
           >
             Back to Dashboard
           </Link>
@@ -73,11 +73,11 @@ export default function ProfilePage() {
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.85fr]">
-          <div className="rounded-3xl border border-cyan-400/20 bg-white/10 p-6 shadow-2xl shadow-cyan-950/30 md:p-8">
+          <div className="rounded-2xl border border-cyan-400/20 bg-white/10 p-4 shadow-2xl shadow-cyan-950/30 sm:rounded-3xl sm:p-6 md:p-8">
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
               <div>
                 <p className="text-sm text-slate-400">World 1 progress</p>
-                <h2 className="mt-2 text-3xl font-black">{worldOne.title}</h2>
+                <h2 className="mt-2 text-2xl font-black sm:text-3xl">{worldOne.title}</h2>
                 <p className="mt-3 max-w-2xl leading-7 text-slate-300">
                   Greetings, introductions, survival phrases, basic questions,
                   and the first conversation challenge.
@@ -90,7 +90,7 @@ export default function ProfilePage() {
             </div>
 
             <div className="mt-8">
-              <div className="mb-3 flex justify-between text-sm text-slate-400">
+              <div className="mb-3 flex flex-col gap-1 text-sm text-slate-400 sm:flex-row sm:justify-between">
                 <span>
                   {summary.clearedSteps} of {summary.totalSteps} steps cleared
                 </span>
@@ -127,13 +127,13 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/10 p-6 md:p-8">
+          <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6 md:p-8">
             <p className="text-sm text-slate-400">Learning identity</p>
-            <div className="mt-5 flex items-center gap-5">
+            <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
               <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl border border-cyan-400/30 bg-cyan-400 text-3xl font-black text-slate-950">
                 {userProgress.initials}
               </div>
-              <div>
+              <div className="min-w-0">
                 <h2 className="text-2xl font-black">{userProgress.userName}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
                   Beginner path: English speaker learning practical Russian.
@@ -154,8 +154,8 @@ export default function ProfilePage() {
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
-          <section className="rounded-3xl border border-white/10 bg-white/10 p-6 md:p-8">
-            <div className="mb-6 flex items-center justify-between gap-4">
+          <section className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6 md:p-8">
+            <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-slate-400">Trophy shelf</p>
                 <h2 className="mt-2 text-2xl font-black">Achievements</h2>
@@ -175,7 +175,7 @@ export default function ProfilePage() {
             </div>
           </section>
 
-          <section className="rounded-3xl border border-white/10 bg-white/10 p-6 md:p-8">
+          <section className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6 md:p-8">
             <div className="mb-6">
               <p className="text-sm text-slate-400">Quest log</p>
               <h2 className="mt-2 text-2xl font-black">Recent Activity</h2>
@@ -202,9 +202,9 @@ function StatCard({ title, value, accent }: StatCardProps) {
   }[accent];
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
+    <div className="min-w-0 rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
       <p className="text-sm text-slate-400">{title}</p>
-      <p className={`mt-3 text-3xl font-black ${accentClass}`}>{value}</p>
+      <p className={`mt-3 break-words text-2xl font-black sm:text-3xl ${accentClass}`}>{value}</p>
     </div>
   );
 }
@@ -225,8 +225,8 @@ function WorldStep({
   }[tone];
 
   return (
-    <div className={`rounded-2xl border p-5 ${toneClass}`}>
-      <p className="font-bold">{title}</p>
+    <div className={`min-w-0 rounded-2xl border p-4 sm:p-5 ${toneClass}`}>
+      <p className="break-words font-bold">{title}</p>
       <p className="mt-2 text-sm opacity-80">{status}</p>
     </div>
   );
@@ -237,14 +237,14 @@ function AchievementCard({ achievement }: { achievement: Achievement }) {
 
   return (
     <div
-      className={`rounded-2xl border p-5 ${
+      className={`min-w-0 rounded-2xl border p-4 sm:p-5 ${
         isUnlocked
           ? "border-yellow-400/30 bg-yellow-400/10"
           : "border-white/10 bg-slate-900/70"
       }`}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="min-w-0">
           <h3 className="font-bold">{achievement.title}</h3>
           <p className="mt-2 text-sm leading-6 text-slate-400">
             {achievement.description}

@@ -30,12 +30,12 @@ function LessonNotFound({ lessonId }: { lessonId: string }) {
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <Navigation />
-      <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-3xl items-center px-6 pb-8">
-        <div className="w-full rounded-3xl border border-white/10 bg-white/10 p-8 text-center shadow-2xl shadow-cyan-950/30">
-          <p className="text-sm font-black uppercase tracking-[0.35em] text-cyan-300">
+      <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-3xl items-center px-4 pb-8 sm:px-6">
+        <div className="w-full rounded-2xl border border-white/10 bg-white/10 p-5 text-center shadow-2xl shadow-cyan-950/30 sm:rounded-3xl sm:p-8">
+          <p className="text-xs font-black uppercase tracking-[0.25em] text-cyan-300 sm:text-sm sm:tracking-[0.35em]">
             Lesson not found
           </p>
-          <h1 className="mt-4 text-4xl font-black md:text-5xl">
+          <h1 className="mt-4 text-3xl font-black md:text-5xl">
             We could not find that lesson.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
