@@ -47,6 +47,12 @@ export default function WorldsPage() {
             {worldOne.stages.map((stage) => {
               const stageState = getStageProgressState(stage.id, progress);
               const lessonId = getNextStageLessonId(stage.id, progress);
+              const stageLessons = worldOne.lessons.filter(
+                (lesson) => lesson.stageId === stage.id,
+              );
+              const completedLessonCount = stageLessons.filter((lesson) =>
+                progress.completedLessonIds.includes(lesson.id),
+              ).length;
 
               return (
                 <StageCard
@@ -60,6 +66,8 @@ export default function WorldsPage() {
                   xp={`${stage.xp} XP`}
                   boss={stage.boss}
                   lessonId={lessonId}
+                  completedLessonCount={completedLessonCount}
+                  lessonCount={stageLessons.length}
                 />
               );
             })}
@@ -80,6 +88,8 @@ function StageCard({
   xp,
   boss = false,
   lessonId,
+  completedLessonCount,
+  lessonCount,
 }: {
   number: string;
   title: string;
@@ -90,32 +100,57 @@ function StageCard({
   xp: string;
   boss?: boolean;
   lessonId?: string;
+  completedLessonCount: number;
+  lessonCount: number;
 }) {
   const href = boss ? "/challenge" : lessonId ? `/lesson/${lessonId}` : undefined;
-  const actionLabel = status === "Completed" ? "Review" : boss ? "Start Boss" : "Start";
+  const isCompleted = status === "Completed";
+  const isAvailable = statusLabel === "Available";
+  const actionLabel = isCompleted
+    ? boss
+      ? "Replay Boss"
+      : "Review"
+    : boss
+      ? "Start Boss"
+      : completedLessonCount > 0
+        ? "Continue"
+        : "Start";
+  const badgeLabel = boss
+    ? isCompleted
+      ? "Boss Completed"
+      : isAvailable
+        ? "Boss Unlocked"
+        : "Boss Locked"
+    : statusLabel;
 
   return (
     <div
       className={`rounded-3xl border p-6 transition ${
         locked
-          ? "border-white/5 bg-slate-900/50 opacity-50"
-          : "border-cyan-400/20 bg-slate-900/80 hover:border-cyan-400/50"
+          ? "border-white/5 bg-slate-900/45 opacity-60"
+          : isCompleted
+            ? "border-green-400/30 bg-green-400/10"
+            : boss
+              ? "border-yellow-400/30 bg-slate-900/80 hover:border-yellow-300/60"
+              : "border-cyan-400/25 bg-slate-900/80 hover:border-cyan-300/60"
       }`}
     >
       <div className="mb-5 flex items-center justify-between">
         <div
           className={`flex h-12 w-12 items-center justify-center rounded-2xl font-bold ${
-            boss
-              ? "bg-yellow-400 text-slate-950"
-              : "bg-cyan-400 text-slate-950"
+            locked
+              ? "bg-slate-800 text-slate-500"
+              : isCompleted
+                ? "bg-green-400 text-slate-950"
+                : boss
+                  ? "bg-yellow-400 text-slate-950"
+                  : "bg-cyan-400 text-slate-950"
           }`}
         >
-          {locked && !boss ? "L" : number}
+          {locked ? "🔒" : boss ? "★" : isCompleted ? "✓" : number}
         </div>
 
-        <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-300">
-          {statusLabel}
-        </span>
+        <StatusBadge label={badgeLabel} locked={locked} completed={isCompleted} boss={boss} />
       </div>
 
       <h3 className="text-xl font-bold">{title}</h3>
@@ -123,24 +158,62 @@ function StageCard({
         {description}
       </p>
 
+      {!boss && (
+        <p className="mt-4 text-sm font-semibold text-slate-300">
+          {completedLessonCount} of {lessonCount} lessons complete
+        </p>
+      )}
+
       <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
         <span className="text-sm text-slate-400">{xp}</span>
         {locked || !href ? (
           <button
             disabled
-            className="rounded-full bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-500"
+            className="cursor-not-allowed rounded-full border border-white/5 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-500"
           >
-            Locked
+            🔒 Locked
           </button>
         ) : (
           <Link
             href={href}
-            className="rounded-full bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-300"
+            className={`rounded-full px-4 py-2 text-sm font-semibold text-slate-950 ${
+              isCompleted
+                ? "bg-white hover:bg-slate-200"
+                : boss
+                  ? "bg-yellow-400 hover:bg-yellow-300"
+                  : "bg-cyan-400 hover:bg-cyan-300"
+            }`}
           >
             {actionLabel}
           </Link>
         )}
       </div>
     </div>
+  );
+}
+
+function StatusBadge({
+  label,
+  locked,
+  completed,
+  boss,
+}: {
+  label: string;
+  locked: boolean;
+  completed: boolean;
+  boss: boolean;
+}) {
+  const badgeClass = locked
+    ? "bg-slate-800 text-slate-400"
+    : completed
+      ? "bg-green-400 text-slate-950"
+      : boss
+        ? "bg-yellow-400 text-slate-950"
+        : "bg-cyan-400 text-slate-950";
+
+  return (
+    <span className={`rounded-full px-3 py-1 text-xs font-bold ${badgeClass}`}>
+      {label}
+    </span>
   );
 }

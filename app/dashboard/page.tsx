@@ -6,6 +6,7 @@ import {
   getLessonProgressState,
   getProgressSummary,
   getProgressStatusLabel,
+  resetProgress,
   useProgress,
 } from "@/lib/progress-storage";
 import Link from "next/link";
@@ -28,26 +29,50 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          <Link
-            href={summary.continueHref}
-            className="rounded-full bg-cyan-400 px-6 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-300"
-          >
-            {summary.continueLabel}
-          </Link>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <button
+              type="button"
+              onClick={() => {
+                resetProgress();
+                window.location.reload();
+              }}
+              className="rounded-full border border-red-400/30 px-4 py-2 text-sm font-semibold text-red-200 transition hover:border-red-300/60 hover:bg-red-400/10"
+            >
+              Reset Progress
+            </button>
+            <Link
+              href={summary.continueHref}
+              className="rounded-full bg-cyan-400 px-6 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-300"
+            >
+              {summary.continueLabel}
+            </Link>
+          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-4">
-          <StatCard title="Total XP" value={progress.totalXp.toLocaleString()} icon="XP" />
+          <StatCard
+            title="XP Earned"
+            value={progress.totalXp.toLocaleString()}
+            icon="⚡"
+            label="Total experience points"
+          />
           <StatCard
             title="Current Streak"
             value={`${progress.currentStreak} days`}
-            icon="St"
+            icon="🔥"
+            label="Days practiced in a row"
           />
-          <StatCard title="Hearts" value={progress.hearts.toString()} icon="Ht" />
+          <StatCard
+            title="Hearts"
+            value={progress.hearts.toString()}
+            icon="❤️"
+            label="Mistakes you can absorb"
+          />
           <StatCard
             title="Achievements"
             value={userProgress.achievementsEarned.length.toString()}
-            icon="Ac"
+            icon="🏆"
+            label="Badges unlocked"
           />
         </div>
 
@@ -124,16 +149,25 @@ function StatCard({
   title,
   value,
   icon,
+  label,
 }: {
   title: string;
   value: string;
   icon: string;
+  label: string;
 }) {
   return (
     <div className="rounded-3xl border border-white/10 bg-white/10 p-6">
-      <div className="text-3xl">{icon}</div>
-      <p className="mt-4 text-sm text-slate-400">{title}</p>
-      <p className="mt-1 text-3xl font-bold">{value}</p>
+      <div className="flex items-center gap-3">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-2xl">
+          {icon}
+        </span>
+        <div>
+          <p className="font-semibold">{title}</p>
+          <p className="text-sm text-slate-400">{label}</p>
+        </div>
+      </div>
+      <p className="mt-5 text-3xl font-bold">{value}</p>
     </div>
   );
 }
@@ -155,7 +189,7 @@ function LessonMiniCard({
           : "border-white/10 bg-slate-900/70"
       }`}
     >
-      <p className="font-semibold">{locked ? "Locked: " : ""}{title}</p>
+      <p className="font-semibold">{locked ? "🔒 Locked: " : ""}{title}</p>
       <p className="mt-2 text-sm text-slate-400">{status}</p>
     </div>
   );

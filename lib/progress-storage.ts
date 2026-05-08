@@ -130,6 +130,22 @@ export function saveProgress(progress: SavedProgress) {
   }
 }
 
+export function resetProgress() {
+  if (!canUseLocalStorage()) {
+    return;
+  }
+
+  try {
+    window.localStorage.removeItem(progressStorageKey);
+    cachedStorageValue = null;
+    cachedProgress = fallbackProgress;
+    hasCachedProgress = false;
+    window.dispatchEvent(new Event(progressChangeEventName));
+  } catch {
+    // Keep reset non-blocking if localStorage is unavailable.
+  }
+}
+
 function subscribeToProgressChanges(onStoreChange: () => void) {
   if (!canUseLocalStorage()) {
     return () => {};
