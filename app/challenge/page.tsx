@@ -13,6 +13,7 @@ import {
   type TextQuestion,
   worldOne,
 } from "@/lib/learning-data";
+import { completeChallenge } from "@/lib/progress-storage";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -211,6 +212,10 @@ export default function ChallengePage() {
     const isLastQuestion = currentQuestionIndex === bossQuestions.length - 1;
 
     if (isLastQuestion || hearts === 0) {
+      if (finalPassed) {
+        completeChallenge("world-1-boss", xp, hearts);
+      }
+
       setIsFinished(true);
       return;
     }

@@ -1,8 +1,18 @@
+"use client";
+
 import { Navigation } from "@/components/Navigation";
 import { userProgress, worldOne } from "@/lib/learning-data";
+import {
+  getLessonProgressState,
+  getProgressSummary,
+  useProgress,
+} from "@/lib/progress-storage";
 import Link from "next/link";
 
 export default function DashboardPage() {
+  const progress = useProgress();
+  const summary = getProgressSummary(progress);
+
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <Navigation />
@@ -25,17 +35,17 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-4">
-          <StatCard title="Total XP" value={userProgress.totalXp.toLocaleString()} icon="⚡" />
+          <StatCard title="Total XP" value={progress.totalXp.toLocaleString()} icon="XP" />
           <StatCard
             title="Current Streak"
-            value={`${userProgress.currentStreak} days`}
-            icon="🔥"
+            value={`${progress.currentStreak} days`}
+            icon="St"
           />
-          <StatCard title="Hearts" value={userProgress.hearts.toString()} icon="❤️" />
+          <StatCard title="Hearts" value={progress.hearts.toString()} icon="Ht" />
           <StatCard
             title="Achievements"
             value={userProgress.achievementsEarned.length.toString()}
-            icon="🏆"
+            icon="Ac"
           />
         </div>
 
@@ -47,31 +57,35 @@ export default function DashboardPage() {
                 <h2 className="text-2xl font-bold">{worldOne.subtitle}</h2>
               </div>
               <span className="rounded-full bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950">
-                Level {userProgress.level}
+                Level {Math.max(userProgress.level, Math.floor(progress.totalXp / 500))}
               </span>
             </div>
 
             <div className="mb-3 flex justify-between text-sm text-slate-400">
               <span>Progress</span>
-              <span>{userProgress.currentWorldProgressPercent}%</span>
+              <span>{summary.currentWorldProgressPercent}%</span>
             </div>
 
             <div className="h-4 overflow-hidden rounded-full bg-slate-800">
               <div
                 className="h-full rounded-full bg-cyan-400"
-                style={{ width: `${userProgress.currentWorldProgressPercent}%` }}
+                style={{ width: `${summary.currentWorldProgressPercent}%` }}
               />
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-3">
-              {worldOne.lessons.map((lesson) => (
-                <LessonMiniCard
-                  key={lesson.id}
-                  title={lesson.title}
-                  status={lesson.status}
-                  locked={lesson.locked}
-                />
-              ))}
+              {worldOne.lessons.map((lesson) => {
+                const lessonState = getLessonProgressState(lesson, progress);
+
+                return (
+                  <LessonMiniCard
+                    key={lesson.id}
+                    title={lesson.title}
+                    status={lessonState.status}
+                    locked={lessonState.locked}
+                  />
+                );
+              })}
             </div>
           </div>
 
@@ -130,7 +144,7 @@ function LessonMiniCard({
           : "border-white/10 bg-slate-900/70"
       }`}
     >
-      <p className="font-semibold">{locked ? "🔒 " : ""}{title}</p>
+      <p className="font-semibold">{locked ? "Locked: " : ""}{title}</p>
       <p className="mt-2 text-sm text-slate-400">{status}</p>
     </div>
   );

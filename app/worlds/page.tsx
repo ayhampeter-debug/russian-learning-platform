@@ -1,19 +1,17 @@
+"use client";
+
 import { Navigation } from "@/components/Navigation";
-import { userProgress, worldOne, type StageStatus } from "@/lib/learning-data";
+import { worldOne, type StageStatus } from "@/lib/learning-data";
+import {
+  getProgressSummary,
+  getStageProgressState,
+  useProgress,
+} from "@/lib/progress-storage";
 import Link from "next/link";
 
 export default function WorldsPage() {
-  function getStageStatus(stageId: string): StageStatus {
-    if (userProgress.completedStages.includes(stageId)) {
-      return "Completed";
-    }
-
-    if (userProgress.unlockedStages.includes(stageId)) {
-      return "Unlocked";
-    }
-
-    return "Locked";
-  }
+  const progress = useProgress();
+  const summary = getProgressSummary(progress);
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
@@ -39,25 +37,29 @@ export default function WorldsPage() {
             </div>
 
             <div className="rounded-full bg-yellow-400 px-5 py-2 font-bold text-slate-950">
-              {userProgress.currentWorldProgressPercent}% Complete
+              {summary.currentWorldProgressPercent}% Complete
             </div>
           </div>
 
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {worldOne.stages.map((stage) => (
-              <StageCard
-                key={stage.id}
-                number={stage.number}
-                title={stage.title}
-                description={stage.description}
-                status={getStageStatus(stage.id)}
-                xp={`${stage.xp} XP`}
-                boss={stage.boss}
-                lessonId={
-                  worldOne.lessons.find((lesson) => lesson.stageId === stage.id)?.id
-                }
-              />
-            ))}
+            {worldOne.stages.map((stage) => {
+              const stageState = getStageProgressState(stage.id, progress);
+
+              return (
+                <StageCard
+                  key={stage.id}
+                  number={stage.number}
+                  title={stage.title}
+                  description={stage.description}
+                  status={stageState.status}
+                  xp={`${stage.xp} XP`}
+                  boss={stage.boss}
+                  lessonId={
+                    worldOne.lessons.find((lesson) => lesson.stageId === stage.id)?.id
+                  }
+                />
+              );
+            })}
           </div>
         </div>
       </section>
@@ -101,7 +103,7 @@ function StageCard({
               : "bg-cyan-400 text-slate-950"
           }`}
         >
-          {locked && !boss ? "🔒" : number}
+          {locked && !boss ? "L" : number}
         </div>
 
         <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-300">

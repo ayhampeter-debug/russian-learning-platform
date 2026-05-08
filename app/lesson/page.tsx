@@ -13,6 +13,7 @@ import {
   type MatchingExercise,
   type SentenceOrderExercise,
 } from "@/lib/learning-data";
+import { completeLesson } from "@/lib/progress-storage";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -126,6 +127,7 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
 
   function handleNext() {
     if (currentExerciseIndex === lessonExercises.length - 1) {
+      completeLesson(currentLesson.id, xp);
       setIsFinished(true);
       return;
     }

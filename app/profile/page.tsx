@@ -1,19 +1,39 @@
+"use client";
+
 import { Navigation } from "@/components/Navigation";
 import {
   achievements,
-  profileStats,
   recentActivity,
   userProgress,
   worldOne,
   type Achievement,
-  type ProfileStat,
   type RecentActivity,
+  type StatAccent,
 } from "@/lib/learning-data";
+import {
+  getProgressSummary,
+  getStageProgressState,
+  useProgress,
+} from "@/lib/progress-storage";
 import Link from "next/link";
 
-type StatCardProps = ProfileStat;
+type StatCardProps = {
+  title: string;
+  value: string;
+  accent: StatAccent;
+};
 
 export default function ProfilePage() {
+  const progress = useProgress();
+  const summary = getProgressSummary(progress);
+  const dynamicStats: StatCardProps[] = [
+    { title: "Total XP", value: progress.totalXp.toLocaleString(), accent: "cyan" },
+    { title: "Current Streak", value: `${progress.currentStreak} days`, accent: "red" },
+    { title: "Longest Streak", value: `${userProgress.longestStreak} days`, accent: "yellow" },
+    { title: "Completed Lessons", value: summary.completedLessons.length.toString(), accent: "green" },
+    { title: "Completed Challenges", value: summary.completedChallenges.length.toString(), accent: "cyan" },
+  ];
+
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <Navigation />
@@ -41,7 +61,7 @@ export default function ProfilePage() {
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5">
-          {profileStats.map((stat) => (
+          {dynamicStats.map((stat) => (
             <StatCard key={stat.title} {...stat} />
           ))}
         </div>
@@ -59,33 +79,44 @@ export default function ProfilePage() {
               </div>
 
               <span className="w-fit rounded-full bg-yellow-400 px-5 py-2 text-sm font-black text-slate-950">
-                {userProgress.currentWorldProgressPercent}% Complete
+                {summary.currentWorldProgressPercent}% Complete
               </span>
             </div>
 
             <div className="mt-8">
               <div className="mb-3 flex justify-between text-sm text-slate-400">
                 <span>
-                  {userProgress.clearedSteps} of {userProgress.totalSteps} steps cleared
+                  {summary.clearedSteps} of {summary.totalSteps} steps cleared
                 </span>
-                <span>{userProgress.profileWorldXp} XP earned</span>
+                <span>{summary.profileWorldXp} XP earned</span>
               </div>
               <div className="h-4 overflow-hidden rounded-full bg-slate-800">
                 <div
                   className="h-full rounded-full bg-cyan-400"
-                  style={{ width: `${userProgress.currentWorldProgressPercent}%` }}
+                  style={{ width: `${summary.currentWorldProgressPercent}%` }}
                 />
               </div>
             </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
-              <WorldStep title="Say Hello" status="Completed" tone="done" />
-              <WorldStep
-                title="Introduce Yourself"
-                status="In progress"
-                tone="active"
-              />
-              <WorldStep title="Boss Level" status="Locked" tone="locked" />
+              {worldOne.stages.slice(0, 3).map((stage) => {
+                const stageState = getStageProgressState(stage.id, progress);
+                const tone =
+                  stageState.status === "Completed"
+                    ? "done"
+                    : stageState.status === "Unlocked"
+                      ? "active"
+                      : "locked";
+
+                return (
+                  <WorldStep
+                    key={stage.id}
+                    title={stage.title}
+                    status={stageState.status}
+                    tone={tone}
+                  />
+                );
+              })}
             </div>
           </div>
 
@@ -106,10 +137,10 @@ export default function ProfilePage() {
             <div className="mt-8 rounded-3xl border border-white/10 bg-slate-900/80 p-5">
               <p className="text-sm text-slate-400">Next goal</p>
               <p className="mt-2 text-xl font-bold">
-                {userProgress.nextGoalTitle}
+                {summary.nextGoalTitle}
               </p>
               <p className="mt-3 text-sm leading-6 text-slate-400">
-                {userProgress.nextGoalDescription}
+                {summary.nextGoalDescription}
               </p>
             </div>
           </div>
