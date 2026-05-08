@@ -13,7 +13,11 @@ import {
   type MatchingExercise,
   type SentenceOrderExercise,
 } from "@/lib/learning-data";
-import { completeLesson } from "@/lib/progress-storage";
+import {
+  completeLesson,
+  getLessonProgressState,
+  useProgress,
+} from "@/lib/progress-storage";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -24,6 +28,8 @@ export default function LessonPage() {
 }
 
 export function LessonExperience({ lesson }: { lesson: Lesson }) {
+  const progressState = useProgress();
+  const lessonState = getLessonProgressState(lesson, progressState);
   const currentLesson = lesson;
   const lessonExercises: LessonExercise[] = currentLesson.exercises;
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
@@ -155,6 +161,10 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
     setHearts(startingHearts);
     setCorrectCount(0);
     setIsFinished(false);
+  }
+
+  if (lessonState.locked) {
+    return <LockedLesson lesson={currentLesson} />;
   }
 
   if (isFinished) {
@@ -326,6 +336,33 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
               </div>
             </div>
           </aside>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function LockedLesson({ lesson }: { lesson: Lesson }) {
+  return (
+    <main className="min-h-screen bg-slate-950 text-white">
+      <Navigation />
+      <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-3xl items-center px-6 pb-8">
+        <div className="w-full rounded-3xl border border-white/10 bg-white/10 p-8 text-center shadow-2xl shadow-cyan-950/30">
+          <p className="text-sm font-black uppercase tracking-[0.35em] text-slate-400">
+            Lesson Locked
+          </p>
+          <h1 className="mt-4 text-4xl font-black md:text-5xl">
+            {lesson.title} is not available yet.
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-slate-400">
+            Complete the previous World 1 lesson to unlock this step.
+          </p>
+          <Link
+            href="/worlds"
+            className="mt-8 inline-flex justify-center rounded-full bg-cyan-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-cyan-300"
+          >
+            Back to Worlds
+          </Link>
         </div>
       </section>
     </main>

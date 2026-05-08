@@ -3,7 +3,9 @@
 import { Navigation } from "@/components/Navigation";
 import { worldOne, type StageStatus } from "@/lib/learning-data";
 import {
+  getNextStageLessonId,
   getProgressSummary,
+  getProgressStatusLabel,
   getStageProgressState,
   useProgress,
 } from "@/lib/progress-storage";
@@ -44,6 +46,7 @@ export default function WorldsPage() {
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {worldOne.stages.map((stage) => {
               const stageState = getStageProgressState(stage.id, progress);
+              const lessonId = getNextStageLessonId(stage.id, progress);
 
               return (
                 <StageCard
@@ -52,11 +55,11 @@ export default function WorldsPage() {
                   title={stage.title}
                   description={stage.description}
                   status={stageState.status}
+                  statusLabel={getProgressStatusLabel(stageState.status)}
+                  locked={stageState.locked}
                   xp={`${stage.xp} XP`}
                   boss={stage.boss}
-                  lessonId={
-                    worldOne.lessons.find((lesson) => lesson.stageId === stage.id)?.id
-                  }
+                  lessonId={lessonId}
                 />
               );
             })}
@@ -72,6 +75,8 @@ function StageCard({
   title,
   description,
   status,
+  statusLabel,
+  locked,
   xp,
   boss = false,
   lessonId,
@@ -80,12 +85,14 @@ function StageCard({
   title: string;
   description: string;
   status: StageStatus;
+  statusLabel: string;
+  locked: boolean;
   xp: string;
   boss?: boolean;
   lessonId?: string;
 }) {
-  const locked = status === "Locked";
-  const href = boss ? "/challenge" : lessonId ? `/lesson/${lessonId}` : "/lesson";
+  const href = boss ? "/challenge" : lessonId ? `/lesson/${lessonId}` : undefined;
+  const actionLabel = status === "Completed" ? "Review" : boss ? "Start Boss" : "Start";
 
   return (
     <div
@@ -107,7 +114,7 @@ function StageCard({
         </div>
 
         <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-300">
-          {status}
+          {statusLabel}
         </span>
       </div>
 
@@ -118,7 +125,7 @@ function StageCard({
 
       <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-4">
         <span className="text-sm text-slate-400">{xp}</span>
-        {locked ? (
+        {locked || !href ? (
           <button
             disabled
             className="rounded-full bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-500"
@@ -130,7 +137,7 @@ function StageCard({
             href={href}
             className="rounded-full bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-300"
           >
-            Start
+            {actionLabel}
           </Link>
         )}
       </div>

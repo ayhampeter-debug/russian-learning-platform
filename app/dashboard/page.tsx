@@ -5,6 +5,7 @@ import { userProgress, worldOne } from "@/lib/learning-data";
 import {
   getLessonProgressState,
   getProgressSummary,
+  getProgressStatusLabel,
   useProgress,
 } from "@/lib/progress-storage";
 import Link from "next/link";
@@ -12,6 +13,7 @@ import Link from "next/link";
 export default function DashboardPage() {
   const progress = useProgress();
   const summary = getProgressSummary(progress);
+  const bossActionUnlocked = summary.bossUnlocked || summary.bossCompleted;
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
@@ -27,10 +29,10 @@ export default function DashboardPage() {
           </div>
 
           <Link
-            href="/lesson"
+            href={summary.continueHref}
             className="rounded-full bg-cyan-400 px-6 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-300"
           >
-            Continue Learning
+            {summary.continueLabel}
           </Link>
         </div>
 
@@ -81,7 +83,7 @@ export default function DashboardPage() {
                   <LessonMiniCard
                     key={lesson.id}
                     title={lesson.title}
-                    status={lessonState.status}
+                    status={getProgressStatusLabel(lessonState.status)}
                     locked={lessonState.locked}
                   />
                 );
@@ -96,12 +98,21 @@ export default function DashboardPage() {
               {worldOne.dailyChallengeDescription}
             </p>
 
-            <Link
-              href="/challenge"
-              className="mt-6 block w-full rounded-full bg-white px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-slate-200"
-            >
-              Start Challenge
-            </Link>
+            {bossActionUnlocked ? (
+              <Link
+                href="/challenge"
+                className="mt-6 block w-full rounded-full bg-white px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-slate-200"
+              >
+                {summary.bossCompleted ? "Replay Boss Challenge" : "Start Boss Challenge"}
+              </Link>
+            ) : (
+              <button
+                disabled
+                className="mt-6 block w-full rounded-full bg-slate-800 px-5 py-3 text-center font-semibold text-slate-500"
+              >
+                Boss Locked
+              </button>
+            )}
           </div>
         </div>
       </section>

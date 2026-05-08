@@ -13,7 +13,12 @@ import {
   type TextQuestion,
   worldOne,
 } from "@/lib/learning-data";
-import { completeChallenge } from "@/lib/progress-storage";
+import {
+  completeChallenge,
+  isBossChallengeCompleted,
+  isBossChallengeUnlocked,
+  useProgress,
+} from "@/lib/progress-storage";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -106,6 +111,9 @@ const bossQuestions: BossQuestion[] = [
 const maxBossHealth = challengeSettings.passScore;
 
 export default function ChallengePage() {
+  const savedProgress = useProgress();
+  const bossAvailable =
+    isBossChallengeUnlocked(savedProgress) || isBossChallengeCompleted(savedProgress);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [typedAnswer, setTypedAnswer] = useState("");
@@ -241,6 +249,10 @@ export default function ChallengePage() {
     setSelectedWordIndexes([]);
     setIsAnswered(false);
     setLastAnswerWasCorrect(false);
+  }
+
+  if (!bossAvailable) {
+    return <LockedBossChallenge />;
   }
 
   if (isFinished) {
@@ -498,6 +510,33 @@ export default function ChallengePage() {
               />
             </div>
           </aside>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function LockedBossChallenge() {
+  return (
+    <main className="min-h-screen bg-slate-950 text-white">
+      <Navigation />
+      <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-3xl items-center px-6 pb-8">
+        <div className="w-full rounded-3xl border border-white/10 bg-white/10 p-8 text-center shadow-2xl shadow-cyan-950/30">
+          <p className="text-sm font-black uppercase tracking-[0.35em] text-slate-400">
+            Boss Locked
+          </p>
+          <h1 className="mt-4 text-4xl font-black md:text-5xl">
+            Finish every World 1 lesson first.
+          </h1>
+          <p className="mx-auto mt-4 max-w-xl text-slate-400">
+            The boss challenge unlocks after all ten First Contact lessons are completed.
+          </p>
+          <Link
+            href="/worlds"
+            className="mt-8 inline-flex justify-center rounded-full bg-cyan-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-cyan-300"
+          >
+            Back to Worlds
+          </Link>
         </div>
       </section>
     </main>

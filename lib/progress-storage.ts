@@ -20,6 +20,8 @@ export type LessonProgressState = {
   completed: boolean;
 };
 
+export type UnlockDisplayStatus = "Completed" | "Available" | "Locked";
+
 export const fallbackProgress: SavedProgress = {
   completedLessonIds: worldOne.lessons
     .filter(
@@ -35,6 +37,10 @@ export const fallbackProgress: SavedProgress = {
   hearts: userProgress.hearts,
   currentStreak: userProgress.currentStreak,
 };
+
+let cachedStorageValue: string | null = null;
+let cachedProgress: SavedProgress = fallbackProgress;
+let hasCachedProgress = false;
 
 function canUseLocalStorage() {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
@@ -67,14 +73,8 @@ function normalizeProgress(progress: Partial<SavedProgress>): SavedProgress {
   };
 }
 
-export function loadProgress(): SavedProgress {
-  if (!canUseLocalStorage()) {
-    return fallbackProgress;
-  }
-
+function parseStoredProgress(storedProgress: string | null): SavedProgress {
   try {
-    const storedProgress = window.localStorage.getItem(progressStorageKey);
-
     if (!storedProgress) {
       return fallbackProgress;
     }
@@ -85,13 +85,45 @@ export function loadProgress(): SavedProgress {
   }
 }
 
+function getProgressSnapshot(): SavedProgress {
+  if (!canUseLocalStorage()) {
+    return fallbackProgress;
+  }
+
+  try {
+    const storedProgress = window.localStorage.getItem(progressStorageKey);
+
+    if (hasCachedProgress && storedProgress === cachedStorageValue) {
+      return cachedProgress;
+    }
+
+    cachedStorageValue = storedProgress;
+    cachedProgress = parseStoredProgress(storedProgress);
+    hasCachedProgress = true;
+
+    return cachedProgress;
+  } catch {
+    return fallbackProgress;
+  }
+}
+
+export function loadProgress(): SavedProgress {
+  return getProgressSnapshot();
+}
+
 export function saveProgress(progress: SavedProgress) {
   if (!canUseLocalStorage()) {
     return;
   }
 
   try {
-    window.localStorage.setItem(progressStorageKey, JSON.stringify(normalizeProgress(progress)));
+    const normalizedProgress = normalizeProgress(progress);
+    const serializedProgress = JSON.stringify(normalizedProgress);
+
+    window.localStorage.setItem(progressStorageKey, serializedProgress);
+    cachedStorageValue = serializedProgress;
+    cachedProgress = normalizedProgress;
+    hasCachedProgress = true;
     window.dispatchEvent(new Event(progressChangeEventName));
   } catch {
     // Storage can fail in private browsing or under quota pressure; keep the app usable.
@@ -119,7 +151,7 @@ function subscribeToProgressChanges(onStoreChange: () => void) {
 }
 
 export function useProgress() {
-  return useSyncExternalStore(subscribeToProgressChanges, loadProgress, () => fallbackProgress);
+  return useSyncExternalStore(subscribeToProgressChanges, getProgressSnapshot, () => fallbackProgress);
 }
 
 export function completeLesson(lessonId: string, xpEarned: number) {
@@ -146,6 +178,14 @@ export function completeChallenge(challengeId: string, xpEarned: number, heartsL
 
   saveProgress(nextProgress);
   return nextProgress;
+}
+
+export function getProgressStatusLabel(status: StageStatus | "In progress"): UnlockDisplayStatus {
+  if (status === "Completed" || status === "Locked") {
+    return status;
+  }
+
+  return "Available";
 }
 
 export function getUnlockedLessonIds(completedLessonIds: string[]) {
@@ -218,11 +258,67 @@ export function getStageProgressState(stageId: string, progress: SavedProgress) 
   return { status: "Locked" as StageStatus, locked: true };
 }
 
+export function isBossChallengeUnlocked(progress: SavedProgress) {
+  const completedLessons = new Set(progress.completedLessonIds);
+
+  return worldOne.lessons.every((lesson) => completedLessons.has(lesson.id));
+}
+
+export function isBossChallengeCompleted(progress: SavedProgress) {
+  return progress.completedChallengeIds.includes("world-1-boss");
+}
+
+export function getNextAvailablePath(progress: SavedProgress) {
+  const nextLesson = worldOne.lessons.find(
+    (lesson) => !progress.completedLessonIds.includes(lesson.id),
+  );
+
+  if (nextLesson) {
+    return `/lesson/${nextLesson.id}`;
+  }
+
+  return "/challenge";
+}
+
+export function getNextAvailableLabel(progress: SavedProgress) {
+  const nextLesson = worldOne.lessons.find(
+    (lesson) => !progress.completedLessonIds.includes(lesson.id),
+  );
+
+  if (nextLesson) {
+    return `Continue: ${nextLesson.title}`;
+  }
+
+  return isBossChallengeCompleted(progress) ? "Replay Boss Challenge" : "Start Boss Challenge";
+}
+
+export function getNextStageLessonId(stageId: string, progress: SavedProgress) {
+  const stageLessons = worldOne.lessons.filter((lesson) => lesson.stageId === stageId);
+  const unlockedLessonIds = new Set(getUnlockedLessonIds(progress.completedLessonIds));
+
+  return (
+    stageLessons.find(
+      (lesson) =>
+        unlockedLessonIds.has(lesson.id) && !progress.completedLessonIds.includes(lesson.id),
+    )?.id ?? stageLessons.find((lesson) => unlockedLessonIds.has(lesson.id))?.id
+  );
+}
+
 export function getProgressSummary(progress: SavedProgress) {
   const completedWorldLessons = worldOne.lessons.filter((lesson) =>
     progress.completedLessonIds.includes(lesson.id),
   );
-  const bossCompleted = progress.completedChallengeIds.includes("world-1-boss");
+  const completedStageIds = worldOne.stages
+    .filter(
+      (stage) =>
+        !stage.boss &&
+        worldOne.lessons
+          .filter((lesson) => lesson.stageId === stage.id)
+          .every((lesson) => progress.completedLessonIds.includes(lesson.id)),
+    )
+    .map((stage) => stage.id);
+  const bossUnlocked = isBossChallengeUnlocked(progress);
+  const bossCompleted = isBossChallengeCompleted(progress);
   const totalSteps = worldOne.lessons.length + 1;
   const clearedSteps = completedWorldLessons.length + (bossCompleted ? 1 : 0);
   const currentWorldProgressPercent = Math.round((clearedSteps / totalSteps) * 100);
@@ -236,8 +332,13 @@ export function getProgressSummary(progress: SavedProgress) {
 
   return {
     completedLessons: completedWorldLessons,
+    completedStageIds,
     completedChallenges: progress.completedChallengeIds,
     unlockedLessonIds: getUnlockedLessonIds(progress.completedLessonIds),
+    bossUnlocked,
+    bossCompleted,
+    continueHref: getNextAvailablePath(progress),
+    continueLabel: getNextAvailableLabel(progress),
     totalSteps,
     clearedSteps,
     currentWorldProgressPercent,

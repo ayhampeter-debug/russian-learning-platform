@@ -12,6 +12,7 @@ import {
 } from "@/lib/learning-data";
 import {
   getProgressSummary,
+  getProgressStatusLabel,
   getStageProgressState,
   useProgress,
 } from "@/lib/progress-storage";
@@ -31,7 +32,12 @@ export default function ProfilePage() {
     { title: "Current Streak", value: `${progress.currentStreak} days`, accent: "red" },
     { title: "Longest Streak", value: `${userProgress.longestStreak} days`, accent: "yellow" },
     { title: "Completed Lessons", value: summary.completedLessons.length.toString(), accent: "green" },
-    { title: "Completed Challenges", value: summary.completedChallenges.length.toString(), accent: "cyan" },
+    { title: "Completed Stages", value: summary.completedStageIds.length.toString(), accent: "cyan" },
+    {
+      title: "Boss Challenge",
+      value: summary.bossCompleted ? "Completed" : summary.bossUnlocked ? "Available" : "Locked",
+      accent: summary.bossCompleted ? "green" : summary.bossUnlocked ? "cyan" : "red",
+    },
   ];
 
   return (
@@ -60,7 +66,7 @@ export default function ProfilePage() {
           </Link>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {dynamicStats.map((stat) => (
             <StatCard key={stat.title} {...stat} />
           ))}
@@ -99,12 +105,13 @@ export default function ProfilePage() {
             </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-3">
-              {worldOne.stages.slice(0, 3).map((stage) => {
+              {worldOne.stages.map((stage) => {
                 const stageState = getStageProgressState(stage.id, progress);
+                const statusLabel = getProgressStatusLabel(stageState.status);
                 const tone =
                   stageState.status === "Completed"
                     ? "done"
-                    : stageState.status === "Unlocked"
+                    : statusLabel === "Available"
                       ? "active"
                       : "locked";
 
@@ -112,7 +119,7 @@ export default function ProfilePage() {
                   <WorldStep
                     key={stage.id}
                     title={stage.title}
-                    status={stageState.status}
+                    status={statusLabel}
                     tone={tone}
                   />
                 );
