@@ -36,7 +36,9 @@ export function Navigation() {
 
           <div className="grid grid-cols-2 gap-2 text-sm font-semibold text-slate-300 sm:grid-cols-3 lg:flex lg:items-center">
             {navItems.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive =
+                pathname === item.href ||
+                (item.href === "/lesson" && pathname.startsWith("/lesson/"));
 
               return (
                 <Link

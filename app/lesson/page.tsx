@@ -8,6 +8,7 @@ import {
 } from "@/components/PronounceButton";
 import {
   worldOne,
+  type Lesson,
   type LessonExercise,
   type MatchingExercise,
   type SentenceOrderExercise,
@@ -15,11 +16,15 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 
-const currentLesson = worldOne.lessons[0];
-const lessonExercises: LessonExercise[] = currentLesson.exercises;
 const startingHearts = 5;
 
 export default function LessonPage() {
+  return <LessonExperience lesson={worldOne.lessons[0]} />;
+}
+
+export function LessonExperience({ lesson }: { lesson: Lesson }) {
+  const currentLesson = lesson;
+  const lessonExercises: LessonExercise[] = currentLesson.exercises;
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [selectedWordIndexes, setSelectedWordIndexes] = useState<number[]>([]);

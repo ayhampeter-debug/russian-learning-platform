@@ -53,6 +53,9 @@ export default function WorldsPage() {
                 status={getStageStatus(stage.id)}
                 xp={`${stage.xp} XP`}
                 boss={stage.boss}
+                lessonId={
+                  worldOne.lessons.find((lesson) => lesson.stageId === stage.id)?.id
+                }
               />
             ))}
           </div>
@@ -69,6 +72,7 @@ function StageCard({
   status,
   xp,
   boss = false,
+  lessonId,
 }: {
   number: string;
   title: string;
@@ -76,8 +80,10 @@ function StageCard({
   status: StageStatus;
   xp: string;
   boss?: boolean;
+  lessonId?: string;
 }) {
   const locked = status === "Locked";
+  const href = boss ? "/challenge" : lessonId ? `/lesson/${lessonId}` : "/lesson";
 
   return (
     <div
@@ -119,7 +125,7 @@ function StageCard({
           </button>
         ) : (
           <Link
-            href={boss ? "/challenge" : "/lesson"}
+            href={href}
             className="rounded-full bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-300"
           >
             Start
