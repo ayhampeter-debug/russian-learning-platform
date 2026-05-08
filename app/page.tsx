@@ -90,22 +90,28 @@ export default function Home() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/dashboard"
+              href="/signup"
               className="w-full rounded-full bg-cyan-400 px-7 py-3 text-center font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
+            >
+              Create Account
+            </Link>
+            <Link
+              href="/dashboard"
+              className="w-full rounded-full border border-cyan-300/40 bg-cyan-400/10 px-7 py-3 text-center font-bold text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-400/20 sm:w-auto"
             >
               Start Learning
             </Link>
             <Link
               href="/worlds"
-              className="w-full rounded-full border border-cyan-300/40 bg-cyan-400/10 px-7 py-3 text-center font-bold text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-400/20 sm:w-auto"
+              className="w-full rounded-full border border-white/20 px-7 py-3 text-center font-bold text-white transition hover:bg-white/10 sm:w-auto"
             >
               Explore Worlds
             </Link>
             <Link
-              href="/lesson/saying-hello"
+              href="/login"
               className="w-full rounded-full border border-white/20 px-7 py-3 text-center font-bold text-white transition hover:bg-white/10 sm:w-auto"
             >
-              Try a Lesson
+              Login
             </Link>
           </div>
 
@@ -196,10 +202,10 @@ export default function Home() {
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:mt-0">
             <Link
-              href="/dashboard"
+              href="/signup"
               className="w-full rounded-full bg-cyan-400 px-7 py-3 text-center font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
             >
-              Start Learning
+              Create Account
             </Link>
             <Link
               href="/lesson/saying-hello"

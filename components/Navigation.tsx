@@ -15,6 +15,7 @@ const navItems: NavItem[] = [
   { href: "/lesson", label: "Lesson" },
   { href: "/challenge", label: "Challenge" },
   { href: "/profile", label: "Profile" },
+  { href: "/login", label: "Login" },
 ];
 
 export function Navigation() {
