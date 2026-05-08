@@ -6,123 +6,17 @@ import {
   normalizeRussianText,
   PronounceButton,
 } from "@/components/PronounceButton";
+import {
+  worldOne,
+  type LessonExercise,
+  type MatchingExercise,
+  type SentenceOrderExercise,
+} from "@/lib/learning-data";
 import Link from "next/link";
 import { useState } from "react";
 
-type ExerciseBase = {
-  id: string;
-  type: "multipleChoice" | "fillBlank" | "sentenceOrder" | "matching" | "scenarioChoice";
-  prompt: string;
-  points: number;
-  explanation: string;
-};
-
-type MultipleChoiceExercise = ExerciseBase & {
-  type: "multipleChoice";
-  display: string;
-  options: string[];
-  correctAnswer: string;
-};
-
-type FillBlankExercise = ExerciseBase & {
-  type: "fillBlank";
-  beforeBlank: string;
-  afterBlank: string;
-  options: string[];
-  correctAnswer: string;
-};
-
-type SentenceOrderExercise = ExerciseBase & {
-  type: "sentenceOrder";
-  translation: string;
-  words: string[];
-  correctOrder: string[];
-};
-
-type MatchingPair = {
-  russian: string;
-  english: string;
-};
-
-type MatchingExercise = ExerciseBase & {
-  type: "matching";
-  pairs: MatchingPair[];
-  englishOptions: string[];
-};
-
-type ScenarioChoiceExercise = ExerciseBase & {
-  type: "scenarioChoice";
-  situation: string;
-  options: string[];
-  correctAnswer: string;
-};
-
-type LessonExercise =
-  | MultipleChoiceExercise
-  | FillBlankExercise
-  | SentenceOrderExercise
-  | MatchingExercise
-  | ScenarioChoiceExercise;
-
-const lessonExercises: LessonExercise[] = [
-  {
-    id: "privet-meaning",
-    type: "multipleChoice",
-    prompt: "Choose the best English meaning.",
-    display: "Привет",
-    options: ["Goodbye", "Hello", "Thank you", "Please"],
-    correctAnswer: "Hello",
-    explanation: "Привет means Hello. It is informal, so use it with friends or people your age.",
-    points: 10,
-  },
-  {
-    id: "fill-thanks",
-    type: "fillBlank",
-    prompt: "Fill the blank with the Russian word for Thank you.",
-    beforeBlank: "When someone helps you, say",
-    afterBlank: ".",
-    options: ["Пока", "Спасибо", "Да", "Нет"],
-    correctAnswer: "Спасибо",
-    explanation: "Спасибо is the everyday Russian word for Thank you.",
-    points: 10,
-  },
-  {
-    id: "order-my-name",
-    type: "sentenceOrder",
-    prompt: "Build the Russian sentence.",
-    translation: "My name is Alex.",
-    words: ["Алекс", "зовут", "Меня"],
-    correctOrder: ["Меня", "зовут", "Алекс"],
-    explanation: "Меня зовут Алекс is the natural way to say My name is Alex.",
-    points: 15,
-  },
-  {
-    id: "match-survival",
-    type: "matching",
-    prompt: "Match each Russian phrase with its English meaning.",
-    pairs: [
-      { russian: "Да", english: "Yes" },
-      { russian: "Нет", english: "No" },
-      { russian: "Пока", english: "Bye" },
-      { russian: "Пожалуйста", english: "Please" },
-    ],
-    englishOptions: ["Please", "Bye", "No", "Yes"],
-    explanation: "These quick words cover yes, no, bye, and please in a basic conversation.",
-    points: 20,
-  },
-  {
-    id: "scenario-cafe",
-    type: "scenarioChoice",
-    prompt: "Pick the best phrase for the situation.",
-    situation:
-      "You are in a cafe in Moscow. The barista gives you your coffee and smiles. What do you say?",
-    options: ["Спасибо", "Кто?", "Где?", "Пока"],
-    correctAnswer: "Спасибо",
-    explanation: "Спасибо is the right polite response after receiving something.",
-    points: 15,
-  },
-];
-
+const currentLesson = worldOne.lessons[0];
+const lessonExercises: LessonExercise[] = currentLesson.exercises;
 const startingHearts = 5;
 
 export default function LessonPage() {
@@ -264,9 +158,9 @@ export default function LessonPage() {
           <div className="w-full overflow-hidden rounded-3xl border border-white/10 bg-white/10 shadow-2xl shadow-cyan-950/30">
             <div className="bg-cyan-400 p-8 text-center text-slate-950">
               <p className="text-sm font-black uppercase tracking-[0.35em]">Lesson Complete</p>
-              <h1 className="mt-3 text-4xl font-black md:text-6xl">First Contact Cleared</h1>
+              <h1 className="mt-3 text-4xl font-black md:text-6xl">{currentLesson.title} Cleared</h1>
               <p className="mx-auto mt-4 max-w-2xl font-semibold">
-                You practiced recognition, sentence building, matching, and a real cafe moment.
+                You practiced {currentLesson.description.toLowerCase()}
               </p>
             </div>
 
@@ -312,9 +206,10 @@ export default function LessonPage() {
               Back to Worlds
             </Link>
             <p className="mt-6 text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
-              Lesson 1
+              Lesson {currentLesson.number}
             </p>
-            <h1 className="mt-3 text-4xl font-black md:text-6xl">Saying Hello</h1>
+            <h1 className="mt-3 text-4xl font-black md:text-6xl">{currentLesson.title}</h1>
+            <p className="mt-3 max-w-2xl text-slate-400">{currentLesson.description}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-center">
@@ -403,6 +298,25 @@ export default function LessonPage() {
               <SideStat label="Correct" value={correctCount.toString()} />
               <SideStat label="Mistakes" value={(startingHearts - hearts).toString()} />
               <SideStat label="Current type" value={getShortExerciseLabel(currentExercise.type)} />
+            </div>
+
+            <div className="mt-6 border-t border-white/10 pt-6">
+              <p className="text-sm text-slate-400">Lesson vocabulary</p>
+              <div className="mt-4 space-y-3">
+                {currentLesson.vocabulary.map((item) => (
+                  <div
+                    key={`${item.russian}-${item.english}`}
+                    className="rounded-2xl border border-white/10 bg-slate-900/70 p-4"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-lg font-black">{normalizeRussianText(item.russian)}</p>
+                      <PronounceButton text={item.russian} />
+                    </div>
+                    <p className="mt-1 text-sm text-slate-300">{item.english}</p>
+                    {item.note && <p className="mt-1 text-xs text-slate-500">{item.note}</p>}
+                  </div>
+                ))}
+              </div>
             </div>
           </aside>
         </div>
