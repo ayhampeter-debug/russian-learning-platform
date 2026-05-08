@@ -2,6 +2,11 @@
 
 import { Navigation } from "@/components/Navigation";
 import {
+  isRussianText,
+  normalizeRussianText,
+  PronounceButton,
+} from "@/components/PronounceButton";
+import {
   challengeQuestions,
   challengeSettings,
   type ChoiceQuestion,
@@ -57,7 +62,7 @@ type BossQuestion =
 
 const importedBossQuestions = challengeQuestions.map((question, index) =>
   toBossQuestion(question, index),
-);
+).map(repairImportedBossQuestion);
 
 const bossQuestions: BossQuestion[] = [
   importedBossQuestions[0],
@@ -397,9 +402,14 @@ export default function ChallengePage() {
               <p className="mt-3 text-lg font-bold text-slate-200">
                 {currentQuestion.bossLine}
               </p>
-              <p className="mt-6 text-center text-4xl font-black md:text-6xl">
-                {currentQuestion.display}
-              </p>
+              <div className="mt-6 flex items-center justify-center gap-3 text-center">
+                <p className="text-4xl font-black md:text-6xl">
+                  {normalizeRussianText(currentQuestion.display)}
+                </p>
+                {isRussianText(currentQuestion.display) && (
+                  <PronounceButton text={currentQuestion.display} />
+                )}
+              </div>
             </div>
 
             <BossQuestionView
@@ -513,6 +523,66 @@ function toBossQuestion(question: ChoiceQuestion | TextQuestion, index: number):
   };
 }
 
+function repairImportedBossQuestion(question: BossQuestion): BossQuestion {
+  if (question.id === "gatekeeper-privet" && question.type === "choice") {
+    return {
+      ...question,
+      prompt: "The Gatekeeper says: Привет. What does it mean?",
+      display: "Привет",
+      explanation: "Привет is the common informal way to say Hello.",
+    };
+  }
+
+  if (question.id === "type-spasibo" && question.type === "text") {
+    return {
+      ...question,
+      prompt: "Type the English meaning of Спасибо.",
+      display: "Спасибо",
+      explanation: "Спасибо means Thank you or Thanks.",
+    };
+  }
+
+  if (question.id === "polite-greeting" && question.type === "choice") {
+    return {
+      ...question,
+      options: ["Пока", "Здравствуйте", "Нет", "Кто"],
+      correctAnswer: "Здравствуйте",
+      explanation: "Здравствуйте is the polite/formal greeting.",
+    };
+  }
+
+  if (question.id === "your-name-answer" && question.type === "choice") {
+    return {
+      ...question,
+      prompt: "What is the correct answer to Как тебя зовут?",
+      display: "Как тебя зовут?",
+      options: ["Меня зовут Alex", "Я не понимаю", "До свидания", "Где?"],
+      correctAnswer: "Меня зовут Alex",
+      explanation: "Как тебя зовут? asks What is your name?",
+    };
+  }
+
+  if (question.id === "type-da" && question.type === "text") {
+    return {
+      ...question,
+      prompt: "Type the English word for Да.",
+      display: "Да",
+      explanation: "Да means Yes.",
+    };
+  }
+
+  if (question.id === "survival-phrase-understand" && question.type === "choice") {
+    return {
+      ...question,
+      options: ["Я не понимаю", "Пожалуйста", "Спасибо", "Привет"],
+      correctAnswer: "Я не понимаю",
+      explanation: "Я не понимаю means I do not understand.",
+    };
+  }
+
+  return question;
+}
+
 function gradeTextAnswer(question: BossTextQuestion, answer: string) {
   const normalizedAnswer = answer.trim().toLowerCase();
 
@@ -600,14 +670,16 @@ function BossQuestionView({
               </span>
             ) : (
               selectedWords.map((selectedWord) => (
-                <button
-                  key={selectedWord.index}
-                  onClick={() => onWordRemove(selectedWord.index)}
-                  disabled={isAnswered}
-                  className="rounded-2xl bg-violet-300 px-4 py-3 font-black text-slate-950 transition hover:bg-violet-200 disabled:hover:bg-violet-300"
-                >
-                  {selectedWord.word}
-                </button>
+                <div key={selectedWord.index} className="flex items-center gap-2">
+                  <button
+                    onClick={() => onWordRemove(selectedWord.index)}
+                    disabled={isAnswered}
+                    className="rounded-2xl bg-violet-300 px-4 py-3 font-black text-slate-950 transition hover:bg-violet-200 disabled:hover:bg-violet-300"
+                  >
+                    {normalizeRussianText(selectedWord.word)}
+                  </button>
+                  <PronounceButton text={selectedWord.word} className="h-8 w-8" />
+                </div>
               ))
             )}
           </div>
@@ -617,18 +689,20 @@ function BossQuestionView({
             const wasSelected = selectedWordIndexes.includes(wordIndex);
 
             return (
-              <button
-                key={`${word}-${wordIndex}`}
-                onClick={() => onWordClick(wordIndex)}
-                disabled={wasSelected || isAnswered}
-                className={`rounded-2xl border px-5 py-4 font-bold transition ${
-                  wasSelected
-                    ? "border-slate-800 bg-slate-800 text-slate-600"
-                    : "border-white/10 bg-slate-900/80 hover:border-violet-300/60"
-                }`}
-              >
-                {word}
-              </button>
+              <div key={`${word}-${wordIndex}`} className="flex items-center gap-2">
+                <button
+                  onClick={() => onWordClick(wordIndex)}
+                  disabled={wasSelected || isAnswered}
+                  className={`rounded-2xl border px-5 py-4 font-bold transition ${
+                    wasSelected
+                      ? "border-slate-800 bg-slate-800 text-slate-600"
+                      : "border-white/10 bg-slate-900/80 hover:border-violet-300/60"
+                  }`}
+                >
+                  {normalizeRussianText(word)}
+                </button>
+                <PronounceButton text={word} className="h-8 w-8" />
+              </div>
             );
           })}
         </div>
@@ -699,14 +773,16 @@ function ChoiceGrid({
         }
 
         return (
-          <button
-            key={option}
-            onClick={() => onSelect(option)}
-            disabled={isAnswered}
-            className={`rounded-2xl border p-5 text-left font-semibold transition ${buttonStyle}`}
-          >
-            {option}
-          </button>
+          <div key={option} className="flex items-center gap-2">
+            <button
+              onClick={() => onSelect(option)}
+              disabled={isAnswered}
+              className={`min-w-0 flex-1 rounded-2xl border p-5 text-left font-semibold transition ${buttonStyle}`}
+            >
+              {normalizeRussianText(option)}
+            </button>
+            {isRussianText(option) && <PronounceButton text={option} />}
+          </div>
         );
       })}
     </div>

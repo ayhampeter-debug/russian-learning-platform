@@ -1,6 +1,11 @@
 "use client";
 
 import { Navigation } from "@/components/Navigation";
+import {
+  isRussianText,
+  normalizeRussianText,
+  PronounceButton,
+} from "@/components/PronounceButton";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -442,7 +447,10 @@ function ExerciseView({
       <>
         <div className="mt-8 rounded-3xl border border-cyan-400/20 bg-slate-900/80 p-8 text-center">
           <p className="text-sm uppercase tracking-[0.25em] text-slate-500">Russian</p>
-          <p className="mt-4 text-5xl font-black">{exercise.display}</p>
+          <div className="mt-4 flex items-center justify-center gap-3">
+            <p className="text-5xl font-black">{normalizeRussianText(exercise.display)}</p>
+            <PronounceButton text={exercise.display} />
+          </div>
         </div>
         <ChoiceGrid
           options={exercise.options}
@@ -462,7 +470,7 @@ function ExerciseView({
           <p className="text-xl font-bold leading-10 md:text-3xl">
             {exercise.beforeBlank}{" "}
             <span className="inline-flex min-w-28 justify-center border-b-4 border-yellow-300 px-4 text-yellow-200">
-              {selectedAnswer || "?"}
+              {selectedAnswer ? normalizeRussianText(selectedAnswer) : "?"}
             </span>
             {exercise.afterBlank}
           </p>
@@ -497,13 +505,15 @@ function ExerciseView({
               <span className="py-3 text-sm text-slate-500">Choose words below</span>
             ) : (
               selectedWords.map((selectedWord) => (
-                <button
-                  key={selectedWord.index}
-                  onClick={() => onWordRemove(selectedWord.index)}
-                  className="rounded-2xl bg-violet-300 px-4 py-3 font-black text-slate-950 transition hover:bg-violet-200"
-                >
-                  {selectedWord.word}
-                </button>
+                <div key={selectedWord.index} className="flex items-center gap-2">
+                  <button
+                    onClick={() => onWordRemove(selectedWord.index)}
+                    className="rounded-2xl bg-violet-300 px-4 py-3 font-black text-slate-950 transition hover:bg-violet-200"
+                  >
+                    {normalizeRussianText(selectedWord.word)}
+                  </button>
+                  <PronounceButton text={selectedWord.word} className="h-8 w-8" />
+                </div>
               ))
             )}
           </div>
@@ -514,18 +524,20 @@ function ExerciseView({
             const wasSelected = selectedWordIndexes.includes(wordIndex);
 
             return (
-              <button
-                key={`${word}-${wordIndex}`}
-                onClick={() => onWordClick(wordIndex)}
-                disabled={wasSelected || isAnswered}
-                className={`rounded-2xl border px-5 py-4 font-bold transition ${
-                  wasSelected
-                    ? "border-slate-800 bg-slate-800 text-slate-600"
-                    : "border-white/10 bg-slate-900/80 hover:border-violet-300/60"
-                }`}
-              >
-                {word}
-              </button>
+              <div key={`${word}-${wordIndex}`} className="flex items-center gap-2">
+                <button
+                  onClick={() => onWordClick(wordIndex)}
+                  disabled={wasSelected || isAnswered}
+                  className={`rounded-2xl border px-5 py-4 font-bold transition ${
+                    wasSelected
+                      ? "border-slate-800 bg-slate-800 text-slate-600"
+                      : "border-white/10 bg-slate-900/80 hover:border-violet-300/60"
+                  }`}
+                >
+                  {normalizeRussianText(word)}
+                </button>
+                <PronounceButton text={word} className="h-8 w-8" />
+              </div>
             );
           })}
         </div>
@@ -551,21 +563,25 @@ function ExerciseView({
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-3">
             {exercise.pairs.map((pair) => (
-              <button
-                key={pair.russian}
-                onClick={() => onRussianMatchSelect(pair.russian)}
-                disabled={isAnswered}
-                className={`w-full rounded-2xl border p-4 text-left transition ${
-                  selectedRussian === pair.russian
-                    ? "border-emerald-300 bg-emerald-300/20"
-                    : "border-white/10 bg-slate-900/80 hover:border-emerald-300/50"
-                }`}
-              >
-                <span className="block text-xl font-black">{pair.russian}</span>
-                <span className="mt-1 block text-sm text-slate-400">
-                  Matched to {matchingAnswers[pair.russian] || "..."}
-                </span>
-              </button>
+              <div key={pair.russian} className="flex items-center gap-2">
+                <button
+                  onClick={() => onRussianMatchSelect(pair.russian)}
+                  disabled={isAnswered}
+                  className={`min-w-0 flex-1 rounded-2xl border p-4 text-left transition ${
+                    selectedRussian === pair.russian
+                      ? "border-emerald-300 bg-emerald-300/20"
+                      : "border-white/10 bg-slate-900/80 hover:border-emerald-300/50"
+                  }`}
+                >
+                  <span className="block text-xl font-black">
+                    {normalizeRussianText(pair.russian)}
+                  </span>
+                  <span className="mt-1 block text-sm text-slate-400">
+                    Matched to {matchingAnswers[pair.russian] || "..."}
+                  </span>
+                </button>
+                <PronounceButton text={pair.russian} />
+              </div>
             ))}
           </div>
 
@@ -650,14 +666,16 @@ function ChoiceGrid({
         }
 
         return (
-          <button
-            key={option}
-            onClick={() => onSelect(option)}
-            disabled={isAnswered}
-            className={`rounded-2xl border p-5 text-left font-semibold transition ${buttonStyle}`}
-          >
-            {option}
-          </button>
+          <div key={option} className="flex items-center gap-2">
+            <button
+              onClick={() => onSelect(option)}
+              disabled={isAnswered}
+              className={`min-w-0 flex-1 rounded-2xl border p-5 text-left font-semibold transition ${buttonStyle}`}
+            >
+              {normalizeRussianText(option)}
+            </button>
+            {isRussianText(option) && <PronounceButton text={option} />}
+          </div>
         );
       })}
     </div>
