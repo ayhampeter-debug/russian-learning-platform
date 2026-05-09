@@ -244,16 +244,16 @@ model UserChallengeAttempt {
 }
 
 model Achievement {
-  id          String            @id @default(cuid())
-  slug        String            @unique
+  id          String        @id @default(cuid())
+  slug        String        @unique
   title       String
   description String
-  xpReward    Int               @default(0)
-  status      ContentStatus     @default(DRAFT)
+  xpReward    Int           @default(0)
+  status      ContentStatus @default(DRAFT)
   criteria    Json?
   metadata    Json?
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   users UserAchievement[]
 }
