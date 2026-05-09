@@ -1,5 +1,6 @@
 "use client";
 
+import { UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -14,12 +15,11 @@ const navItems: NavItem[] = [
   { href: "/worlds", label: "Worlds" },
   { href: "/lesson", label: "Lesson" },
   { href: "/challenge", label: "Challenge" },
-  { href: "/profile", label: "Profile" },
-  { href: "/login", label: "Login" },
 ];
 
 export function Navigation() {
   const pathname = usePathname();
+  const { isLoaded, isSignedIn } = useUser();
 
   return (
     <nav className="mx-auto mb-6 w-full max-w-7xl px-3 pt-3 sm:mb-10 sm:px-6 sm:pt-6">
@@ -58,6 +58,50 @@ export function Navigation() {
                 </Link>
               );
             })}
+
+            {!isLoaded ? null : isSignedIn ? (
+              <>
+                <Link
+                  href="/profile"
+                  aria-current={pathname === "/profile" ? "page" : undefined}
+                  className={`min-w-0 rounded-2xl border px-2.5 py-3 text-center transition sm:px-4 lg:px-5 ${
+                    pathname === "/profile"
+                      ? "border-cyan-400 bg-cyan-400 text-slate-950"
+                      : "border-white/10 bg-slate-900/70 hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
+                  }`}
+                >
+                  Profile
+                </Link>
+                <div className="flex min-h-11 items-center justify-center rounded-2xl border border-white/10 bg-slate-900/70 px-3">
+                  <UserButton />
+                </div>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  aria-current={pathname === "/login" ? "page" : undefined}
+                  className={`min-w-0 rounded-2xl border px-2.5 py-3 text-center transition sm:px-4 lg:px-5 ${
+                    pathname === "/login"
+                      ? "border-cyan-400 bg-cyan-400 text-slate-950"
+                      : "border-white/10 bg-slate-900/70 hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
+                  }`}
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/signup"
+                  aria-current={pathname === "/signup" ? "page" : undefined}
+                  className={`min-w-0 rounded-2xl border px-2.5 py-3 text-center transition sm:px-4 lg:px-5 ${
+                    pathname === "/signup"
+                      ? "border-cyan-400 bg-cyan-400 text-slate-950"
+                      : "border-white/10 bg-slate-900/70 hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white"
+                  }`}
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
