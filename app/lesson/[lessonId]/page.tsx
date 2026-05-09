@@ -1,6 +1,8 @@
 import { Navigation } from "@/components/Navigation";
 import { worldOne } from "@/lib/learning-data";
+import { getLessonContent } from "@/lib/lesson-content";
 import Link from "next/link";
+import { connection } from "next/server";
 import { LessonExperience } from "../page";
 
 type LessonPageProps = {
@@ -16,8 +18,9 @@ export function generateStaticParams() {
 }
 
 export default async function DynamicLessonPage({ params }: LessonPageProps) {
+  await connection();
   const { lessonId } = await params;
-  const lesson = worldOne.lessons.find((worldLesson) => worldLesson.id === lessonId);
+  const { lesson } = await getLessonContent(lessonId);
 
   if (!lesson) {
     return <LessonNotFound lessonId={lessonId} />;
