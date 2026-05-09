@@ -20,7 +20,7 @@ import {
   useProgress,
 } from "@/lib/progress-storage";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type BossQuestionBase = {
   id: string;
@@ -108,12 +108,27 @@ const bossQuestions: BossQuestion[] = [
   importedBossQuestions[5],
 ];
 
-const maxBossHealth = challengeSettings.passScore;
+type BossChallengeContent = {
+  id: string;
+  title: string;
+  description: string;
+  settings: typeof challengeSettings;
+  questions: BossQuestion[];
+};
+
+const staticBossChallenge: BossChallengeContent = {
+  id: "world-1-boss",
+  title: worldOne.bossTitle,
+  description: worldOne.bossDescription,
+  settings: challengeSettings,
+  questions: bossQuestions,
+};
 
 export default function ChallengePage() {
   const savedProgress = useProgress();
   const bossAvailable =
     isBossChallengeUnlocked(savedProgress) || isBossChallengeCompleted(savedProgress);
+  const [bossChallenge, setBossChallenge] = useState(staticBossChallenge);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
   const [typedAnswer, setTypedAnswer] = useState("");
@@ -121,18 +136,49 @@ export default function ChallengePage() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [xp, setXp] = useState(0);
-  const [hearts, setHearts] = useState(challengeSettings.startingHearts);
+  const [hearts, setHearts] = useState(staticBossChallenge.settings.startingHearts);
   const [correctCount, setCorrectCount] = useState(0);
   const [bossDamage, setBossDamage] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [lastAnswerWasCorrect, setLastAnswerWasCorrect] = useState(false);
 
-  const currentQuestion = bossQuestions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex + 1) / bossQuestions.length) * 100;
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadBossChallenge() {
+      try {
+        const response = await fetch("/api/challenge/boss");
+
+        if (!response.ok) {
+          return;
+        }
+
+        const challenge = (await response.json()) as BossChallengeContent;
+
+        if (isMounted && challenge.questions.length > 0) {
+          setBossChallenge(challenge);
+        }
+      } catch {
+        // The static challenge remains available if the database request fails.
+      }
+    }
+
+    loadBossChallenge();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const activeQuestions = bossChallenge.questions;
+  const activeSettings = bossChallenge.settings;
+  const maxBossHealth = activeSettings.passScore;
+  const currentQuestion = activeQuestions[currentQuestionIndex] ?? activeQuestions[0];
+  const progress = ((currentQuestionIndex + 1) / activeQuestions.length) * 100;
   const bossHealth = Math.max(maxBossHealth - bossDamage, 0);
   const bossHealthPercent = (bossHealth / maxBossHealth) * 100;
-  const accuracy = Math.round((correctCount / bossQuestions.length) * 100);
-  const finalPassed = score >= challengeSettings.passScore && hearts > 0;
+  const accuracy = Math.round((correctCount / activeQuestions.length) * 100);
+  const finalPassed = score >= activeSettings.passScore && hearts > 0;
   const resultTitle = finalPassed ? "Boss Defeated" : "Boss Survived";
   const resultMessage = finalPassed
     ? "You cleared the First Contact boss fight and proved you can handle a real opening exchange."
@@ -217,11 +263,11 @@ export default function ChallengePage() {
   }
 
   function handleNext() {
-    const isLastQuestion = currentQuestionIndex === bossQuestions.length - 1;
+    const isLastQuestion = currentQuestionIndex === activeQuestions.length - 1;
 
     if (isLastQuestion || hearts === 0) {
       if (finalPassed) {
-        completeChallenge("world-1-boss", xp, hearts);
+        completeChallenge(bossChallenge.id, xp, hearts);
       }
 
       setIsFinished(true);
@@ -237,7 +283,7 @@ export default function ChallengePage() {
     resetQuestionState();
     setScore(0);
     setXp(0);
-    setHearts(challengeSettings.startingHearts);
+    setHearts(activeSettings.startingHearts);
     setCorrectCount(0);
     setBossDamage(0);
     setIsFinished(false);
@@ -306,8 +352,8 @@ export default function ChallengePage() {
                   />
                 </div>
                 <p className="mt-4 text-sm text-slate-400">
-                  Pass requires {challengeSettings.passScore} score and at least
-                  one heart. You landed {correctCount} of {bossQuestions.length} attacks.
+                  Pass requires {activeSettings.passScore} score and at least
+                  one heart. You landed {correctCount} of {activeQuestions.length} attacks.
                 </p>
               </div>
 
@@ -342,7 +388,7 @@ export default function ChallengePage() {
               Back to Worlds
             </Link>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-red-300 sm:text-sm sm:tracking-[0.3em]">
-              {worldOne.bossTitle} - Final Stage
+              {bossChallenge.title} - Final Stage
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
               First Contact Sentinel
@@ -379,7 +425,7 @@ export default function ChallengePage() {
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-5">
             <div className="mb-3 flex items-center justify-between text-sm text-slate-400">
               <span>
-                Attack {currentQuestionIndex + 1} of {bossQuestions.length}
+                Attack {currentQuestionIndex + 1} of {activeQuestions.length}
               </span>
               <span>{Math.round(progress)}%</span>
             </div>
@@ -476,7 +522,7 @@ export default function ChallengePage() {
                   : "bg-slate-800 text-slate-500"
               }`}
             >
-              {currentQuestionIndex === bossQuestions.length - 1 || hearts === 0
+              {currentQuestionIndex === activeQuestions.length - 1 || hearts === 0
                 ? "Reveal Result"
                 : "Next Attack"}
             </button>
@@ -501,12 +547,12 @@ export default function ChallengePage() {
               <SideStat label="Correct hits" value={correctCount.toString()} />
               <SideStat
                 label="Mistakes"
-                value={(challengeSettings.startingHearts - hearts).toString()}
+                value={(activeSettings.startingHearts - hearts).toString()}
               />
               <SideStat label="Accuracy" value={`${accuracy}%`} />
               <SideStat
                 label="Pass score"
-                value={challengeSettings.passScore.toString()}
+                value={activeSettings.passScore.toString()}
               />
             </div>
           </aside>
