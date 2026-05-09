@@ -1,6 +1,5 @@
 import "server-only";
 
-import type { Challenge } from "@prisma/client";
 import { getPrismaClient } from "@/lib/prisma";
 import {
   challengeQuestions,
@@ -67,7 +66,13 @@ export type BossChallengeContent = {
 };
 
 type JsonRecord = Record<string, unknown>;
-type DatabaseChallenge = Challenge;
+type DatabaseChallenge = {
+  slug: string;
+  title: string;
+  description: string;
+  passScore: number | null;
+  content: unknown;
+};
 
 export async function getWorldOneBossChallenge(): Promise<BossChallengeContent> {
   try {
