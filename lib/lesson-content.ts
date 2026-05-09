@@ -1,6 +1,5 @@
 import "server-only";
 
-import type { Prisma } from "@prisma/client";
 import { getPrismaClient } from "@/lib/prisma";
 import {
   worldOne,
@@ -19,12 +18,28 @@ export type LessonContentResult = {
 };
 
 type JsonRecord = Record<string, unknown>;
-type DatabaseLesson = Prisma.LessonGetPayload<{
-  include: {
-    stage: true;
-    exercises: true;
+type DatabaseExercise = {
+  slug: string;
+  type: string;
+  prompt: string;
+  content: unknown;
+  answerKey: unknown;
+  explanation: string | null;
+  points: number;
+};
+type DatabaseLesson = {
+  slug: string;
+  number: number;
+  title: string;
+  description: string;
+  xpReward: number;
+  vocabulary: unknown;
+  metadata: unknown;
+  stage: {
+    slug: string;
   };
-}>;
+  exercises: DatabaseExercise[];
+};
 
 export async function getLessonContent(lessonId: string): Promise<LessonContentResult> {
   try {

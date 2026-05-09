@@ -1,7 +1,6 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
-import type { InputJsonValue } from "@prisma/client/runtime/client";
 import pg from "pg";
 import {
   achievements,
@@ -12,6 +11,9 @@ import {
   type ChallengeQuestion,
   type LessonExercise,
 } from "../lib/learning-data.ts";
+
+type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
+type InputJsonValue = Exclude<JsonValue, null>;
 
 const connectionString = process.env.DATABASE_URL;
 
