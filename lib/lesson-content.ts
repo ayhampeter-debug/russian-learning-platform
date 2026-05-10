@@ -1,5 +1,6 @@
 import "server-only";
 
+import { logContentFallback } from "@/lib/content-fallback-log";
 import { getPrismaClient } from "@/lib/prisma";
 import {
   worldOne,
@@ -57,7 +58,17 @@ export async function getLessonContent(lessonId: string): Promise<LessonContentR
       },
     });
 
-    if (!lesson || lesson.exercises.length === 0) {
+    if (!lesson) {
+      logContentFallback(`Falling back to static lesson content for ${lessonId}.`, {
+        reason: "lesson-not-found",
+      });
+      return getStaticLessonContent(lessonId);
+    }
+
+    if (lesson.exercises.length === 0) {
+      logContentFallback(`Falling back to static lesson content for ${lessonId}.`, {
+        reason: "published-exercises-missing",
+      });
       return getStaticLessonContent(lessonId);
     }
 
@@ -65,8 +76,8 @@ export async function getLessonContent(lessonId: string): Promise<LessonContentR
       source: "database",
       lesson: mapLessonFromDatabase(lesson),
     };
-  } catch {
-    console.error(`Falling back to static lesson content for ${lessonId}.`);
+  } catch (error) {
+    logContentFallback(`Falling back to static lesson content for ${lessonId}.`, { error });
     return getStaticLessonContent(lessonId);
   }
 }

@@ -2,6 +2,11 @@ import "server-only";
 
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
+import pg, { type PoolConfig } from "pg";
+
+const { Pool } = pg;
+
+const PRISMA_CONNECT_TIMEOUT_MS = 7_000;
 
 type PrismaGlobal = {
   prisma?: PrismaClient;
@@ -9,7 +14,7 @@ type PrismaGlobal = {
 
 const globalForPrisma = globalThis as unknown as PrismaGlobal;
 
-function getConnectionString() {
+function getPoolConfig(): PoolConfig {
   const connectionString = process.env.DATABASE_URL;
 
   if (!connectionString) {
@@ -17,17 +22,23 @@ function getConnectionString() {
   }
 
   const url = new URL(connectionString);
+  const sslMode = url.searchParams.get("sslmode");
 
-  if (url.searchParams.get("sslmode") !== "disable") {
-    url.searchParams.set("sslmode", "no-verify");
-  }
+  url.searchParams.delete("sslmode");
+  url.searchParams.delete("pgbouncer");
 
-  return url.toString();
+  return {
+    connectionString: url.toString(),
+    connectionTimeoutMillis: PRISMA_CONNECT_TIMEOUT_MS,
+    max: 3,
+    ssl: sslMode === "disable" ? false : { rejectUnauthorized: false },
+  };
 }
 
 function createPrismaClient() {
-  const adapter = new PrismaPg({
-    connectionString: getConnectionString(),
+  const pool = new Pool(getPoolConfig());
+  const adapter = new PrismaPg(pool, {
+    disposeExternalPool: true,
   });
 
   return new PrismaClient({ adapter });

@@ -7,6 +7,9 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "db:ping": "node scripts/db-ping.mjs",
+    "db:disable-user-rls": "node scripts/db-maintenance.mjs disable-user-rls",
+    "db:check-user-rls": "node scripts/db-maintenance.mjs check-user-rls",
     "db:seed": "node --experimental-strip-types prisma/seed.ts",
     "db:seed:sql": "node --experimental-strip-types prisma/generate-seed-sql.ts"
   },

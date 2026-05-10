@@ -1,5 +1,6 @@
 import "server-only";
 
+import { logContentFallback } from "@/lib/content-fallback-log";
 import { getPrismaClient } from "@/lib/prisma";
 import { worldOne, type Lesson, type Stage, type StageStatus, type World } from "@/lib/learning-data";
 
@@ -71,7 +72,17 @@ export async function getWorldOneContent(): Promise<WorldContentResult> {
       },
     });
 
-    if (!world || world.stages.length === 0 || world.lessons.length === 0) {
+    if (!world) {
+      logContentFallback("Falling back to static World 1 content.", {
+        reason: "world-not-found",
+      });
+      return getStaticWorldOneContent();
+    }
+
+    if (world.stages.length === 0 || world.lessons.length === 0) {
+      logContentFallback("Falling back to static World 1 content.", {
+        reason: `published-content-missing stages=${world.stages.length} lessons=${world.lessons.length}`,
+      });
       return getStaticWorldOneContent();
     }
 
@@ -79,8 +90,8 @@ export async function getWorldOneContent(): Promise<WorldContentResult> {
       source: "database",
       world: mapWorldOneFromDatabase(world),
     };
-  } catch {
-    console.error("Falling back to static World 1 content.");
+  } catch (error) {
+    logContentFallback("Falling back to static World 1 content.", { error });
     return getStaticWorldOneContent();
   }
 }

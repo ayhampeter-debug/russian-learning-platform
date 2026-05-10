@@ -1,5 +1,6 @@
 import "server-only";
 
+import { logContentFallback } from "@/lib/content-fallback-log";
 import { getPrismaClient } from "@/lib/prisma";
 import {
   challengeQuestions,
@@ -86,18 +87,24 @@ export async function getWorldOneBossChallenge(): Promise<BossChallengeContent> 
     });
 
     if (!challenge) {
+      logContentFallback("Falling back to static World 1 boss challenge.", {
+        reason: "challenge-not-found",
+      });
       return getStaticBossChallenge();
     }
 
     const mappedChallenge = mapBossChallengeFromDatabase(challenge);
 
     if (mappedChallenge.questions.length === 0) {
+      logContentFallback("Falling back to static World 1 boss challenge.", {
+        reason: "published-questions-missing",
+      });
       return getStaticBossChallenge();
     }
 
     return mappedChallenge;
-  } catch {
-    console.error("Falling back to static World 1 boss challenge.");
+  } catch (error) {
+    logContentFallback("Falling back to static World 1 boss challenge.", { error });
     return getStaticBossChallenge();
   }
 }
