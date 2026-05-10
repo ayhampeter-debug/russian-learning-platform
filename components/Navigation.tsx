@@ -3,7 +3,6 @@
 import { UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ThemeToggle } from "@/components/ThemeToggle";
 
 type NavItem = {
   href: string;
@@ -23,7 +22,7 @@ export function Navigation() {
   const { isLoaded, isSignedIn } = useUser();
 
   return (
-    <nav className="mx-auto mb-6 w-full max-w-7xl px-3 pt-3 sm:mb-10 sm:px-6 sm:pt-6">
+    <nav className="mx-auto mb-6 w-full max-w-7xl px-3 pt-16 sm:mb-10 sm:px-6 sm:pt-20 lg:pr-28 lg:pt-6 2xl:pr-6">
       <div className="rounded-2xl border border-white/10 bg-white/10 p-2 shadow-2xl shadow-cyan-950/20 backdrop-blur sm:rounded-3xl sm:p-3">
         <div className="flex min-w-0 flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
           <Link
@@ -39,8 +38,6 @@ export function Navigation() {
           </Link>
 
           <div className="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-300 sm:grid-cols-3 sm:text-sm lg:flex lg:items-center">
-            <ThemeToggle />
-
             {navItems.map((item) => {
               const isActive =
                 pathname === item.href ||

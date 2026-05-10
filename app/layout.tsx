@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider, themeStorageKey } from "@/components/ThemeProvider";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserSync } from "@/components/UserSync";
 import "./globals.css";
 
@@ -57,6 +58,7 @@ export default function RootLayout({
         <body className="min-h-full flex flex-col">
           <script dangerouslySetInnerHTML={{ __html: themeScript }} />
           <ThemeProvider>
+            <ThemeToggle />
             <UserSync />
             {children}
           </ThemeProvider>
