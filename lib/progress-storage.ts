@@ -1,18 +1,15 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useUser } from "@clerk/nextjs";
+import type { ProgressApiResponse, SavedProgress } from "@/lib/progress-types";
+import { useEffect, useSyncExternalStore } from "react";
 import { userProgress, worldOne, type Lesson, type StageStatus } from "@/lib/learning-data";
+
+export type { SavedProgress } from "@/lib/progress-types";
 
 const progressStorageKey = "russian-learning-platform-progress";
 const progressChangeEventName = "russian-learning-platform-progress-change";
-
-export type SavedProgress = {
-  completedLessonIds: string[];
-  completedChallengeIds: string[];
-  totalXp: number;
-  hearts: number;
-  currentStreak: number;
-};
+const progressRequestTimeoutMs = 4_000;
 
 export type LessonProgressState = {
   status: StageStatus | "In progress";
@@ -41,6 +38,7 @@ export const fallbackProgress: SavedProgress = {
 let cachedStorageValue: string | null = null;
 let cachedProgress: SavedProgress = fallbackProgress;
 let hasCachedProgress = false;
+let authMode: "unknown" | "guest" | "signed-in" = "unknown";
 
 function canUseLocalStorage() {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
@@ -107,6 +105,96 @@ function getProgressSnapshot(): SavedProgress {
   }
 }
 
+function hasStoredProgress() {
+  if (!canUseLocalStorage()) {
+    return false;
+  }
+
+  try {
+    return window.localStorage.getItem(progressStorageKey) !== null;
+  } catch {
+    return false;
+  }
+}
+
+function getMergeStorageKey(userId: string) {
+  return `${progressStorageKey}-merged-${userId}`;
+}
+
+function hasMergedLocalProgress(userId: string) {
+  if (!canUseLocalStorage()) {
+    return true;
+  }
+
+  try {
+    return window.localStorage.getItem(getMergeStorageKey(userId)) === "true";
+  } catch {
+    return true;
+  }
+}
+
+function markLocalProgressMerged(userId: string) {
+  if (!canUseLocalStorage()) {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(getMergeStorageKey(userId), "true");
+  } catch {
+    // Merging is best-effort; inability to remember the flag should not block play.
+  }
+}
+
+async function fetchJsonWithTimeout<T>(
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+  timeoutMs = progressRequestTimeoutMs,
+) {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(input, {
+      ...init,
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return (await response.json()) as T;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+}
+
+function applyDatabaseProgress(progress: SavedProgress | null | undefined) {
+  if (!progress) {
+    return;
+  }
+
+  saveProgress(progress);
+}
+
+async function postProgressUpdate(path: string, body: unknown) {
+  if (authMode !== "signed-in") {
+    return;
+  }
+
+  try {
+    const result = await fetchJsonWithTimeout<ProgressApiResponse>(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    applyDatabaseProgress(result?.progress);
+  } catch {
+    console.warn("Progress sync skipped: using local progress fallback.");
+  }
+}
+
 export function loadProgress(): SavedProgress {
   return getProgressSnapshot();
 }
@@ -167,6 +255,10 @@ function subscribeToProgressChanges(onStoreChange: () => void) {
 }
 
 export function useProgress() {
+  const { isLoaded, isSignedIn, user } = useUser();
+
+  useSyncDatabaseProgress(isLoaded, Boolean(isSignedIn), user?.id ?? null);
+
   return useSyncExternalStore(subscribeToProgressChanges, getProgressSnapshot, () => fallbackProgress);
 }
 
@@ -180,20 +272,114 @@ export function completeLesson(lessonId: string, xpEarned: number) {
   });
 
   saveProgress(nextProgress);
+  void postProgressUpdate("/api/progress/lesson", {
+    lessonId,
+    xpEarned,
+  });
+
   return nextProgress;
 }
 
-export function completeChallenge(challengeId: string, xpEarned: number, heartsLeft: number) {
+export function completeChallenge(
+  challengeId: string,
+  xpEarned: number,
+  heartsLeft: number,
+  score = 0,
+  passed = true,
+) {
   const currentProgress = loadProgress();
   const nextProgress = normalizeProgress({
     ...currentProgress,
-    completedChallengeIds: [...currentProgress.completedChallengeIds, challengeId],
-    totalXp: currentProgress.totalXp + xpEarned,
+    completedChallengeIds: passed
+      ? [...currentProgress.completedChallengeIds, challengeId]
+      : currentProgress.completedChallengeIds,
+    totalXp: passed ? currentProgress.totalXp + xpEarned : currentProgress.totalXp,
     hearts: Math.max(heartsLeft, 0),
   });
 
   saveProgress(nextProgress);
+  void postProgressUpdate("/api/progress/challenge", {
+    challengeId,
+    xpEarned,
+    heartsLeft,
+    score,
+    passed,
+  });
+
   return nextProgress;
+}
+
+function shouldMergeLocalProgress(localProgress: SavedProgress) {
+  return (
+    localProgress.completedLessonIds.length > 0 ||
+    localProgress.completedChallengeIds.length > 0 ||
+    localProgress.totalXp > 0 ||
+    localProgress.currentStreak > 0 ||
+    localProgress.hearts !== fallbackProgress.hearts
+  );
+}
+
+function useSyncDatabaseProgress(isLoaded: boolean, isSignedIn: boolean, userId: string | null) {
+  useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
+
+    if (!isSignedIn || !userId) {
+      authMode = "guest";
+      return;
+    }
+
+    authMode = "signed-in";
+    const signedInUserId = userId;
+    let isMounted = true;
+    const localProgress = loadProgress();
+    const shouldAttemptMerge =
+      hasStoredProgress() &&
+      shouldMergeLocalProgress(localProgress) &&
+      !hasMergedLocalProgress(signedInUserId);
+
+    async function syncProgress() {
+      try {
+        if (shouldAttemptMerge) {
+          const mergeResult = await fetchJsonWithTimeout<ProgressApiResponse>("/api/progress/merge", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(localProgress),
+          });
+
+          if (!isMounted) {
+            return;
+          }
+
+          if (mergeResult?.progress) {
+            markLocalProgressMerged(signedInUserId);
+            applyDatabaseProgress(mergeResult.progress);
+          }
+
+          return;
+        }
+
+        const result = await fetchJsonWithTimeout<ProgressApiResponse>("/api/progress", {
+          method: "GET",
+        });
+
+        if (!isMounted) {
+          return;
+        }
+
+        applyDatabaseProgress(result?.progress);
+      } catch {
+        console.warn("Progress load skipped: using local progress fallback.");
+      }
+    }
+
+    void syncProgress();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isLoaded, isSignedIn, userId]);
 }
 
 export function getProgressStatusLabel(status: StageStatus | "In progress"): UnlockDisplayStatus {

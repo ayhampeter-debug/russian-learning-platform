@@ -26,6 +26,7 @@ type ProfileUser = {
   profile: {
     displayName: string;
     initials: string | null;
+    longestStreak?: number;
   } | null;
 } | null;
 
@@ -83,7 +84,11 @@ export function ProfileClient({ syncError, user }: ProfileClientProps) {
   const dynamicStats: StatCardProps[] = [
     { title: "Total XP", value: progress.totalXp.toLocaleString(), accent: "cyan" },
     { title: "Current Streak", value: `${progress.currentStreak} days`, accent: "red" },
-    { title: "Longest Streak", value: `${userProgress.longestStreak} days`, accent: "yellow" },
+    {
+      title: "Longest Streak",
+      value: `${profileUser?.profile?.longestStreak ?? userProgress.longestStreak} days`,
+      accent: "yellow",
+    },
     { title: "Completed Lessons", value: summary.completedLessons.length.toString(), accent: "green" },
     { title: "Completed Stages", value: summary.completedStageIds.length.toString(), accent: "cyan" },
     {

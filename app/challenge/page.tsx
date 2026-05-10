@@ -266,9 +266,7 @@ export default function ChallengePage() {
     const isLastQuestion = currentQuestionIndex === activeQuestions.length - 1;
 
     if (isLastQuestion || hearts === 0) {
-      if (finalPassed) {
-        completeChallenge(bossChallenge.id, xp, hearts);
-      }
+      completeChallenge(bossChallenge.id, xp, hearts, score, finalPassed);
 
       setIsFinished(true);
       return;

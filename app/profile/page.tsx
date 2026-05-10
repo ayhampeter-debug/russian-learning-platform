@@ -1,5 +1,8 @@
 import { ProfileClient } from "@/app/profile/ProfileClient";
+import { syncCurrentUser } from "@/lib/current-user";
 
-export default function ProfilePage() {
-  return <ProfileClient syncError={null} user={null} />;
+export default async function ProfilePage() {
+  const { error, user } = await syncCurrentUser();
+
+  return <ProfileClient syncError={error} user={user} />;
 }
