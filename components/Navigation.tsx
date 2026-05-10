@@ -3,6 +3,7 @@
 import { UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 type NavItem = {
   href: string;
@@ -38,6 +39,8 @@ export function Navigation() {
           </Link>
 
           <div className="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-300 sm:grid-cols-3 sm:text-sm lg:flex lg:items-center">
+            <ThemeToggle />
+
             {navItems.map((item) => {
               const isActive =
                 pathname === item.href ||
