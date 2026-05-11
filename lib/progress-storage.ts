@@ -21,19 +21,11 @@ export type UnlockDisplayStatus = "Completed" | "Available" | "Locked";
 export type LessonDisplayState = "Completed" | "Current" | "Available" | "Locked";
 
 export const fallbackProgress: SavedProgress = {
-  completedLessonIds: worldOne.lessons
-    .filter(
-      (lesson) =>
-        lesson.status === "Completed" ||
-        worldOne.stages.some(
-          (stage) => stage.id === lesson.stageId && stage.status === "Completed",
-        ),
-    )
-    .map((lesson) => lesson.id),
-  completedChallengeIds: userProgress.completedChallenges,
-  totalXp: userProgress.totalXp,
+  completedLessonIds: [],
+  completedChallengeIds: [],
+  totalXp: 0,
   hearts: userProgress.hearts,
-  currentStreak: userProgress.currentStreak,
+  currentStreak: 0,
 };
 
 let cachedStorageValue: string | null = null;
@@ -419,6 +411,29 @@ export function getWorldForLesson(lesson: Lesson) {
   return worlds.find((world) => world.lessons.some((worldLesson) => worldLesson.id === lesson.id));
 }
 
+export function getWorldBossChallengeId(world: World) {
+  return `${world.id}-boss`;
+}
+
+export function areWorldLessonsCompleted(world: World, progress: SavedProgress) {
+  return (
+    world.lessons.length > 0 &&
+    world.lessons.every((lesson) => progress.completedLessonIds.includes(lesson.id))
+  );
+}
+
+export function isWorldBossCompleted(world: World, progress: SavedProgress) {
+  return progress.completedChallengeIds.includes(getWorldBossChallengeId(world));
+}
+
+export function getWorldBossState(world: World, progress: SavedProgress) {
+  if (isWorldBossCompleted(world, progress)) {
+    return "completed" as const;
+  }
+
+  return areWorldLessonsCompleted(world, progress) ? ("available" as const) : ("locked" as const);
+}
+
 export function isWorldUnlocked(world: World, progress: SavedProgress) {
   if (world.number === 1) {
     return true;
@@ -435,7 +450,7 @@ export function isWorldUnlocked(world: World, progress: SavedProgress) {
     progress.completedLessonIds.includes(lesson.id),
   );
 
-  return progress.completedChallengeIds.includes(previousBossId) || previousLessonsCompleted;
+  return progress.completedChallengeIds.includes(previousBossId) && previousLessonsCompleted;
 }
 
 export function getLessonProgressState(
@@ -464,16 +479,21 @@ export function getLessonProgressState(
 }
 
 export function getStageProgressState(stageId: string, progress: SavedProgress) {
-  const stageLessons = worldOne.lessons.filter((lesson) => lesson.stageId === stageId);
-  const completedLessons = new Set(progress.completedLessonIds);
-  const unlockedLessons = new Set(getUnlockedLessonIds(progress.completedLessonIds));
+  return getWorldStageProgressState(worldOne, stageId, progress);
+}
 
-  if (stageId === "boss-level") {
-    if (progress.completedChallengeIds.includes("world-1-boss")) {
+export function getWorldStageProgressState(world: World, stageId: string, progress: SavedProgress) {
+  const stage = world.stages.find((stageData) => stageData.id === stageId);
+  const stageLessons = world.lessons.filter((lesson) => lesson.stageId === stageId);
+  const completedLessons = new Set(progress.completedLessonIds);
+  const unlockedLessons = new Set(getUnlockedWorldLessonIds(world, progress.completedLessonIds));
+
+  if (stage?.boss) {
+    if (isWorldBossCompleted(world, progress)) {
       return { status: "Completed" as StageStatus, locked: false };
     }
 
-    const bossUnlocked = worldOne.lessons.every((lesson) => completedLessons.has(lesson.id));
+    const bossUnlocked = world.lessons.every((lesson) => completedLessons.has(lesson.id));
     return {
       status: bossUnlocked ? ("Unlocked" as StageStatus) : ("Locked" as StageStatus),
       locked: !bossUnlocked,
@@ -492,50 +512,51 @@ export function getStageProgressState(stageId: string, progress: SavedProgress) 
 }
 
 export function isBossChallengeUnlocked(progress: SavedProgress) {
-  const completedLessons = new Set(progress.completedLessonIds);
-
-  return worldOne.lessons.every((lesson) => completedLessons.has(lesson.id));
+  return getWorldBossState(worldOne, progress) !== "locked";
 }
 
 export function isBossChallengeCompleted(progress: SavedProgress) {
-  return progress.completedChallengeIds.includes("world-1-boss");
+  return isWorldBossCompleted(worldOne, progress);
 }
 
-export function getNextAvailablePath(progress: SavedProgress) {
-  const nextLesson = worldOne.lessons.find(
-    (lesson) => !progress.completedLessonIds.includes(lesson.id),
+export function getNextRecommendedLesson(progress: SavedProgress, availableWorlds: World[] = worlds) {
+  return (
+    availableWorlds
+      .filter((world) => isWorldUnlocked(world, progress))
+      .flatMap((world) => world.lessons)
+      .find((lesson) => !progress.completedLessonIds.includes(lesson.id)) ?? null
   );
+}
 
+export function getNextAvailablePath(progress: SavedProgress, availableWorlds: World[] = worlds) {
+  const nextLesson = getNextRecommendedLesson(progress, availableWorlds);
   if (nextLesson) {
     return `/lesson/${nextLesson.id}`;
   }
 
-  return isBossChallengeCompleted(progress) ? "/worlds" : "/challenge";
+  const worldOneBossState = getWorldBossState(worldOne, progress);
+
+  if (worldOneBossState === "available") {
+    return "/challenge";
+  }
+
+  return "/worlds?complete=1";
 }
 
-export function getNextAvailableLabel(progress: SavedProgress) {
-  const nextLesson = worldOne.lessons.find(
-    (lesson) => !progress.completedLessonIds.includes(lesson.id),
-  );
-
+export function getNextAvailableLabel(progress: SavedProgress, availableWorlds: World[] = worlds) {
+  const nextLesson = getNextRecommendedLesson(progress, availableWorlds);
   if (nextLesson) {
     return `Continue: ${nextLesson.title}`;
   }
 
-  return isBossChallengeCompleted(progress) ? "World 1 completed" : "Start Boss Challenge";
-}
+  const worldOneBossState = getWorldBossState(worldOne, progress);
 
-export function getNextRecommendedLesson(progress: SavedProgress) {
-  return worldOne.lessons.find((lesson) => !progress.completedLessonIds.includes(lesson.id)) ?? null;
+  return worldOneBossState === "available" ? "Start Boss Challenge" : "View Worlds";
 }
 
 export function getLessonDisplayState(lesson: Lesson, progress: SavedProgress): LessonDisplayState {
   const lessonState = getLessonProgressState(lesson, progress);
-  const lessonWorld = getWorldForLesson(lesson) ?? worldOne;
-  const nextLesson =
-    lessonWorld.number === 1
-      ? getNextRecommendedLesson(progress)
-      : lessonWorld.lessons.find((worldLesson) => !progress.completedLessonIds.includes(worldLesson.id));
+  const nextLesson = getNextRecommendedLesson(progress);
 
   if (lessonState.completed) {
     return "Completed";
@@ -561,38 +582,71 @@ export function getNextStageLessonId(stageId: string, progress: SavedProgress) {
 }
 
 export function getProgressSummary(progress: SavedProgress) {
-  const completedWorldLessons = worldOne.lessons.filter((lesson) =>
+  const worldSummaries = worlds.map((world) => getWorldProgressSummary(world, progress));
+  const fallbackWorldSummary = getWorldProgressSummary(worldOne, progress);
+  const currentWorldSummary =
+    worldSummaries.find((summary) => summary.unlocked && !summary.completed) ??
+    worldSummaries.find((summary) => summary.unlocked) ??
+    fallbackWorldSummary;
+  const completedWorldLessons = currentWorldSummary.world.lessons.filter((lesson) =>
     progress.completedLessonIds.includes(lesson.id),
   );
-  const completedStageIds = worldOne.stages
+  const completedStageIds = currentWorldSummary.world.stages
     .filter(
       (stage) =>
         !stage.boss &&
-        worldOne.lessons
+        currentWorldSummary.world.lessons
           .filter((lesson) => lesson.stageId === stage.id)
           .every((lesson) => progress.completedLessonIds.includes(lesson.id)),
     )
     .map((stage) => stage.id);
-  const bossUnlocked = isBossChallengeUnlocked(progress);
-  const bossCompleted = isBossChallengeCompleted(progress);
-  const totalSteps = worldOne.lessons.length + 1;
-  const clearedSteps = completedWorldLessons.length + (bossCompleted ? 1 : 0);
-  const currentWorldProgressPercent = Math.round((clearedSteps / totalSteps) * 100);
+  const bossState = getWorldBossState(worldOne, progress);
+  const bossUnlocked = bossState !== "locked";
+  const bossCompleted = bossState === "completed";
+  const totalSteps = currentWorldSummary.totalSteps;
+  const clearedSteps = currentWorldSummary.clearedSteps;
+  const currentWorldProgressPercent = currentWorldSummary.progressPercent;
   const profileWorldXp = completedWorldLessons.reduce(
     (total, lesson) => total + lesson.xpReward,
-    bossCompleted ? 200 : 0,
+    currentWorldSummary.bossCompleted ? 200 : 0,
   );
-  const nextLesson = worldOne.lessons.find(
-    (lesson) => !progress.completedLessonIds.includes(lesson.id),
-  );
+  const nextLesson = getNextRecommendedLesson(progress);
+  const worldOneSummary = worldSummaries.find((summary) => summary.world.id === "world-1");
+  const worldTwoSummary = worldSummaries.find((summary) => summary.world.id === "world-2");
+  const totalCompletedLessons = worlds
+    .flatMap((world) => world.lessons)
+    .filter((lesson) => progress.completedLessonIds.includes(lesson.id)).length;
+  const allAvailableContentComplete =
+    !nextLesson && bossCompleted && worldSummaries.every((summary) => summary.completed || !summary.unlocked);
+  const nextGoalTitle = nextLesson
+    ? `Complete ${nextLesson.title}`
+    : bossState === "available"
+      ? "Defeat the World 1 Boss"
+      : "Review your worlds";
+  const nextGoalDescription = nextLesson
+    ? `Earn ${nextLesson.xpReward} XP and keep moving through ${
+        getWorldForLesson(nextLesson)?.subtitle ?? "your current world"
+      }.`
+    : bossState === "available"
+      ? "Complete the final challenge to finish World 1 and unlock World 2."
+      : "All available lessons are complete. Review unlocked worlds or replay the boss.";
 
   return {
     completedLessons: completedWorldLessons,
     completedStageIds,
     completedChallenges: progress.completedChallengeIds,
-    unlockedLessonIds: getUnlockedLessonIds(progress.completedLessonIds),
+    unlockedLessonIds: worlds.flatMap((world) =>
+      isWorldUnlocked(world, progress) ? getUnlockedWorldLessonIds(world, progress.completedLessonIds) : [],
+    ),
     bossUnlocked,
     bossCompleted,
+    bossState,
+    worldSummaries,
+    currentWorld: currentWorldSummary.world,
+    worldOneSummary,
+    worldTwoSummary,
+    totalCompletedLessons,
+    allAvailableContentComplete,
     continueHref: getNextAvailablePath(progress),
     continueLabel: getNextAvailableLabel(progress),
     nextRecommendedLesson: nextLesson,
@@ -600,9 +654,34 @@ export function getProgressSummary(progress: SavedProgress) {
     clearedSteps,
     currentWorldProgressPercent,
     profileWorldXp,
-    nextGoalTitle: nextLesson ? `Complete ${nextLesson.title}` : "Clear the Boss Level",
-    nextGoalDescription: nextLesson
-      ? `Earn ${nextLesson.xpReward} XP and move closer to the World 1 boss challenge.`
-      : "Finish the final challenge to complete World 1.",
+    nextGoalTitle,
+    nextGoalDescription,
+  };
+}
+
+export function getWorldProgressSummary(world: World, progress: SavedProgress) {
+  const completedLessons = world.lessons.filter((lesson) =>
+    progress.completedLessonIds.includes(lesson.id),
+  );
+  const bossCompleted = isWorldBossCompleted(world, progress);
+  const hasBossStage = world.stages.some((stage) => stage.boss);
+  const totalSteps = world.lessons.length + (hasBossStage ? 1 : 0);
+  const clearedSteps = completedLessons.length + (bossCompleted ? 1 : 0);
+  const progressPercent = totalSteps === 0 ? 0 : Math.round((clearedSteps / totalSteps) * 100);
+  const unlocked = isWorldUnlocked(world, progress);
+
+  return {
+    world,
+    unlocked,
+    completed: unlocked && totalSteps > 0 && clearedSteps >= totalSteps,
+    completedLessons,
+    completedLessonCount: completedLessons.length,
+    totalLessons: world.lessons.length,
+    lessonsCompleted: areWorldLessonsCompleted(world, progress),
+    bossState: getWorldBossState(world, progress),
+    bossCompleted,
+    totalSteps,
+    clearedSteps,
+    progressPercent,
   };
 }

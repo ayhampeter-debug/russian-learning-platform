@@ -1,12 +1,13 @@
 "use client";
 
 import { Navigation } from "@/components/Navigation";
-import { userProgress, worldOne } from "@/lib/learning-data";
+import { userProgress, worldOne, worlds } from "@/lib/learning-data";
 import {
   getLessonDisplayState,
   getLessonProgressState,
   getProgressSummary,
   getProgressStatusLabel,
+  getWorldProgressSummary,
   resetProgress,
   useProgress,
 } from "@/lib/progress-storage";
@@ -18,11 +19,15 @@ export default function DashboardPage() {
   const progress = useProgress();
   const summary = getProgressSummary(progress);
   const bossActionUnlocked = summary.bossUnlocked || summary.bossCompleted;
+  const currentWorld = summary.currentWorld;
+  const worldOneSummary = summary.worldOneSummary ?? getWorldProgressSummary(worldOne, progress);
+  const worldTwo = worlds.find((world) => world.number === 2);
+  const worldTwoSummary =
+    summary.worldTwoSummary ?? (worldTwo ? getWorldProgressSummary(worldTwo, progress) : null);
   const noProgress =
     summary.completedLessons.length === 0 &&
     summary.completedChallenges.length === 0 &&
     progress.totalXp === 0;
-  const allWorldLessonsComplete = summary.completedLessons.length === worldOne.lessons.length;
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
@@ -59,7 +64,7 @@ export default function DashboardPage() {
               href={summary.continueHref}
               className="w-full rounded-full bg-cyan-400 px-6 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
             >
-              {summary.bossCompleted ? "View Worlds" : summary.continueLabel}
+              {summary.continueLabel}
             </Link>
           </div>
         </div>
@@ -73,9 +78,9 @@ export default function DashboardPage() {
           />
           <StatCard
             title="Lessons Done"
-            value={`${summary.completedLessons.length}/${worldOne.lessons.length}`}
+            value={`${summary.totalCompletedLessons}/${worlds.flatMap((world) => world.lessons).length}`}
             icon="OK"
-            label="World 1 lessons completed"
+            label="Total lessons completed"
           />
           <StatCard
             title="Hearts"
@@ -100,7 +105,7 @@ export default function DashboardPage() {
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-slate-400">Current world</p>
-                <h2 className="text-xl font-bold sm:text-2xl">{worldOne.subtitle}</h2>
+                <h2 className="text-xl font-bold sm:text-2xl">{currentWorld.subtitle}</h2>
               </div>
               <span className="w-fit rounded-full bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950">
                 Level {Math.max(userProgress.level, Math.floor(progress.totalXp / 500) + 1)}
@@ -109,7 +114,7 @@ export default function DashboardPage() {
 
             <div className="mb-3 flex flex-col gap-1 text-sm text-slate-400 sm:flex-row sm:justify-between">
               <span>
-                {summary.clearedSteps} of {summary.totalSteps} World 1 steps cleared
+                {summary.clearedSteps} of {summary.totalSteps} current-world steps cleared
               </span>
               <span>{summary.currentWorldProgressPercent}%</span>
             </div>
@@ -122,7 +127,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="mt-6 grid gap-4 md:grid-cols-3">
-              {worldOne.lessons.map((lesson) => {
+              {currentWorld.lessons.map((lesson) => {
                 const lessonState = getLessonProgressState(lesson, progress);
                 const displayState = getLessonDisplayState(lesson, progress);
 
@@ -153,16 +158,45 @@ export default function DashboardPage() {
               {summary.nextRecommendedLesson
                 ? summary.nextGoalDescription
                 : summary.bossCompleted
-                  ? "You defeated the First Contact boss. Review worlds or replay challenges while the next world is prepared."
+                  ? "The World 1 boss is defeated. Continue into World 2 or review completed worlds."
                   : "All World 1 lessons are complete. The boss challenge is ready."}
             </p>
 
+            <div className="mt-6 grid gap-3 text-sm">
+              <ProgressLine
+                label="World 1"
+                value={
+                  worldOneSummary.completed
+                    ? "Completed"
+                    : `${worldOneSummary.completedLessonCount}/${worldOneSummary.totalLessons} lessons`
+                }
+              />
+              <ProgressLine
+                label="Boss Challenge"
+                value={
+                  summary.bossCompleted
+                    ? "Boss defeated"
+                    : summary.bossUnlocked
+                      ? "Available"
+                      : "Locked"
+                }
+              />
+              <ProgressLine
+                label="World 2"
+                value={
+                  worldTwoSummary?.unlocked
+                    ? "Unlocked"
+                    : "Locked"
+                }
+              />
+            </div>
+
             {bossActionUnlocked ? (
               <Link
-                href="/challenge"
+                href={summary.bossCompleted ? summary.continueHref : "/challenge"}
                 className="mt-6 block w-full rounded-full bg-white px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-slate-200"
               >
-                {summary.bossCompleted ? "Replay Boss Challenge" : "Start Boss Challenge"}
+                {summary.bossCompleted ? summary.continueLabel : "Start Boss Challenge"}
               </Link>
             ) : summary.nextRecommendedLesson ? (
               <Link
@@ -176,13 +210,22 @@ export default function DashboardPage() {
                 disabled
                 className="mt-6 block w-full rounded-full bg-slate-800 px-5 py-3 text-center font-semibold text-slate-500"
               >
-                {allWorldLessonsComplete ? "Boss preparing" : "Boss Locked"}
+                Boss Locked
               </button>
             )}
           </div>
         </div>
       </section>
     </main>
+  );
+}
+
+function ProgressLine({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-1 rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+      <span className="text-slate-400">{label}</span>
+      <span className="font-bold text-white">{value}</span>
+    </div>
   );
 }
 

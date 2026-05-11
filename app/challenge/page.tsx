@@ -15,8 +15,7 @@ import {
 } from "@/lib/learning-data";
 import {
   completeChallenge,
-  isBossChallengeCompleted,
-  isBossChallengeUnlocked,
+  getWorldBossState,
   useProgress,
 } from "@/lib/progress-storage";
 import Link from "next/link";
@@ -126,8 +125,9 @@ const staticBossChallenge: BossChallengeContent = {
 
 export default function ChallengePage() {
   const savedProgress = useProgress();
-  const bossAvailable =
-    isBossChallengeUnlocked(savedProgress) || isBossChallengeCompleted(savedProgress);
+  const bossState = getWorldBossState(worldOne, savedProgress);
+  const bossAvailable = bossState !== "locked";
+  const [hasStarted, setHasStarted] = useState(false);
   const [bossChallenge, setBossChallenge] = useState(staticBossChallenge);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
@@ -299,6 +299,17 @@ export default function ChallengePage() {
     return <LockedBossChallenge />;
   }
 
+  if (!hasStarted && !isFinished) {
+    return (
+      <BossGate
+        state={bossState}
+        onStart={() => {
+          setHasStarted(true);
+        }}
+      />
+    );
+  }
+
   if (isFinished) {
     return (
       <main className="min-h-screen bg-slate-950 text-white">
@@ -363,10 +374,10 @@ export default function ChallengePage() {
                   Retry Boss
                 </button>
                 <Link
-                  href="/dashboard"
+                  href={finalPassed ? "/worlds" : "/dashboard"}
                   className="inline-flex flex-1 justify-center rounded-full border border-white/10 bg-white/10 px-7 py-4 font-bold text-white transition hover:border-white/30 hover:bg-white/15"
                 >
-                  Back to Dashboard
+                  {finalPassed ? "View Unlocked Worlds" : "Back to Dashboard"}
                 </Link>
               </div>
             </div>
@@ -573,8 +584,7 @@ function LockedBossChallenge() {
             Finish every World 1 lesson first.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
-            The gate opens after every World 1 lesson is completed. Clear the next available
-            lesson, then come back for the boss fight.
+            Complete all World 1 lessons to unlock the Boss Challenge.
           </p>
           <Link
             href="/worlds"
@@ -582,6 +592,51 @@ function LockedBossChallenge() {
           >
             Back to Worlds
           </Link>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function BossGate({
+  state,
+  onStart,
+}: {
+  state: "locked" | "available" | "completed";
+  onStart: () => void;
+}) {
+  const completed = state === "completed";
+
+  return (
+    <main className="min-h-screen bg-slate-950 text-white">
+      <Navigation />
+      <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-4xl items-center px-4 pb-8 sm:px-6">
+        <div className="w-full rounded-2xl border border-white/10 bg-white/10 p-5 text-center shadow-2xl shadow-cyan-950/30 sm:rounded-3xl sm:p-8">
+          <p className="text-xs font-black uppercase tracking-[0.25em] text-yellow-300 sm:text-sm sm:tracking-[0.35em]">
+            {completed ? "Boss Completed" : "Boss Available"}
+          </p>
+          <h1 className="mt-4 text-3xl font-black md:text-5xl">
+            {completed ? "Boss defeated" : "World 1 Boss Challenge"}
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-slate-300">
+            {completed
+              ? "World 2 is unlocked. You can continue into Everyday Basics or replay the boss for practice."
+              : "All World 1 lessons are complete. Defeat the boss to unlock World 2: Everyday Basics."}
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <button
+              onClick={onStart}
+              className="w-full rounded-full bg-yellow-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-yellow-300 sm:w-auto"
+            >
+              {completed ? "Replay Boss Challenge" : "Start Boss Challenge"}
+            </button>
+            <Link
+              href={completed ? "/worlds" : "/dashboard"}
+              className="w-full rounded-full border border-white/10 bg-white/10 px-7 py-4 font-bold text-white transition hover:border-white/30 hover:bg-white/15 sm:w-auto"
+            >
+              {completed ? "Go to World 2" : "Back to Dashboard"}
+            </Link>
+          </div>
         </div>
       </section>
     </main>

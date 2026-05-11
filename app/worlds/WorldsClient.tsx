@@ -5,6 +5,9 @@ import type { StageStatus, World } from "@/lib/learning-data";
 import {
   getLessonDisplayState,
   getProgressStatusLabel,
+  getUnlockedWorldLessonIds,
+  getWorldProgressSummary,
+  getWorldStageProgressState,
   isWorldUnlocked,
   type SavedProgress,
   useProgress,
@@ -31,6 +34,26 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
           {worlds.map((world) => {
             const summary = getWorldProgressSummary(world, progress);
             const worldUnlocked = isWorldUnlocked(world, progress);
+            const unlockedLessonIds = getUnlockedWorldLessonIds(world, progress.completedLessonIds);
+            const firstAvailableLesson = world.lessons.find((lesson) =>
+              unlockedLessonIds.includes(lesson.id),
+            );
+            const nextLesson = world.lessons.find(
+              (lesson) =>
+                unlockedLessonIds.includes(lesson.id) &&
+                !progress.completedLessonIds.includes(lesson.id),
+            );
+            const worldHref =
+              worldUnlocked && (nextLesson || firstAvailableLesson)
+                ? `/lesson/${(nextLesson ?? firstAvailableLesson)?.id}`
+                : undefined;
+            const ctaLabel = !worldUnlocked
+              ? "Locked"
+              : summary.completed
+                ? "Review"
+                : summary.completedLessonCount > 0
+                  ? "Continue World"
+                  : "Start World";
 
             return (
               <div
@@ -48,13 +71,33 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
                     <p className="mt-2 max-w-3xl text-slate-400">{world.description}</p>
                     {!worldUnlocked ? (
                       <p className="mt-3 text-sm font-semibold text-yellow-200">
-                        Locked until World 1 is completed or the World 1 boss is passed.
+                        Locked until all World 1 lessons are complete and the World 1 boss is defeated.
                       </p>
                     ) : null}
                   </div>
 
-                  <div className="w-fit rounded-full bg-yellow-400 px-5 py-2 font-bold text-slate-950">
-                    {summary.currentWorldProgressPercent}% Complete
+                  <div className="flex flex-col gap-3 sm:items-end">
+                    <div className="w-fit rounded-full bg-yellow-400 px-5 py-2 font-bold text-slate-950">
+                      {summary.progressPercent}% Complete
+                    </div>
+                    <p className="text-sm text-slate-400">
+                      {summary.completedLessonCount}/{summary.totalLessons} lessons complete
+                    </p>
+                    {worldHref ? (
+                      <Link
+                        href={worldHref}
+                        className="w-full rounded-full bg-cyan-400 px-5 py-2 text-center text-sm font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
+                      >
+                        {ctaLabel}
+                      </Link>
+                    ) : (
+                      <button
+                        disabled
+                        className="w-full cursor-not-allowed rounded-full bg-slate-800 px-5 py-2 text-sm font-bold text-slate-500 sm:w-auto"
+                      >
+                        {ctaLabel}
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -101,57 +144,6 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
   );
 }
 
-function getUnlockedWorldLessonIds(world: World, completedLessonIds: string[]) {
-  const completedLessons = new Set(completedLessonIds);
-  const unlockedLessonIds = new Set<string>();
-
-  world.lessons.forEach((lesson, index) => {
-    if (index === 0 || completedLessons.has(lesson.id)) {
-      unlockedLessonIds.add(lesson.id);
-      return;
-    }
-
-    const previousLesson = world.lessons[index - 1];
-
-    if (previousLesson && completedLessons.has(previousLesson.id)) {
-      unlockedLessonIds.add(lesson.id);
-    }
-  });
-
-  return Array.from(unlockedLessonIds);
-}
-
-function getWorldStageProgressState(world: World, stageId: string, progress: SavedProgress) {
-  const stage = world.stages.find((stageData) => stageData.id === stageId);
-  const stageLessons = world.lessons.filter((lesson) => lesson.stageId === stageId);
-  const completedLessons = new Set(progress.completedLessonIds);
-  const unlockedLessons = new Set(getUnlockedWorldLessonIds(world, progress.completedLessonIds));
-
-  if (stage?.boss) {
-    const bossChallengeId = `${world.id}-boss`;
-
-    if (progress.completedChallengeIds.includes(bossChallengeId)) {
-      return { status: "Completed" as StageStatus, locked: false };
-    }
-
-    const bossUnlocked = world.lessons.every((lesson) => completedLessons.has(lesson.id));
-    return {
-      status: bossUnlocked ? ("Unlocked" as StageStatus) : ("Locked" as StageStatus),
-      locked: !bossUnlocked,
-    };
-  }
-
-  if (stageLessons.length > 0 && stageLessons.every((lesson) => completedLessons.has(lesson.id))) {
-    return { status: "Completed" as StageStatus, locked: false };
-  }
-
-  if (stageLessons.some((lesson) => unlockedLessons.has(lesson.id))) {
-    return { status: "Unlocked" as StageStatus, locked: false };
-  }
-
-  return { status: "Locked" as StageStatus, locked: true };
-}
-
 function getNextWorldStageLessonId(world: World, stageId: string, progress: SavedProgress) {
   const stageLessons = world.lessons.filter((lesson) => lesson.stageId === stageId);
   const unlockedLessonIds = new Set(getUnlockedWorldLessonIds(world, progress.completedLessonIds));
@@ -162,19 +154,6 @@ function getNextWorldStageLessonId(world: World, stageId: string, progress: Save
         unlockedLessonIds.has(lesson.id) && !progress.completedLessonIds.includes(lesson.id),
     )?.id ?? stageLessons.find((lesson) => unlockedLessonIds.has(lesson.id))?.id
   );
-}
-
-function getWorldProgressSummary(world: World, progress: SavedProgress) {
-  const completedWorldLessons = world.lessons.filter((lesson) =>
-    progress.completedLessonIds.includes(lesson.id),
-  );
-  const bossCompleted = progress.completedChallengeIds.includes(`${world.id}-boss`);
-  const totalSteps = world.lessons.length + 1;
-  const clearedSteps = completedWorldLessons.length + (bossCompleted ? 1 : 0);
-
-  return {
-    currentWorldProgressPercent: Math.round((clearedSteps / totalSteps) * 100),
-  };
 }
 
 function StageCard({

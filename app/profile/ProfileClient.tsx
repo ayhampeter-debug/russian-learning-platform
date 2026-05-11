@@ -14,6 +14,7 @@ import {
   getProgressSummary,
   getProgressStatusLabel,
   getStageProgressState,
+  getWorldProgressSummary,
   useProgress,
 } from "@/lib/progress-storage";
 import Link from "next/link";
@@ -69,15 +70,21 @@ const achievementDefinitions = [
   },
   {
     id: "first-contact-completed",
-    title: "First Contact Completed",
+    title: "World 1 Completed",
     description: "Complete every lesson in World 1.",
-    dbSlugs: ["first-contact-completed", "world-1-lessons"],
+    dbSlugs: ["first-contact-completed", "world-1-completed", "world-1-lessons"],
   },
   {
     id: "boss-defeated",
     title: "Boss Defeated",
     description: "Pass the First Contact boss challenge.",
     dbSlugs: ["boss-defeated", "world-1-boss", "boss-challenger"],
+  },
+  {
+    id: "world-2-unlocked",
+    title: "World 2 Unlocked",
+    description: "Unlock Everyday Basics by clearing World 1 and defeating the boss.",
+    dbSlugs: ["world-2-unlocked", "everyday-basics-unlocked"],
   },
   {
     id: "xp-starter",
@@ -99,6 +106,7 @@ function getDisplayAchievements(
     progress.completedLessonIds.includes(lesson.id),
   );
   const bossCompleted = progress.completedChallengeIds.includes("world-1-boss");
+  const worldTwoUnlocked = allLessonsCompleted && bossCompleted;
 
   return achievementDefinitions.map((definition) => {
     const dbRow = definition.dbSlugs.map((slug) => rowBySlug.get(slug)).find(Boolean);
@@ -110,7 +118,9 @@ function getDisplayAchievements(
           ? allLessonsCompleted
           : definition.id === "boss-defeated"
             ? bossCompleted
-            : progress.totalXp >= 100;
+            : definition.id === "world-2-unlocked"
+              ? worldTwoUnlocked
+              : progress.totalXp >= 100;
     const isUnlocked = dbUnlocked || inferredUnlocked;
 
     return {
@@ -131,6 +141,12 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
   const { isLoaded, user: clerkUser } = useUser();
   const progress = useProgress();
   const summary = getProgressSummary(progress);
+  const worldOneSummary = summary.worldOneSummary ?? getWorldProgressSummary(worldOne, progress);
+  const worldTwoSummary = summary.worldTwoSummary;
+  const worldOneXp = worldOneSummary.completedLessons.reduce(
+    (total, lesson) => total + lesson.xpReward,
+    worldOneSummary.bossCompleted ? 200 : 0,
+  );
   const clerkEmail = clerkUser?.primaryEmailAddress?.emailAddress ?? null;
   const clerkName =
     clerkUser?.fullName ||
@@ -164,12 +180,17 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
       value: `${profileUser?.profile?.longestStreak ?? userProgress.longestStreak} days`,
       accent: "yellow",
     },
-    { title: "Completed Lessons", value: summary.completedLessons.length.toString(), accent: "green" },
+    { title: "Completed Lessons", value: summary.totalCompletedLessons.toString(), accent: "green" },
     { title: "Completed Stages", value: summary.completedStageIds.length.toString(), accent: "cyan" },
     {
       title: "Boss Challenge",
       value: summary.bossCompleted ? "Completed" : summary.bossUnlocked ? "Available" : "Locked",
       accent: summary.bossCompleted ? "green" : summary.bossUnlocked ? "cyan" : "red",
+    },
+    {
+      title: "World 2",
+      value: worldTwoSummary?.unlocked ? "Unlocked" : "Locked",
+      accent: worldTwoSummary?.unlocked ? "green" : "red",
     },
   ];
   const displayAchievements = getDisplayAchievements(achievements, progress);
@@ -232,21 +253,21 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
               </div>
 
               <span className="w-fit rounded-full bg-yellow-400 px-5 py-2 text-sm font-black text-slate-950">
-                {summary.currentWorldProgressPercent}% Complete
+                {worldOneSummary.progressPercent}% Complete
               </span>
             </div>
 
             <div className="mt-8">
               <div className="mb-3 flex flex-col gap-1 text-sm text-slate-400 sm:flex-row sm:justify-between">
                 <span>
-                  {summary.clearedSteps} of {summary.totalSteps} steps cleared
+                  {worldOneSummary.clearedSteps} of {worldOneSummary.totalSteps} steps cleared
                 </span>
-                <span>{summary.profileWorldXp} XP earned</span>
+                <span>{worldOneXp} XP earned</span>
               </div>
               <div className="h-4 overflow-hidden rounded-full bg-slate-800">
                 <div
                   className="h-full rounded-full bg-cyan-400"
-                  style={{ width: `${summary.currentWorldProgressPercent}%` }}
+                  style={{ width: `${worldOneSummary.progressPercent}%` }}
                 />
               </div>
             </div>

@@ -15,7 +15,10 @@ import {
 } from "@/lib/learning-data";
 import {
   completeLesson,
+  getNextAvailableLabel,
+  getNextAvailablePath,
   getLessonProgressState,
+  type SavedProgress,
   useProgress,
 } from "@/lib/progress-storage";
 import Link from "next/link";
@@ -44,6 +47,7 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
   const [hearts, setHearts] = useState(startingHearts);
   const [correctCount, setCorrectCount] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
+  const [completionProgress, setCompletionProgress] = useState<SavedProgress | null>(null);
 
   const currentExercise = lessonExercises[currentExerciseIndex];
   const progress = ((currentExerciseIndex + 1) / lessonExercises.length) * 100;
@@ -133,7 +137,8 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
 
   function handleNext() {
     if (currentExerciseIndex === lessonExercises.length - 1) {
-      completeLesson(currentLesson.id, xp);
+      const nextProgress = completeLesson(currentLesson.id, xp);
+      setCompletionProgress(nextProgress);
       setIsFinished(true);
       return;
     }
@@ -161,6 +166,7 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
     setHearts(startingHearts);
     setCorrectCount(0);
     setIsFinished(false);
+    setCompletionProgress(null);
   }
 
   if (lessonState.locked) {
@@ -194,10 +200,10 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
-                  href="/dashboard"
+                  href={getNextAvailablePath(completionProgress ?? progressState)}
                   className="inline-flex flex-1 justify-center rounded-full bg-cyan-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-cyan-300"
                 >
-                  Back to Dashboard
+                  {getNextAvailableLabel(completionProgress ?? progressState)}
                 </Link>
                 <button
                   onClick={handleRestart}
