@@ -159,7 +159,7 @@ export default function ChallengePage() {
           setBossChallenge(challenge);
         }
       } catch {
-        // The static challenge remains available if the database request fails.
+        console.warn("Challenge load skipped: using static boss challenge fallback.");
       }
     }
 
@@ -573,7 +573,8 @@ function LockedBossChallenge() {
             Finish every World 1 lesson first.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
-            The boss challenge unlocks after all ten First Contact lessons are completed.
+            The gate opens after every World 1 lesson is completed. Clear the next available
+            lesson, then come back for the boss fight.
           </p>
           <Link
             href="/worlds"

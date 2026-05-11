@@ -18,6 +18,7 @@ export type LessonProgressState = {
 };
 
 export type UnlockDisplayStatus = "Completed" | "Available" | "Locked";
+export type LessonDisplayState = "Completed" | "Current" | "Available" | "Locked";
 
 export const fallbackProgress: SavedProgress = {
   completedLessonIds: worldOne.lessons
@@ -479,7 +480,7 @@ export function getNextAvailablePath(progress: SavedProgress) {
     return `/lesson/${nextLesson.id}`;
   }
 
-  return "/challenge";
+  return isBossChallengeCompleted(progress) ? "/worlds" : "/challenge";
 }
 
 export function getNextAvailableLabel(progress: SavedProgress) {
@@ -491,7 +492,26 @@ export function getNextAvailableLabel(progress: SavedProgress) {
     return `Continue: ${nextLesson.title}`;
   }
 
-  return isBossChallengeCompleted(progress) ? "Replay Boss Challenge" : "Start Boss Challenge";
+  return isBossChallengeCompleted(progress) ? "World 1 completed" : "Start Boss Challenge";
+}
+
+export function getNextRecommendedLesson(progress: SavedProgress) {
+  return worldOne.lessons.find((lesson) => !progress.completedLessonIds.includes(lesson.id)) ?? null;
+}
+
+export function getLessonDisplayState(lesson: Lesson, progress: SavedProgress): LessonDisplayState {
+  const lessonState = getLessonProgressState(lesson, progress);
+  const nextLesson = getNextRecommendedLesson(progress);
+
+  if (lessonState.completed) {
+    return "Completed";
+  }
+
+  if (lessonState.locked) {
+    return "Locked";
+  }
+
+  return nextLesson?.id === lesson.id ? "Current" : "Available";
 }
 
 export function getNextStageLessonId(stageId: string, progress: SavedProgress) {
@@ -541,6 +561,7 @@ export function getProgressSummary(progress: SavedProgress) {
     bossCompleted,
     continueHref: getNextAvailablePath(progress),
     continueLabel: getNextAvailableLabel(progress),
+    nextRecommendedLesson: nextLesson,
     totalSteps,
     clearedSteps,
     currentWorldProgressPercent,

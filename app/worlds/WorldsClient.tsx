@@ -3,6 +3,7 @@
 import { Navigation } from "@/components/Navigation";
 import type { StageStatus, World } from "@/lib/learning-data";
 import {
+  getLessonDisplayState,
   getProgressStatusLabel,
   type SavedProgress,
   useProgress,
@@ -62,6 +63,11 @@ export function WorldsClient({ world }: { world: World }) {
                   lessonId={lessonId}
                   completedLessonCount={completedLessonCount}
                   lessonCount={stageLessons.length}
+                  lessons={stageLessons.map((lesson) => ({
+                    id: lesson.id,
+                    title: lesson.title,
+                    state: getLessonDisplayState(lesson, progress),
+                  }))}
                 />
               );
             })}
@@ -158,6 +164,7 @@ function StageCard({
   lessonId,
   completedLessonCount,
   lessonCount,
+  lessons,
 }: {
   number: string;
   title: string;
@@ -170,6 +177,7 @@ function StageCard({
   lessonId?: string;
   completedLessonCount: number;
   lessonCount: number;
+  lessons: { id: string; title: string; state: "Completed" | "Current" | "Available" | "Locked" }[];
 }) {
   const href = boss ? "/challenge" : lessonId ? `/lesson/${lessonId}` : undefined;
   const isCompleted = status === "Completed";
@@ -225,9 +233,16 @@ function StageCard({
       <p className="mt-3 min-h-16 text-sm leading-6 text-slate-400">{description}</p>
 
       {!boss && (
-        <p className="mt-4 text-sm font-semibold text-slate-300">
-          {completedLessonCount} of {lessonCount} lessons complete
-        </p>
+        <div className="mt-4 space-y-3">
+          <p className="text-sm font-semibold text-slate-300">
+            {completedLessonCount} of {lessonCount} lessons complete
+          </p>
+          <div className="grid gap-2">
+            {lessons.map((lesson) => (
+              <LessonStateRow key={lesson.id} title={lesson.title} state={lesson.state} />
+            ))}
+          </div>
+        </div>
       )}
 
       <div className="mt-5 flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
@@ -253,6 +268,31 @@ function StageCard({
             {actionLabel}
           </Link>
         )}
+      </div>
+    </div>
+  );
+}
+
+function LessonStateRow({
+  title,
+  state,
+}: {
+  title: string;
+  state: "Completed" | "Current" | "Available" | "Locked";
+}) {
+  const stateClass = {
+    Completed: "border-green-400/25 bg-green-400/10 text-green-200",
+    Current: "border-cyan-400/35 bg-cyan-400/10 text-cyan-100",
+    Available: "border-white/10 bg-white/5 text-slate-300",
+    Locked: "border-white/5 bg-slate-900/40 text-slate-500",
+  }[state];
+  const label = state === "Current" ? "Current/Continue" : state;
+
+  return (
+    <div className={`rounded-2xl border px-3 py-2 ${stateClass}`}>
+      <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+        <span className="min-w-0 truncate text-sm font-semibold">{title}</span>
+        <span className="shrink-0 text-xs font-bold">{label}</span>
       </div>
     </div>
   );

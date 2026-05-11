@@ -1,13 +1,12 @@
 "use client";
 
 import { Navigation } from "@/components/Navigation";
+import type { ProfileAchievementRow } from "@/lib/achievement-service";
 import { useUser } from "@clerk/nextjs";
 import {
-  achievements,
   recentActivity,
   userProgress,
   worldOne,
-  type Achievement,
   type RecentActivity,
   type StatAccent,
 } from "@/lib/learning-data";
@@ -31,6 +30,7 @@ type ProfileUser = {
 } | null;
 
 type ProfileClientProps = {
+  achievements: ProfileAchievementRow[];
   syncError: string | null;
   user: ProfileUser;
 };
@@ -52,8 +52,83 @@ function getInitials(displayName: string) {
   return initials || userProgress.initials;
 }
 
-export function ProfileClient({ syncError, user }: ProfileClientProps) {
-  const { user: clerkUser } = useUser();
+type DisplayAchievement = {
+  id: string;
+  title: string;
+  description: string;
+  status: "Unlocked" | "In progress";
+  detail: string;
+};
+
+const achievementDefinitions = [
+  {
+    id: "first-lesson-completed",
+    title: "First Lesson Completed",
+    description: "Clear any World 1 lesson.",
+    dbSlugs: ["first-lesson-completed", "first-lesson", "first-contact"],
+  },
+  {
+    id: "first-contact-completed",
+    title: "First Contact Completed",
+    description: "Complete every lesson in World 1.",
+    dbSlugs: ["first-contact-completed", "world-1-lessons"],
+  },
+  {
+    id: "boss-defeated",
+    title: "Boss Defeated",
+    description: "Pass the First Contact boss challenge.",
+    dbSlugs: ["boss-defeated", "world-1-boss", "boss-challenger"],
+  },
+  {
+    id: "xp-starter",
+    title: "XP Starter",
+    description: "Earn your first 100 XP.",
+    dbSlugs: ["xp-starter"],
+  },
+];
+
+function getDisplayAchievements(
+  rows: ProfileAchievementRow[],
+  progress: ReturnType<typeof useProgress>,
+): DisplayAchievement[] {
+  const unlockedRows = new Set(
+    rows.filter((row) => row.status === "UNLOCKED").map((row) => row.slug),
+  );
+  const rowBySlug = new Map(rows.map((row) => [row.slug, row]));
+  const allLessonsCompleted = worldOne.lessons.every((lesson) =>
+    progress.completedLessonIds.includes(lesson.id),
+  );
+  const bossCompleted = progress.completedChallengeIds.includes("world-1-boss");
+
+  return achievementDefinitions.map((definition) => {
+    const dbRow = definition.dbSlugs.map((slug) => rowBySlug.get(slug)).find(Boolean);
+    const dbUnlocked = definition.dbSlugs.some((slug) => unlockedRows.has(slug));
+    const inferredUnlocked =
+      definition.id === "first-lesson-completed"
+        ? progress.completedLessonIds.length > 0
+        : definition.id === "first-contact-completed"
+          ? allLessonsCompleted
+          : definition.id === "boss-defeated"
+            ? bossCompleted
+            : progress.totalXp >= 100;
+    const isUnlocked = dbUnlocked || inferredUnlocked;
+
+    return {
+      id: definition.id,
+      title: dbRow?.title ?? definition.title,
+      description: dbRow?.description ?? definition.description,
+      status: isUnlocked ? "Unlocked" : "In progress",
+      detail: dbRow
+        ? "Synced from your profile achievements."
+        : isUnlocked
+          ? "Unlocked from current progress."
+          : "Keep learning to unlock this badge.",
+    };
+  });
+}
+
+export function ProfileClient({ achievements, syncError, user }: ProfileClientProps) {
+  const { isLoaded, user: clerkUser } = useUser();
   const progress = useProgress();
   const summary = getProgressSummary(progress);
   const clerkEmail = clerkUser?.primaryEmailAddress?.emailAddress ?? null;
@@ -97,6 +172,10 @@ export function ProfileClient({ syncError, user }: ProfileClientProps) {
       accent: summary.bossCompleted ? "green" : summary.bossUnlocked ? "cyan" : "red",
     },
   ];
+  const displayAchievements = getDisplayAchievements(achievements, progress);
+  const unlockedAchievementCount = displayAchievements.filter(
+    (achievement) => achievement.status === "Unlocked",
+  ).length;
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
@@ -117,6 +196,11 @@ export function ProfileClient({ syncError, user }: ProfileClientProps) {
             {syncError ? (
               <p className="mt-3 max-w-2xl text-sm text-yellow-200">
                 {syncError} Local progress is still available on this device.
+              </p>
+            ) : null}
+            {isLoaded && isGuestProfile(clerkUser, profileUser) ? (
+              <p className="mt-3 max-w-2xl rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-100">
+                You are browsing as a guest. Your quest log stays on this device until you sign in.
               </p>
             ) : null}
           </div>
@@ -238,12 +322,12 @@ export function ProfileClient({ syncError, user }: ProfileClientProps) {
                 <h2 className="mt-2 text-2xl font-black">Achievements</h2>
               </div>
               <span className="rounded-full bg-white/10 px-4 py-2 text-sm text-slate-300">
-                {userProgress.achievementsEarned.length} unlocked
+                {unlockedAchievementCount} unlocked
               </span>
             </div>
 
             <div className="grid gap-4">
-              {achievements.map((achievement) => (
+              {displayAchievements.map((achievement) => (
                 <AchievementCard
                   key={achievement.id}
                   achievement={achievement}
@@ -268,6 +352,13 @@ export function ProfileClient({ syncError, user }: ProfileClientProps) {
       </section>
     </main>
   );
+}
+
+function isGuestProfile(
+  clerkUser: ReturnType<typeof useUser>["user"],
+  profileUser: ProfileUser,
+) {
+  return !clerkUser && !profileUser;
 }
 
 function StatCard({ title, value, accent }: StatCardProps) {
@@ -309,7 +400,7 @@ function WorldStep({
   );
 }
 
-function AchievementCard({ achievement }: { achievement: Achievement }) {
+function AchievementCard({ achievement }: { achievement: DisplayAchievement }) {
   const isUnlocked = achievement.status === "Unlocked";
 
   return (
@@ -325,6 +416,9 @@ function AchievementCard({ achievement }: { achievement: Achievement }) {
           <h3 className="font-bold">{achievement.title}</h3>
           <p className="mt-2 text-sm leading-6 text-slate-400">
             {achievement.description}
+          </p>
+          <p className="mt-2 text-xs font-semibold text-slate-500">
+            {achievement.detail}
           </p>
         </div>
         <span
