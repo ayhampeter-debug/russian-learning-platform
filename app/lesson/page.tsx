@@ -355,7 +355,7 @@ function LockedLesson({ lesson }: { lesson: Lesson }) {
             {lesson.title} is not available yet.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
-            Complete the previous World 1 lesson to unlock this step.
+            Complete the previous required lesson or boss challenge to unlock this step.
           </p>
           <Link
             href="/worlds"

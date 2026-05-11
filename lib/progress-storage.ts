@@ -3,7 +3,7 @@
 import { useUser } from "@clerk/nextjs";
 import type { ProgressApiResponse, SavedProgress } from "@/lib/progress-types";
 import { useEffect, useSyncExternalStore } from "react";
-import { userProgress, worldOne, type Lesson, type StageStatus } from "@/lib/learning-data";
+import { userProgress, worldOne, worlds, type Lesson, type StageStatus, type World } from "@/lib/learning-data";
 
 export type { SavedProgress } from "@/lib/progress-types";
 
@@ -392,16 +392,20 @@ export function getProgressStatusLabel(status: StageStatus | "In progress"): Unl
 }
 
 export function getUnlockedLessonIds(completedLessonIds: string[]) {
+  return getUnlockedWorldLessonIds(worldOne, completedLessonIds);
+}
+
+export function getUnlockedWorldLessonIds(world: World, completedLessonIds: string[]) {
   const completedLessons = new Set(completedLessonIds);
   const unlockedLessonIds = new Set<string>();
 
-  worldOne.lessons.forEach((lesson, index) => {
+  world.lessons.forEach((lesson, index) => {
     if (index === 0 || completedLessons.has(lesson.id)) {
       unlockedLessonIds.add(lesson.id);
       return;
     }
 
-    const previousLesson = worldOne.lessons[index - 1];
+    const previousLesson = world.lessons[index - 1];
 
     if (previousLesson && completedLessons.has(previousLesson.id)) {
       unlockedLessonIds.add(lesson.id);
@@ -411,12 +415,38 @@ export function getUnlockedLessonIds(completedLessonIds: string[]) {
   return Array.from(unlockedLessonIds);
 }
 
+export function getWorldForLesson(lesson: Lesson) {
+  return worlds.find((world) => world.lessons.some((worldLesson) => worldLesson.id === lesson.id));
+}
+
+export function isWorldUnlocked(world: World, progress: SavedProgress) {
+  if (world.number === 1) {
+    return true;
+  }
+
+  const previousWorld = worlds.find((candidate) => candidate.number === world.number - 1);
+
+  if (!previousWorld) {
+    return false;
+  }
+
+  const previousBossId = `${previousWorld.id}-boss`;
+  const previousLessonsCompleted = previousWorld.lessons.every((lesson) =>
+    progress.completedLessonIds.includes(lesson.id),
+  );
+
+  return progress.completedChallengeIds.includes(previousBossId) || previousLessonsCompleted;
+}
+
 export function getLessonProgressState(
   lesson: Lesson,
   progress: SavedProgress,
 ): LessonProgressState {
+  const lessonWorld = getWorldForLesson(lesson);
   const completed = progress.completedLessonIds.includes(lesson.id);
-  const unlocked = getUnlockedLessonIds(progress.completedLessonIds).includes(lesson.id);
+  const unlocked =
+    Boolean(lessonWorld && isWorldUnlocked(lessonWorld, progress)) &&
+    getUnlockedWorldLessonIds(lessonWorld ?? worldOne, progress.completedLessonIds).includes(lesson.id);
 
   if (completed) {
     return {
@@ -501,7 +531,11 @@ export function getNextRecommendedLesson(progress: SavedProgress) {
 
 export function getLessonDisplayState(lesson: Lesson, progress: SavedProgress): LessonDisplayState {
   const lessonState = getLessonProgressState(lesson, progress);
-  const nextLesson = getNextRecommendedLesson(progress);
+  const lessonWorld = getWorldForLesson(lesson) ?? worldOne;
+  const nextLesson =
+    lessonWorld.number === 1
+      ? getNextRecommendedLesson(progress)
+      : lessonWorld.lessons.find((worldLesson) => !progress.completedLessonIds.includes(worldLesson.id));
 
   if (lessonState.completed) {
     return "Completed";

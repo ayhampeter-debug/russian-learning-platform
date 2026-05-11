@@ -2,13 +2,18 @@ import "server-only";
 
 import { logContentFallback } from "@/lib/content-fallback-log";
 import { getPrismaClient } from "@/lib/prisma";
-import { worldOne, type Lesson, type Stage, type StageStatus, type World } from "@/lib/learning-data";
+import { worldOne, worlds, type Lesson, type Stage, type StageStatus, type World } from "@/lib/learning-data";
 
 type ContentSource = "database" | "static";
 
 export type WorldContentResult = {
   source: ContentSource;
   world: World;
+};
+
+export type WorldsContentResult = {
+  source: ContentSource;
+  worlds: World[];
 };
 
 type JsonRecord = Record<string, unknown>;
@@ -53,9 +58,17 @@ type DatabaseWorld = {
 };
 
 export async function getWorldOneContent(): Promise<WorldContentResult> {
+  const { source, worlds: contentWorlds } = await getWorldsContent();
+  const world = contentWorlds.find((contentWorld) => contentWorld.number === 1) ?? worldOne;
+
+  return { source, world };
+}
+
+export async function getWorldsContent(): Promise<WorldsContentResult> {
   try {
-    const world = await getPrismaClient().world.findUnique({
-      where: { number: 1 },
+    const databaseWorlds = await getPrismaClient().world.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: { number: "asc" },
       include: {
         stages: {
           where: { status: "PUBLISHED" },
@@ -72,38 +85,39 @@ export async function getWorldOneContent(): Promise<WorldContentResult> {
       },
     });
 
-    if (!world) {
-      logContentFallback("Falling back to static World 1 content.", {
-        reason: "world-not-found",
+    if (databaseWorlds.length === 0) {
+      logContentFallback("Falling back to static worlds content.", {
+        reason: "worlds-not-found",
       });
-      return getStaticWorldOneContent();
+      return getStaticWorldsContent();
     }
 
-    if (world.stages.length === 0 || world.lessons.length === 0) {
-      logContentFallback("Falling back to static World 1 content.", {
-        reason: `published-content-missing stages=${world.stages.length} lessons=${world.lessons.length}`,
+    if (databaseWorlds.some((world) => world.stages.length === 0 || world.lessons.length === 0)) {
+      logContentFallback("Falling back to static worlds content.", {
+        reason: "published-content-missing",
       });
-      return getStaticWorldOneContent();
+      return getStaticWorldsContent();
     }
 
     return {
       source: "database",
-      world: mapWorldOneFromDatabase(world),
+      worlds: mergeDatabaseAndStaticWorlds(databaseWorlds.map(mapWorldFromDatabase)),
     };
   } catch (error) {
-    logContentFallback("Falling back to static World 1 content.", { error });
-    return getStaticWorldOneContent();
+    logContentFallback("Falling back to static worlds content.", { error });
+    return getStaticWorldsContent();
   }
 }
 
-function getStaticWorldOneContent(): WorldContentResult {
+function getStaticWorldsContent(): WorldsContentResult {
   return {
     source: "static",
-    world: worldOne,
+    worlds,
   };
 }
 
-function mapWorldOneFromDatabase(world: DatabaseWorld): World {
+function mapWorldFromDatabase(world: DatabaseWorld): World {
+  const staticWorld = worlds.find((contentWorld) => contentWorld.id === world.slug) ?? worldOne;
   const metadata = asRecord(world.metadata);
   const bossChallenge =
     world.challenges.find((challenge) => challenge.type === "boss") ??
@@ -151,27 +165,34 @@ function mapWorldOneFromDatabase(world: DatabaseWorld): World {
     title: world.title,
     subtitle: world.subtitle ?? `World ${world.number}: ${world.title}`,
     description: world.description,
-    progressPercent: getNumber(metadata.progressPercent, worldOne.progressPercent),
+    progressPercent: getNumber(metadata.progressPercent, staticWorld.progressPercent),
     profileProgressPercent: getNumber(
       metadata.profileProgressPercent,
-      worldOne.profileProgressPercent,
+      staticWorld.profileProgressPercent,
     ),
     dashboardProgressPercent: getNumber(
       metadata.dashboardProgressPercent,
-      worldOne.dashboardProgressPercent,
+      staticWorld.dashboardProgressPercent,
     ),
     xp: world.xpReward,
-    bossTitle: bossChallenge?.title ?? getString(metadata.bossTitle, worldOne.bossTitle),
+    bossTitle: bossChallenge?.title ?? getString(metadata.bossTitle, staticWorld.bossTitle),
     bossDescription:
-      bossChallenge?.description ?? getString(metadata.bossDescription, worldOne.bossDescription),
+      bossChallenge?.description ?? getString(metadata.bossDescription, staticWorld.bossDescription),
     dailyChallengeTitle:
-      dailyChallenge?.title ?? getString(metadata.dailyChallengeTitle, worldOne.dailyChallengeTitle),
+      dailyChallenge?.title ?? getString(metadata.dailyChallengeTitle, staticWorld.dailyChallengeTitle),
     dailyChallengeDescription:
       dailyChallenge?.description ??
-      getString(metadata.dailyChallengeDescription, worldOne.dailyChallengeDescription),
+      getString(metadata.dailyChallengeDescription, staticWorld.dailyChallengeDescription),
     stages,
     lessons,
   };
+}
+
+function mergeDatabaseAndStaticWorlds(databaseWorlds: World[]) {
+  const databaseWorldIds = new Set(databaseWorlds.map((world) => world.id));
+  const missingStaticWorlds = worlds.filter((world) => !databaseWorldIds.has(world.id));
+
+  return [...databaseWorlds, ...missingStaticWorlds].sort((left, right) => left.number - right.number);
 }
 
 function asRecord(value: unknown): JsonRecord {

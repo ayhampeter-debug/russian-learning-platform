@@ -1,5 +1,5 @@
 import { Navigation } from "@/components/Navigation";
-import { worldOne } from "@/lib/learning-data";
+import { worldOne, worlds } from "@/lib/learning-data";
 import { getLessonContent } from "@/lib/lesson-content";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -12,7 +12,7 @@ type LessonPageProps = {
 };
 
 export function generateStaticParams() {
-  return worldOne.lessons.map((lesson) => ({
+  return worlds.flatMap((world) => world.lessons).map((lesson) => ({
     lessonId: lesson.id,
   }));
 }
@@ -42,7 +42,7 @@ function LessonNotFound({ lessonId }: { lessonId: string }) {
             We could not find that lesson.
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
-            No World 1 lesson matches &quot;{lessonId}&quot;. Choose an available stage
+            No lesson matches &quot;{lessonId}&quot;. Choose an available stage
             from the worlds map and keep going.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">

@@ -3,7 +3,7 @@ import "server-only";
 import { logContentFallback } from "@/lib/content-fallback-log";
 import { getPrismaClient } from "@/lib/prisma";
 import {
-  worldOne,
+  worlds,
   type Lesson,
   type LessonExercise,
   type LessonStatus,
@@ -85,7 +85,9 @@ export async function getLessonContent(lessonId: string): Promise<LessonContentR
 export function getStaticLessonContent(lessonId: string): LessonContentResult {
   return {
     source: "static",
-    lesson: worldOne.lessons.find((lesson) => lesson.id === lessonId) ?? null,
+    lesson:
+      worlds.flatMap((world) => world.lessons).find((lesson) => lesson.id === lessonId) ??
+      null,
   };
 }
 

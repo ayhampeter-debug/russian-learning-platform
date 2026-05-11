@@ -6,8 +6,12 @@ import {
   challengeSettings,
   lessonQuestions,
   worldOne,
+  worlds,
+  worldTwoChallengeQuestions,
+  worldTwoChallengeSettings,
   type ChallengeQuestion,
   type LessonExercise,
+  type World,
 } from "../lib/learning-data.ts";
 
 type RawSql = {
@@ -27,128 +31,9 @@ const lines: string[] = [
   "",
 ];
 
-addInsert(
-  "World",
-  {
-    id: contentId("world", worldOne.id),
-    slug: worldOne.id,
-    number: worldOne.number,
-    title: worldOne.title,
-    subtitle: worldOne.subtitle,
-    description: worldOne.description,
-    xpReward: worldOne.xp,
-    status: contentStatus,
-    metadata: json({
-      bossTitle: worldOne.bossTitle,
-      bossDescription: worldOne.bossDescription,
-      dailyChallengeTitle: worldOne.dailyChallengeTitle,
-      dailyChallengeDescription: worldOne.dailyChallengeDescription,
-      progressPercent: worldOne.progressPercent,
-      profileProgressPercent: worldOne.profileProgressPercent,
-      dashboardProgressPercent: worldOne.dashboardProgressPercent,
-    }),
-  },
-  ["slug"],
-  ["number", "title", "subtitle", "description", "xpReward", "status", "metadata"],
-);
-
-for (const [index, stageData] of worldOne.stages.entries()) {
-  const stageNumber = Number.parseInt(stageData.number, 10);
-
-  addInsert(
-    "Stage",
-    {
-      id: contentId("stage", worldOne.id, stageData.id),
-      worldId: selectWorldId(worldOne.id),
-      slug: stageData.id,
-      number: Number.isNaN(stageNumber) ? index + 1 : stageNumber,
-      title: stageData.title,
-      description: stageData.description,
-      xpReward: stageData.xp,
-      status: contentStatus,
-      isBossStage: stageData.boss ?? false,
-      metadata: json({
-        displayNumber: stageData.number,
-        learningStatus: stageData.status,
-        locked: stageData.locked ?? false,
-      }),
-    },
-    ["worldId", "slug"],
-    ["number", "title", "description", "xpReward", "status", "isBossStage", "metadata"],
-  );
+for (const world of worlds) {
+  seedWorld(world);
 }
-
-for (const lessonData of worldOne.lessons) {
-  addInsert(
-    "Lesson",
-    {
-      id: contentId("lesson", worldOne.id, lessonData.id),
-      worldId: selectWorldId(worldOne.id),
-      stageId: selectStageId(worldOne.id, lessonData.stageId),
-      slug: lessonData.id,
-      number: Number.parseInt(lessonData.number, 10),
-      title: lessonData.title,
-      description: lessonData.description,
-      xpReward: lessonData.xpReward,
-      status: contentStatus,
-      vocabulary: json(lessonData.vocabulary),
-      metadata: json({
-        learningStatus: lessonData.status,
-        xp: lessonData.xp,
-        locked: lessonData.locked ?? false,
-      }),
-    },
-    ["worldId", "slug"],
-    ["stageId", "number", "title", "description", "xpReward", "status", "vocabulary", "metadata"],
-  );
-
-  for (const [exerciseIndex, exercise] of lessonData.exercises.entries()) {
-    addInsert(
-      "Exercise",
-      {
-        id: contentId("exercise", lessonData.id, exercise.id),
-        lessonId: selectLessonId(worldOne.id, lessonData.id),
-        slug: exercise.id,
-        type: exercise.type,
-        prompt: exercise.prompt,
-        content: json(getExerciseContent(exercise)),
-        answerKey: json(getExerciseAnswerKey(exercise)),
-        explanation: exercise.explanation,
-        points: exercise.points,
-        order: exerciseIndex + 1,
-        status: contentStatus,
-      },
-      ["lessonId", "slug"],
-      ["type", "prompt", "content", "answerKey", "explanation", "points", "order", "status"],
-    );
-  }
-}
-
-addInsert(
-  "Challenge",
-  {
-    id: contentId("challenge", worldOne.id, "world-1-boss"),
-    worldId: selectWorldId(worldOne.id),
-    stageId: selectStageId(worldOne.id, "boss-level"),
-    slug: "world-1-boss",
-    title: worldOne.bossTitle,
-    description: worldOne.bossDescription,
-    type: "boss",
-    xpReward: Math.round(totalChallengePoints(challengeQuestions) / 10),
-    passScore: challengeSettings.passScore,
-    content: json({
-      questions: challengeQuestions,
-      settings: challengeSettings,
-    }),
-    status: contentStatus,
-    metadata: json({
-      source: "challengeQuestions",
-      startingHearts: challengeSettings.startingHearts,
-    }),
-  },
-  ["worldId", "slug"],
-  ["stageId", "title", "description", "type", "xpReward", "passScore", "content", "status", "metadata"],
-);
 
 addInsert(
   "Challenge",
@@ -199,6 +84,147 @@ lines.push("COMMIT;", "");
 writeFileSync(outputFile, lines.join("\n"), "utf8");
 
 console.log(`Generated ${outputFile}`);
+
+function seedWorld(world: World) {
+  addInsert(
+    "World",
+    {
+      id: contentId("world", world.id),
+      slug: world.id,
+      number: world.number,
+      title: world.title,
+      subtitle: world.subtitle,
+      description: world.description,
+      xpReward: world.xp,
+      status: contentStatus,
+      metadata: json({
+        bossTitle: world.bossTitle,
+        bossDescription: world.bossDescription,
+        dailyChallengeTitle: world.dailyChallengeTitle,
+        dailyChallengeDescription: world.dailyChallengeDescription,
+        progressPercent: world.progressPercent,
+        profileProgressPercent: world.profileProgressPercent,
+        dashboardProgressPercent: world.dashboardProgressPercent,
+      }),
+    },
+    ["slug"],
+    ["number", "title", "subtitle", "description", "xpReward", "status", "metadata"],
+  );
+
+  for (const [index, stageData] of world.stages.entries()) {
+    const stageNumber = Number.parseInt(stageData.number, 10);
+
+    addInsert(
+      "Stage",
+      {
+        id: contentId("stage", world.id, stageData.id),
+        worldId: selectWorldId(world.id),
+        slug: stageData.id,
+        number: Number.isNaN(stageNumber) ? index + 1 : stageNumber,
+        title: stageData.title,
+        description: stageData.description,
+        xpReward: stageData.xp,
+        status: contentStatus,
+        isBossStage: stageData.boss ?? false,
+        metadata: json({
+          displayNumber: stageData.number,
+          learningStatus: stageData.status,
+          locked: stageData.locked ?? false,
+        }),
+      },
+      ["worldId", "slug"],
+      ["number", "title", "description", "xpReward", "status", "isBossStage", "metadata"],
+    );
+  }
+
+  for (const lessonData of world.lessons) {
+    addInsert(
+      "Lesson",
+      {
+        id: contentId("lesson", world.id, lessonData.id),
+        worldId: selectWorldId(world.id),
+        stageId: selectStageId(world.id, lessonData.stageId),
+        slug: lessonData.id,
+        number: Number.parseInt(lessonData.number, 10),
+        title: lessonData.title,
+        description: lessonData.description,
+        xpReward: lessonData.xpReward,
+        status: contentStatus,
+        vocabulary: json(lessonData.vocabulary),
+        metadata: json({
+          learningStatus: lessonData.status,
+          xp: lessonData.xp,
+          locked: lessonData.locked ?? false,
+        }),
+      },
+      ["worldId", "slug"],
+      ["stageId", "number", "title", "description", "xpReward", "status", "vocabulary", "metadata"],
+    );
+
+    for (const [exerciseIndex, exercise] of lessonData.exercises.entries()) {
+      addInsert(
+        "Exercise",
+        {
+          id: contentId("exercise", lessonData.id, exercise.id),
+          lessonId: selectLessonId(world.id, lessonData.id),
+          slug: exercise.id,
+          type: exercise.type,
+          prompt: exercise.prompt,
+          content: json(getExerciseContent(exercise)),
+          answerKey: json(getExerciseAnswerKey(exercise)),
+          explanation: exercise.explanation,
+          points: exercise.points,
+          order: exerciseIndex + 1,
+          status: contentStatus,
+        },
+        ["lessonId", "slug"],
+        ["type", "prompt", "content", "answerKey", "explanation", "points", "order", "status"],
+      );
+    }
+  }
+
+  const bossChallenge = getBossChallengeSeed(world);
+
+  addInsert(
+    "Challenge",
+    {
+      id: contentId("challenge", world.id, `${world.id}-boss`),
+      worldId: selectWorldId(world.id),
+      stageId: selectStageId(world.id, world.stages.find((stage) => stage.boss)?.id ?? ""),
+      slug: `${world.id}-boss`,
+      title: world.bossTitle,
+      description: world.bossDescription,
+      type: "boss",
+      xpReward: Math.round(totalChallengePoints(bossChallenge.questions) / 10),
+      passScore: bossChallenge.settings.passScore,
+      content: json({
+        questions: bossChallenge.questions,
+        settings: bossChallenge.settings,
+      }),
+      status: contentStatus,
+      metadata: json({
+        source: `${world.id}-challengeQuestions`,
+        startingHearts: bossChallenge.settings.startingHearts,
+      }),
+    },
+    ["worldId", "slug"],
+    ["stageId", "title", "description", "type", "xpReward", "passScore", "content", "status", "metadata"],
+  );
+}
+
+function getBossChallengeSeed(world: World) {
+  if (world.id === "world-2") {
+    return {
+      questions: worldTwoChallengeQuestions,
+      settings: worldTwoChallengeSettings,
+    };
+  }
+
+  return {
+    questions: challengeQuestions,
+    settings: challengeSettings,
+  };
+}
 
 function addInsert(
   table: string,

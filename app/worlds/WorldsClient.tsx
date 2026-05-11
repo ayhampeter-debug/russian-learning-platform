@@ -5,14 +5,14 @@ import type { StageStatus, World } from "@/lib/learning-data";
 import {
   getLessonDisplayState,
   getProgressStatusLabel,
+  isWorldUnlocked,
   type SavedProgress,
   useProgress,
 } from "@/lib/progress-storage";
 import Link from "next/link";
 
-export function WorldsClient({ world }: { world: World }) {
+export function WorldsClient({ worlds }: { worlds: World[] }) {
   const progress = useProgress();
-  const summary = getWorldProgressSummary(world, progress);
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
@@ -27,51 +27,74 @@ export function WorldsClient({ world }: { world: World }) {
           </p>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
-          <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
-            <div>
-              <p className="text-sm text-slate-400">World {world.number}</p>
-              <h2 className="text-2xl font-bold sm:text-3xl">{world.title}</h2>
-              <p className="mt-2 text-slate-400">{world.description}</p>
-            </div>
+        <div className="space-y-8">
+          {worlds.map((world) => {
+            const summary = getWorldProgressSummary(world, progress);
+            const worldUnlocked = isWorldUnlocked(world, progress);
 
-            <div className="w-fit rounded-full bg-yellow-400 px-5 py-2 font-bold text-slate-950">
-              {summary.currentWorldProgressPercent}% Complete
-            </div>
-          </div>
+            return (
+              <div
+                key={world.id}
+                className={`rounded-2xl border p-4 sm:rounded-3xl sm:p-6 ${
+                  worldUnlocked
+                    ? "border-white/10 bg-white/10"
+                    : "border-white/5 bg-slate-900/60"
+                }`}
+              >
+                <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                  <div>
+                    <p className="text-sm text-slate-400">World {world.number}</p>
+                    <h2 className="text-2xl font-bold sm:text-3xl">{world.title}</h2>
+                    <p className="mt-2 max-w-3xl text-slate-400">{world.description}</p>
+                    {!worldUnlocked ? (
+                      <p className="mt-3 text-sm font-semibold text-yellow-200">
+                        Locked until World 1 is completed or the World 1 boss is passed.
+                      </p>
+                    ) : null}
+                  </div>
 
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {world.stages.map((stage) => {
-              const stageState = getWorldStageProgressState(world, stage.id, progress);
-              const lessonId = getNextWorldStageLessonId(world, stage.id, progress);
-              const stageLessons = world.lessons.filter((lesson) => lesson.stageId === stage.id);
-              const completedLessonCount = stageLessons.filter((lesson) =>
-                progress.completedLessonIds.includes(lesson.id),
-              ).length;
+                  <div className="w-fit rounded-full bg-yellow-400 px-5 py-2 font-bold text-slate-950">
+                    {summary.currentWorldProgressPercent}% Complete
+                  </div>
+                </div>
 
-              return (
-                <StageCard
-                  key={stage.id}
-                  number={stage.number}
-                  title={stage.title}
-                  description={stage.description}
-                  status={stageState.status}
-                  statusLabel={getProgressStatusLabel(stageState.status)}
-                  locked={stageState.locked}
-                  xp={`${stage.xp} XP`}
-                  boss={stage.boss}
-                  lessonId={lessonId}
-                  completedLessonCount={completedLessonCount}
-                  lessonCount={stageLessons.length}
-                  lessons={stageLessons.map((lesson) => ({
-                    id: lesson.id,
-                    title: lesson.title,
-                    state: getLessonDisplayState(lesson, progress),
-                  }))}
-                />
-              );
-            })}
-          </div>
+                <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                  {world.stages.map((stage) => {
+                    const stageState = getWorldStageProgressState(world, stage.id, progress);
+                    const lessonId = getNextWorldStageLessonId(world, stage.id, progress);
+                    const stageLessons = world.lessons.filter((lesson) => lesson.stageId === stage.id);
+                    const completedLessonCount = stageLessons.filter((lesson) =>
+                      progress.completedLessonIds.includes(lesson.id),
+                    ).length;
+                    const locked = !worldUnlocked || stageState.locked;
+
+                    return (
+                      <StageCard
+                        key={stage.id}
+                        worldId={world.id}
+                        number={stage.number}
+                        title={stage.title}
+                        description={stage.description}
+                        status={locked ? "Locked" : stageState.status}
+                        statusLabel={getProgressStatusLabel(locked ? "Locked" : stageState.status)}
+                        locked={locked}
+                        xp={`${stage.xp} XP`}
+                        boss={stage.boss}
+                        lessonId={lessonId}
+                        completedLessonCount={completedLessonCount}
+                        lessonCount={stageLessons.length}
+                        lessons={stageLessons.map((lesson) => ({
+                          id: lesson.id,
+                          title: lesson.title,
+                          state: !worldUnlocked ? "Locked" : getLessonDisplayState(lesson, progress),
+                        }))}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
     </main>
@@ -105,7 +128,9 @@ function getWorldStageProgressState(world: World, stageId: string, progress: Sav
   const unlockedLessons = new Set(getUnlockedWorldLessonIds(world, progress.completedLessonIds));
 
   if (stage?.boss) {
-    if (progress.completedChallengeIds.includes("world-1-boss")) {
+    const bossChallengeId = `${world.id}-boss`;
+
+    if (progress.completedChallengeIds.includes(bossChallengeId)) {
       return { status: "Completed" as StageStatus, locked: false };
     }
 
@@ -143,7 +168,7 @@ function getWorldProgressSummary(world: World, progress: SavedProgress) {
   const completedWorldLessons = world.lessons.filter((lesson) =>
     progress.completedLessonIds.includes(lesson.id),
   );
-  const bossCompleted = progress.completedChallengeIds.includes("world-1-boss");
+  const bossCompleted = progress.completedChallengeIds.includes(`${world.id}-boss`);
   const totalSteps = world.lessons.length + 1;
   const clearedSteps = completedWorldLessons.length + (bossCompleted ? 1 : 0);
 
@@ -153,6 +178,7 @@ function getWorldProgressSummary(world: World, progress: SavedProgress) {
 }
 
 function StageCard({
+  worldId,
   number,
   title,
   description,
@@ -166,6 +192,7 @@ function StageCard({
   lessonCount,
   lessons,
 }: {
+  worldId: string;
   number: string;
   title: string;
   description: string;
@@ -179,7 +206,7 @@ function StageCard({
   lessonCount: number;
   lessons: { id: string; title: string; state: "Completed" | "Current" | "Available" | "Locked" }[];
 }) {
-  const href = boss ? "/challenge" : lessonId ? `/lesson/${lessonId}` : undefined;
+  const href = boss ? (worldId === "world-1" ? "/challenge" : undefined) : lessonId ? `/lesson/${lessonId}` : undefined;
   const isCompleted = status === "Completed";
   const isAvailable = statusLabel === "Available";
   const actionLabel = isCompleted
@@ -252,7 +279,7 @@ function StageCard({
             disabled
             className="w-full cursor-not-allowed rounded-full border border-white/5 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-500 sm:w-auto"
           >
-            🔒 Locked
+            {boss && !locked ? "Coming Soon" : "🔒 Locked"}
           </button>
         ) : (
           <Link
