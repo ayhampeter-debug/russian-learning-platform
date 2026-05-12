@@ -74,12 +74,12 @@ export default function Home() {
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 pb-16 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:gap-14 lg:pb-24">
         <div>
           <p className="inline-flex max-w-full rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-200">
-            YazkUp is a gamified language learning platform
+            YazkUp language quests are live
           </p>
 
           <h1 className="mt-6 max-w-4xl text-3xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            Level up your language skills through quests, XP, worlds, and daily
-            progress.
+            YazkUp turns language practice into premium quests, XP, worlds, and
+            daily progress.
           </h1>
 
           <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
@@ -132,7 +132,7 @@ export default function Home() {
         <WorldPreview />
       </section>
 
-      <section className="border-y border-white/10 bg-slate-900/60">
+      <section className="border-y border-cyan-400/10 bg-slate-900/60">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-20">
           <SectionHeading
             eyebrow="How it works"
@@ -402,7 +402,7 @@ function LessonCard({
     <div
       className={`flex items-start gap-3 rounded-lg border p-4 ${
         locked
-          ? "border-white/5 bg-slate-900/50 opacity-60"
+          ? "border-white/5 bg-slate-900/50 text-slate-400"
           : "border-white/10 bg-slate-900/80"
       }`}
     >

@@ -75,18 +75,21 @@ export default function DashboardPage() {
             value={progress.totalXp.toLocaleString()}
             icon="XP"
             label="Total experience points"
+            tone="xp"
           />
           <StatCard
             title="Lessons Done"
             value={`${summary.totalCompletedLessons}/${worlds.flatMap((world) => world.lessons).length}`}
             icon="OK"
             label="Total lessons completed"
+            tone="success"
           />
           <StatCard
             title="Hearts"
             value={progress.hearts.toString()}
             icon="HP"
             label="Mistakes you can absorb"
+            tone="danger"
           />
           <StatCard
             title="Streak"
@@ -97,6 +100,7 @@ export default function DashboardPage() {
                 ? "Days practiced in a row"
                 : "Daily streak coming soon"
             }
+            tone="primary"
           />
         </div>
 
@@ -234,16 +238,25 @@ function StatCard({
   value,
   icon,
   label,
+  tone,
 }: {
   title: string;
   value: string;
   icon: string;
   label: string;
+  tone: "primary" | "xp" | "success" | "danger";
 }) {
+  const toneClass = {
+    primary: "border-cyan-400/20 bg-cyan-400/10 text-cyan-300",
+    xp: "border-yellow-400/25 bg-yellow-400/10 text-yellow-300",
+    success: "border-green-400/25 bg-green-400/10 text-green-300",
+    danger: "border-red-400/25 bg-red-400/10 text-red-300",
+  }[tone];
+
   return (
     <div className="min-w-0 rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
       <div className="flex items-center gap-3">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-900 text-sm font-black tracking-wide text-cyan-300">
+        <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-sm font-black tracking-wide ${toneClass}`}>
           {icon}
         </span>
         <div className="min-w-0">
@@ -271,7 +284,7 @@ function LessonMiniCard({
     <div
       className={`min-w-0 rounded-2xl border p-4 ${
         locked
-          ? "border-white/5 bg-slate-900/40 opacity-60"
+          ? "border-white/5 bg-slate-900/40 text-slate-400"
           : current
             ? "border-cyan-400/40 bg-cyan-400/10"
             : "border-white/10 bg-slate-900/70"

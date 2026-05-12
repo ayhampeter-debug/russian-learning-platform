@@ -41,9 +41,18 @@ export default function LoginPage() {
               signUpUrl="/signup"
               fallbackRedirectUrl="/dashboard"
               appearance={{
+                variables: {
+                  colorPrimary: "var(--app-primary)",
+                  colorBackground: "var(--app-surface)",
+                  colorText: "var(--app-text)",
+                  colorTextSecondary: "var(--app-text-muted)",
+                  colorInputBackground: "var(--app-surface-muted)",
+                  colorInputText: "var(--app-text)",
+                },
                 elements: {
                   rootBox: "w-full",
-                  cardBox: "mx-auto w-full max-w-md",
+                  cardBox: "mx-auto w-full max-w-md border border-white/10 shadow-2xl",
+                  footerActionLink: "font-bold",
                 },
               }}
             />

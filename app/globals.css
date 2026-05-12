@@ -3,9 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --app-bg: #f8fafc;
+  --app-bg: #f8fbff;
   --app-surface: rgb(255 255 255 / 0.9);
-  --app-surface-muted: rgb(241 245 249 / 0.9);
+  --app-surface-muted: rgb(239 246 255 / 0.9);
   --app-surface-strong: rgb(226 232 240 / 0.95);
   --app-border: rgb(15 23 42 / 0.12);
   --app-border-muted: rgb(15 23 42 / 0.08);
@@ -13,6 +13,19 @@
   --app-text-soft: #334155;
   --app-text-muted: #64748b;
   --app-text-faint: #94a3b8;
+  --app-primary: #0891b2;
+  --app-primary-strong: #0e7490;
+  --app-primary-soft: rgb(8 145 178 / 0.12);
+  --app-secondary: #4f46e5;
+  --app-secondary-soft: rgb(79 70 229 / 0.12);
+  --app-xp: #ca8a04;
+  --app-xp-soft: rgb(202 138 4 / 0.14);
+  --app-success: #15803d;
+  --app-success-soft: rgb(21 128 61 / 0.12);
+  --app-danger: #dc2626;
+  --app-danger-soft: rgb(220 38 38 / 0.12);
+  --app-locked: #475569;
+  --app-locked-soft: rgb(100 116 139 / 0.14);
   --app-shadow-cyan: rgb(8 145 178 / 0.12);
 }
 
@@ -26,7 +39,7 @@
 :root[data-theme="dark"] {
   --background: #0a0a0a;
   --foreground: #ededed;
-  --app-bg: #020617;
+  --app-bg: #020817;
   --app-surface: rgb(255 255 255 / 0.1);
   --app-surface-muted: rgb(15 23 42 / 0.8);
   --app-surface-strong: rgb(30 41 59 / 1);
@@ -36,13 +49,31 @@
   --app-text-soft: #cbd5e1;
   --app-text-muted: #94a3b8;
   --app-text-faint: #64748b;
+  --app-primary: #22d3ee;
+  --app-primary-strong: #67e8f9;
+  --app-primary-soft: rgb(34 211 238 / 0.12);
+  --app-secondary: #a78bfa;
+  --app-secondary-soft: rgb(167 139 250 / 0.14);
+  --app-xp: #facc15;
+  --app-xp-soft: rgb(250 204 21 / 0.14);
+  --app-success: #4ade80;
+  --app-success-soft: rgb(74 222 128 / 0.14);
+  --app-danger: #f87171;
+  --app-danger-soft: rgb(248 113 113 / 0.14);
+  --app-locked: #94a3b8;
+  --app-locked-soft: rgb(100 116 139 / 0.18);
   --app-shadow-cyan: rgb(8 47 73 / 0.3);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--app-bg);
+  color: var(--app-text);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: var(--app-primary-soft);
+  color: var(--app-text);
 }
 
 :root[data-theme="light"] .bg-slate-950,
@@ -63,16 +94,19 @@ body {
 }
 
 :root[data-theme="light"] .bg-white,
-:root[data-theme="light"] .bg-white\/10 {
+:root[data-theme="light"] .bg-white\/10,
+:root[data-theme="light"] .bg-white\/5 {
   background-color: var(--app-surface);
 }
 
 :root[data-theme="light"] .border-white\/20,
+:root[data-theme="light"] .border-white\/15,
 :root[data-theme="light"] .border-white\/10 {
   border-color: var(--app-border);
 }
 
-:root[data-theme="light"] .border-white\/5 {
+:root[data-theme="light"] .border-white\/5,
+:root[data-theme="light"] .hover\:border-white\/30:hover {
   border-color: var(--app-border-muted);
 }
 
@@ -90,6 +124,39 @@ body {
 :root[data-theme="light"] .text-slate-500,
 :root[data-theme="light"] .text-slate-600 {
   color: var(--app-text-muted);
+}
+
+:root[data-theme="light"] .text-cyan-100,
+:root[data-theme="light"] .text-cyan-200,
+:root[data-theme="light"] .text-cyan-300 {
+  color: var(--app-primary-strong);
+}
+
+:root[data-theme="light"] .text-yellow-200,
+:root[data-theme="light"] .text-yellow-300 {
+  color: var(--app-xp);
+}
+
+:root[data-theme="light"] .text-red-200,
+:root[data-theme="light"] .text-red-300 {
+  color: var(--app-danger);
+}
+
+:root[data-theme="light"] .text-green-200,
+:root[data-theme="light"] .text-green-300,
+:root[data-theme="light"] .text-emerald-200,
+:root[data-theme="light"] .text-emerald-300 {
+  color: var(--app-success);
+}
+
+:root[data-theme="light"] .text-violet-200,
+:root[data-theme="light"] .text-violet-300 {
+  color: var(--app-secondary);
+}
+
+:root[data-theme="light"] .text-orange-200,
+:root[data-theme="light"] .text-orange-300 {
+  color: #c2410c;
 }
 
 :root[data-theme="light"] .placeholder\:text-slate-600::placeholder {
@@ -110,5 +177,10 @@ body {
 }
 
 :root[data-theme="light"] .hover\:text-white:hover {
+  color: var(--app-text);
+}
+
+:root[data-theme="light"] .cl-card,
+:root[data-theme="light"] .cl-cardBox {
   color: var(--app-text);
 }

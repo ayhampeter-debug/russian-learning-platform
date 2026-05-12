@@ -209,7 +209,7 @@ function StageCard({
     <div
       className={`min-w-0 rounded-2xl border p-4 transition sm:rounded-3xl sm:p-6 ${
         locked
-          ? "border-white/5 bg-slate-900/45 opacity-60"
+          ? "border-white/5 bg-slate-900/45 text-slate-400"
           : isCompleted
             ? "border-green-400/30 bg-green-400/10"
             : boss
