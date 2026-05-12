@@ -16,8 +16,26 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "YazkUp - Gamified Language Learning",
-  description: "Learn languages through quests, levels, XP, and daily progress.",
+  title: {
+    default: "YazkUp - Gamified Language Learning",
+    template: "%s | YazkUp",
+  },
+  description:
+    "YazkUp helps learners build daily language momentum with quests, XP, worlds, and saved progress.",
+  applicationName: "YazkUp",
+  openGraph: {
+    title: "YazkUp - Gamified Language Learning",
+    description:
+      "Practice languages through short quests, boss challenges, XP, and clear next steps.",
+    siteName: "YazkUp",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "YazkUp - Gamified Language Learning",
+    description:
+      "Practice languages through short quests, boss challenges, XP, and clear next steps.",
+  },
 };
 
 const themeScript = `

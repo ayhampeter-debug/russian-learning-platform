@@ -19,13 +19,13 @@ export async function POST(request: Request) {
     });
 
     if (!progress) {
-      return Response.json({ signedIn: false, source: "local", progress: null }, { status: 401 });
+      return Response.json({ signedIn: false, source: "local", progress: null });
     }
 
     return Response.json({ signedIn: true, source: "database", progress });
   } catch {
     console.warn("Progress save skipped: lesson completion could not be saved.");
 
-    return Response.json({ error: "Lesson progress could not be saved." }, { status: 503 });
+    return Response.json({ signedIn: true, source: "local", progress: null });
   }
 }

@@ -206,6 +206,7 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
                   {getNextAvailableLabel(completionProgress ?? progressState)}
                 </Link>
                 <button
+                  type="button"
                   onClick={handleRestart}
                   className="inline-flex flex-1 justify-center rounded-full border border-white/10 bg-white/10 px-7 py-4 font-bold text-white transition hover:border-white/30 hover:bg-white/15"
                 >
@@ -301,8 +302,10 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
             )}
 
             <button
+              type="button"
               onClick={handleNext}
               disabled={!isAnswered}
+              aria-disabled={!isAnswered}
               className={`mt-8 w-full rounded-full px-6 py-4 font-bold transition ${
                 isAnswered
                   ? "bg-cyan-400 text-slate-950 hover:bg-cyan-300"
@@ -471,6 +474,7 @@ function ExerciseView({
               selectedWords.map((selectedWord) => (
                 <div key={selectedWord.index} className="flex items-center gap-2">
                   <button
+                    type="button"
                     onClick={() => onWordRemove(selectedWord.index)}
                     className="max-w-full break-words rounded-2xl bg-violet-300 px-3 py-2 font-black text-slate-950 transition hover:bg-violet-200 sm:px-4 sm:py-3"
                   >
@@ -490,8 +494,10 @@ function ExerciseView({
             return (
               <div key={`${word}-${wordIndex}`} className="flex items-center gap-2">
                 <button
+                  type="button"
                   onClick={() => onWordClick(wordIndex)}
                   disabled={wasSelected || isAnswered}
+                  aria-disabled={wasSelected || isAnswered}
                   className={`max-w-full break-words rounded-2xl border px-3 py-3 font-bold transition sm:px-5 sm:py-4 ${
                     wasSelected
                       ? "border-slate-800 bg-slate-800 text-slate-600"
@@ -507,8 +513,10 @@ function ExerciseView({
         </div>
 
         <button
+          type="button"
           onClick={() => onSentenceSubmit(exercise)}
           disabled={isAnswered || selectedWordIndexes.length !== exercise.words.length}
+          aria-disabled={isAnswered || selectedWordIndexes.length !== exercise.words.length}
           className={`mt-6 w-full rounded-full px-6 py-4 font-bold transition ${
             !isAnswered && selectedWordIndexes.length === exercise.words.length
               ? "bg-violet-300 text-slate-950 hover:bg-violet-200"
@@ -529,8 +537,10 @@ function ExerciseView({
             {exercise.pairs.map((pair) => (
               <div key={pair.russian} className="flex items-center gap-2">
                 <button
+                  type="button"
                   onClick={() => onRussianMatchSelect(pair.russian)}
                   disabled={isAnswered}
+                  aria-disabled={isAnswered}
                     className={`min-w-0 flex-1 rounded-2xl border p-3 text-left transition sm:p-4 ${
                     selectedRussian === pair.russian
                       ? "border-emerald-300 bg-emerald-300/20"
@@ -552,9 +562,11 @@ function ExerciseView({
           <div className="space-y-3">
             {exercise.englishOptions.map((english) => (
               <button
+                type="button"
                 key={english}
                 onClick={() => onEnglishMatchSelect(english)}
                 disabled={isAnswered}
+                aria-disabled={isAnswered}
                 className={`w-full rounded-2xl border p-3 text-left font-bold transition sm:p-4 ${
                   selectedEnglish === english
                     ? "border-cyan-300 bg-cyan-300/20"
@@ -568,8 +580,10 @@ function ExerciseView({
         </div>
 
         <button
+          type="button"
           onClick={() => onMatchingSubmit(exercise)}
           disabled={isAnswered || Object.keys(matchingAnswers).length !== exercise.pairs.length}
+          aria-disabled={isAnswered || Object.keys(matchingAnswers).length !== exercise.pairs.length}
           className={`mt-6 w-full rounded-full px-6 py-4 font-bold transition ${
             !isAnswered && Object.keys(matchingAnswers).length === exercise.pairs.length
               ? "bg-emerald-300 text-slate-950 hover:bg-emerald-200"
@@ -632,8 +646,10 @@ function ChoiceGrid({
         return (
           <div key={option} className="flex min-w-0 items-center gap-2">
             <button
+              type="button"
               onClick={() => onSelect(option)}
               disabled={isAnswered}
+              aria-disabled={isAnswered}
               className={`min-w-0 flex-1 break-words rounded-2xl border p-4 text-left font-semibold transition sm:p-5 ${buttonStyle}`}
             >
               {normalizeRussianText(option)}

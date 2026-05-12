@@ -1,6 +1,6 @@
 import "server-only";
 
-import { logContentFallback } from "@/lib/content-fallback-log";
+import { logContentFallback, withContentFallbackTimeout } from "@/lib/content-fallback-log";
 import { getPrismaClient } from "@/lib/prisma";
 import { worldOne, worlds, type Lesson, type Stage, type StageStatus, type World } from "@/lib/learning-data";
 
@@ -66,24 +66,27 @@ export async function getWorldOneContent(): Promise<WorldContentResult> {
 
 export async function getWorldsContent(): Promise<WorldsContentResult> {
   try {
-    const databaseWorlds = await getPrismaClient().world.findMany({
-      where: { status: "PUBLISHED" },
-      orderBy: { number: "asc" },
-      include: {
-        stages: {
-          where: { status: "PUBLISHED" },
-          orderBy: { number: "asc" },
+    const databaseWorlds = await withContentFallbackTimeout(
+      getPrismaClient().world.findMany({
+        where: { status: "PUBLISHED" },
+        orderBy: { number: "asc" },
+        include: {
+          stages: {
+            where: { status: "PUBLISHED" },
+            orderBy: { number: "asc" },
+          },
+          lessons: {
+            where: { status: "PUBLISHED" },
+            orderBy: { number: "asc" },
+          },
+          challenges: {
+            where: { status: "PUBLISHED" },
+            orderBy: { createdAt: "asc" },
+          },
         },
-        lessons: {
-          where: { status: "PUBLISHED" },
-          orderBy: { number: "asc" },
-        },
-        challenges: {
-          where: { status: "PUBLISHED" },
-          orderBy: { createdAt: "asc" },
-        },
-      },
-    });
+      }),
+      "World content load",
+    );
 
     if (databaseWorlds.length === 0) {
       logContentFallback("Falling back to static worlds content.", {

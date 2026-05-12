@@ -12,9 +12,6 @@ export async function GET() {
   } catch {
     console.warn("Progress load skipped: database progress could not be loaded.");
 
-    return Response.json(
-      { signedIn: true, source: "local", progress: null },
-      { status: 503 },
-    );
+    return Response.json({ signedIn: true, source: "local", progress: null });
   }
 }

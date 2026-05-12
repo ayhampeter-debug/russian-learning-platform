@@ -368,6 +368,7 @@ export default function ChallengePage() {
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <button
+                  type="button"
                   onClick={handleRetry}
                   className="inline-flex flex-1 justify-center rounded-full bg-yellow-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-yellow-300"
                 >
@@ -523,8 +524,10 @@ export default function ChallengePage() {
             )}
 
             <button
+              type="button"
               onClick={handleNext}
               disabled={!isAnswered}
+              aria-disabled={!isAnswered}
               className={`mt-8 w-full rounded-full px-6 py-4 font-bold transition ${
                 isAnswered
                   ? "bg-yellow-400 text-slate-950 hover:bg-yellow-300"
@@ -625,6 +628,7 @@ function BossGate({
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <button
+              type="button"
               onClick={onStart}
               className="w-full rounded-full bg-yellow-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-yellow-300 sm:w-auto"
             >
@@ -780,8 +784,10 @@ function BossQuestionView({
           placeholder="Type the English answer"
         />
         <button
+          type="button"
           onClick={onTextSubmit}
           disabled={isAnswered || !typedAnswer.trim()}
+          aria-disabled={isAnswered || !typedAnswer.trim()}
           className={`mt-4 w-full rounded-full px-6 py-4 font-bold transition ${
             !isAnswered && typedAnswer.trim()
               ? "bg-cyan-400 text-slate-950 hover:bg-cyan-300"
@@ -816,8 +822,10 @@ function BossQuestionView({
               selectedWords.map((selectedWord) => (
                 <div key={selectedWord.index} className="flex items-center gap-2">
                   <button
+                    type="button"
                     onClick={() => onWordRemove(selectedWord.index)}
                     disabled={isAnswered}
+                    aria-disabled={isAnswered}
                     className="max-w-full break-words rounded-2xl bg-violet-300 px-3 py-2 font-black text-slate-950 transition hover:bg-violet-200 disabled:hover:bg-violet-300 sm:px-4 sm:py-3"
                   >
                     {normalizeRussianText(selectedWord.word)}
@@ -835,8 +843,10 @@ function BossQuestionView({
             return (
               <div key={`${word}-${wordIndex}`} className="flex items-center gap-2">
                 <button
+                  type="button"
                   onClick={() => onWordClick(wordIndex)}
                   disabled={wasSelected || isAnswered}
+                  aria-disabled={wasSelected || isAnswered}
                   className={`max-w-full break-words rounded-2xl border px-3 py-3 font-bold transition sm:px-5 sm:py-4 ${
                     wasSelected
                       ? "border-slate-800 bg-slate-800 text-slate-600"
@@ -851,8 +861,10 @@ function BossQuestionView({
           })}
         </div>
         <button
+          type="button"
           onClick={onSequenceSubmit}
           disabled={isAnswered || selectedWordIndexes.length !== question.words.length}
+          aria-disabled={isAnswered || selectedWordIndexes.length !== question.words.length}
           className={`mt-6 w-full rounded-full px-6 py-4 font-bold transition ${
             !isAnswered && selectedWordIndexes.length === question.words.length
               ? "bg-violet-300 text-slate-950 hover:bg-violet-200"
@@ -919,8 +931,10 @@ function ChoiceGrid({
         return (
           <div key={option} className="flex min-w-0 items-center gap-2">
             <button
+              type="button"
               onClick={() => onSelect(option)}
               disabled={isAnswered}
+              aria-disabled={isAnswered}
               className={`min-w-0 flex-1 break-words rounded-2xl border p-4 text-left font-semibold transition sm:p-5 ${buttonStyle}`}
             >
               {normalizeRussianText(option)}

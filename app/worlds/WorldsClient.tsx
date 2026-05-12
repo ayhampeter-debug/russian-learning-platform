@@ -25,8 +25,8 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
           <p className="text-sm text-cyan-300">Choose your path</p>
           <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Worlds & Stages</h1>
           <p className="mt-3 max-w-2xl text-slate-400">
-            Progress through your current Russian course step by step. Complete
-            lessons, pass boss challenges, and unlock the next stage.
+            Progress through the live course path step by step. Complete
+            lessons, pass boss challenges, and unlock the next stage or world.
           </p>
         </div>
 
@@ -93,6 +93,7 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
                     ) : (
                       <button
                         disabled
+                        aria-disabled="true"
                         className="w-full cursor-not-allowed rounded-full bg-slate-800 px-5 py-2 text-sm font-bold text-slate-500 sm:w-auto"
                       >
                         {ctaLabel}
@@ -229,7 +230,7 @@ function StageCard({
                   : "bg-cyan-400 text-slate-950"
           }`}
         >
-          {locked ? "🔒" : boss ? "★" : isCompleted ? "✓" : number}
+          {locked ? "L" : boss ? "B" : isCompleted ? "OK" : number}
         </div>
 
         <StatusBadge label={badgeLabel} locked={locked} completed={isCompleted} boss={boss} />
@@ -256,9 +257,10 @@ function StageCard({
         {locked || !href ? (
           <button
             disabled
+            aria-disabled="true"
             className="w-full cursor-not-allowed rounded-full border border-white/5 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-500 sm:w-auto"
           >
-            {boss && !locked ? "Coming Soon" : "🔒 Locked"}
+            {boss && !locked ? "Coming Soon" : "Locked"}
           </button>
         ) : (
           <Link

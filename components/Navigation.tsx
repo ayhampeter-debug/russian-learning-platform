@@ -31,7 +31,7 @@ export function Navigation() {
     (href !== "/" && pathname.startsWith(`${href}/`));
 
   return (
-    <nav className="mx-auto mb-5 w-full max-w-7xl px-3 pt-3 sm:mb-8 sm:px-6 sm:pt-5">
+    <nav className="mx-auto mb-5 w-full max-w-7xl px-3 pt-3 sm:mb-8 sm:px-6 sm:pt-5" aria-label="Primary navigation">
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/10 shadow-xl shadow-cyan-950/20 backdrop-blur">
         <div className="flex h-14 min-w-0 items-center justify-between gap-3 px-3 sm:px-4">
           <Link

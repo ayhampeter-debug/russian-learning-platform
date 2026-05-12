@@ -313,7 +313,7 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
               <div className="min-w-0">
                 <h2 className="text-2xl font-black">{displayName}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
-                  Current course: Russian for English speakers.
+                  First live course: Russian for English speakers.
                 </p>
                 {profileUser?.email ? (
                   <p className="mt-1 break-words text-sm text-slate-500">

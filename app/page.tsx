@@ -9,7 +9,7 @@ type Tone = "cyan" | "yellow" | "red" | "green" | "violet";
 const worldTwo = worlds.find((world) => world.number === 2);
 
 const heroStats = [
-  { label: "Course live now", value: "Russian" },
+  { label: "First course live", value: "Russian" },
   { label: "Available worlds", value: worldTwo ? "2" : "1" },
   { label: "Starter XP path", value: `${worldOne.xp}` },
 ];
@@ -98,7 +98,9 @@ export default async function Home() {
 
           <div className="mt-6 max-w-2xl space-y-3 text-base leading-8 text-slate-300 sm:text-lg">
             <p>Learn languages through quests, levels, XP, and daily progress.</p>
-            <p className="font-semibold text-cyan-200">Start with Russian today.</p>
+            <p className="font-semibold text-cyan-200">
+              Start with the first live course today.
+            </p>
           </div>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -106,7 +108,7 @@ export default async function Home() {
               href={startHref}
               className="w-full rounded-full bg-cyan-400 px-7 py-3 text-center font-bold text-slate-950 shadow-lg shadow-cyan-950/30 transition hover:bg-cyan-300 sm:w-auto"
             >
-              Start Learning
+              {userId ? "Continue Learning" : "Create Free Account"}
             </Link>
             <Link
               href="/worlds"
@@ -172,9 +174,10 @@ export default async function Home() {
               Russian is live now. More languages can come later.
             </h2>
             <p className="mt-4 leading-7 text-slate-400">
-              YazkUp is a language learning platform, not a Russian-only app.
-              The current course gives beginners an English-guided path through
-              practical Russian basics in World 1 and World 2.
+              YazkUp is designed as a language learning platform that can grow
+              beyond the first course. The current path gives beginners an
+              English-guided route through practical basics in World 1 and
+              World 2.
             </p>
           </div>
 
@@ -234,7 +237,7 @@ export default async function Home() {
               href={startHref}
               className="w-full rounded-full bg-cyan-400 px-7 py-3 text-center font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
             >
-              Start Learning
+              {userId ? "Continue Learning" : "Create Free Account"}
             </Link>
             <Link
               href="/worlds"

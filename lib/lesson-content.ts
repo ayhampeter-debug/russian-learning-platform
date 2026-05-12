@@ -1,6 +1,6 @@
 import "server-only";
 
-import { logContentFallback } from "@/lib/content-fallback-log";
+import { logContentFallback, withContentFallbackTimeout } from "@/lib/content-fallback-log";
 import { getPrismaClient } from "@/lib/prisma";
 import {
   worlds,
@@ -44,19 +44,22 @@ type DatabaseLesson = {
 
 export async function getLessonContent(lessonId: string): Promise<LessonContentResult> {
   try {
-    const lesson = await getPrismaClient().lesson.findFirst({
-      where: {
-        status: "PUBLISHED",
-        OR: [{ slug: lessonId }, { id: lessonId }],
-      },
-      include: {
-        stage: true,
-        exercises: {
-          where: { status: "PUBLISHED" },
-          orderBy: { order: "asc" },
+    const lesson = await withContentFallbackTimeout(
+      getPrismaClient().lesson.findFirst({
+        where: {
+          status: "PUBLISHED",
+          OR: [{ slug: lessonId }, { id: lessonId }],
         },
-      },
-    });
+        include: {
+          stage: true,
+          exercises: {
+            where: { status: "PUBLISHED" },
+            orderBy: { order: "asc" },
+          },
+        },
+      }),
+      `Lesson content load for ${lessonId}`,
+    );
 
     if (!lesson) {
       logContentFallback(`Falling back to static lesson content for ${lessonId}.`, {

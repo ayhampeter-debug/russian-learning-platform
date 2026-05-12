@@ -55,7 +55,7 @@ export default function SignupPage() {
           </h2>
           <p className="mt-5 max-w-2xl leading-7 text-slate-300">
             Save your quest progress, XP, streaks, hearts, and unlocks while
-            you work through the current Russian course.
+            you work through YazkUp&apos;s first live course.
           </p>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-3">

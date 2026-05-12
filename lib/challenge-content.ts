@@ -1,6 +1,6 @@
 import "server-only";
 
-import { logContentFallback } from "@/lib/content-fallback-log";
+import { logContentFallback, withContentFallbackTimeout } from "@/lib/content-fallback-log";
 import { getPrismaClient } from "@/lib/prisma";
 import {
   challengeQuestions,
@@ -77,14 +77,17 @@ type DatabaseChallenge = {
 
 export async function getWorldOneBossChallenge(): Promise<BossChallengeContent> {
   try {
-    const challenge = await getPrismaClient().challenge.findFirst({
-      where: {
-        status: "PUBLISHED",
-        world: { number: 1 },
-        OR: [{ slug: "world-1-boss" }, { type: "boss" }],
-      },
-      orderBy: { createdAt: "asc" },
-    });
+    const challenge = await withContentFallbackTimeout(
+      getPrismaClient().challenge.findFirst({
+        where: {
+          status: "PUBLISHED",
+          world: { number: 1 },
+          OR: [{ slug: "world-1-boss" }, { type: "boss" }],
+        },
+        orderBy: { createdAt: "asc" },
+      }),
+      "World 1 boss challenge load",
+    );
 
     if (!challenge) {
       logContentFallback("Falling back to static World 1 boss challenge.", {

@@ -10,6 +10,35 @@ type ErrorWithCode = {
   name?: unknown;
 };
 
+export class ContentFallbackTimeoutError extends Error {
+  constructor(label: string, timeoutMs: number) {
+    super(`${label} timed out after ${timeoutMs}ms`);
+    this.name = "ContentFallbackTimeoutError";
+  }
+}
+
+export async function withContentFallbackTimeout<T>(
+  promise: Promise<T>,
+  label: string,
+  timeoutMs = 3_500,
+) {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  const timeout = new Promise<never>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new ContentFallbackTimeoutError(label, timeoutMs));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, timeout]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
+}
+
 export function logContentFallback(message: string, details: FallbackDetails = {}) {
   if (process.env.NODE_ENV !== "development") {
     return;

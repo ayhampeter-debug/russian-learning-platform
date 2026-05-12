@@ -53,12 +53,18 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => {
-                resetProgress();
-                window.location.reload();
+                const confirmed = window.confirm(
+                  "Reset local YazkUp progress on this device? Synced account progress may reload after refresh.",
+                );
+
+                if (confirmed) {
+                  resetProgress();
+                  window.location.reload();
+                }
               }}
               className="w-full rounded-full border border-red-400/30 px-4 py-2 text-sm font-semibold text-red-200 transition hover:border-red-300/60 hover:bg-red-400/10 sm:w-auto"
             >
-              Reset Progress
+              Reset Local Progress
             </button>
             <Link
               href={summary.continueHref}
@@ -108,7 +114,7 @@ export default function DashboardPage() {
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6 lg:col-span-2">
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm text-slate-400">Current course: Russian</p>
+                <p className="text-sm text-slate-400">Current course path</p>
                 <h2 className="text-xl font-bold sm:text-2xl">{currentWorld.subtitle}</h2>
               </div>
               <span className="w-fit rounded-full bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950">
@@ -212,9 +218,10 @@ export default function DashboardPage() {
             ) : (
               <button
                 disabled
+                aria-disabled="true"
                 className="mt-6 block w-full rounded-full bg-slate-800 px-5 py-3 text-center font-semibold text-slate-500"
               >
-                Boss Locked
+                Complete World 1 lessons to unlock
               </button>
             )}
           </div>
