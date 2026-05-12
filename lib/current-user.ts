@@ -112,7 +112,7 @@ function getDisplayName({
     composedName ||
     username?.trim() ||
     email.split("@")[0] ||
-    "Russian learner"
+    "Language learner"
   );
 }
 
@@ -124,7 +124,7 @@ function getInitials(displayName: string) {
     .map((part) => part[0]?.toUpperCase())
     .join("");
 
-  return initials || "RU";
+  return initials || "YU";
 }
 
 function isDynamicServerUsageError(error: unknown) {

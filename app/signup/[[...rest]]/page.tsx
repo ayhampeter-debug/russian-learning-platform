@@ -39,15 +39,14 @@ export default function SignupPage() {
 
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.3em] text-cyan-300">
-            Save system preview
+            Start your journey
           </p>
           <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-5xl">
-            Build your profile before cloud accounts arrive
+            Create your YazkUp profile
           </h2>
           <p className="mt-5 max-w-2xl leading-7 text-slate-300">
-            Progress is currently saved locally in the browser. Creating an
-            account is a visual preview for the MVP and does not change lesson
-            unlocks or challenge progress yet.
+            Save your quest progress, XP, streaks, hearts, and unlocks while
+            you work through the current Russian course.
           </p>
 
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
@@ -58,7 +57,7 @@ export default function SignupPage() {
               >
                 <p className="text-lg font-black text-cyan-200">{item}</p>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
-                  Still tracked locally during the MVP.
+                  Tracked as you level up your language skills.
                 </p>
               </div>
             ))}

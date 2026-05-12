@@ -15,11 +15,11 @@ export default function LoginPage() {
             Player access
           </p>
           <h1 className="mt-4 text-3xl font-black tracking-tight sm:text-5xl">
-            Log in to your RusQuest account
+            Log in to your YazkUp account
           </h1>
           <p className="mt-5 max-w-2xl leading-7 text-slate-300">
-            Account saving will be added soon. For now, your Russian learning
-            progress stays on this browser.
+            Keep your language progress synced as you complete quests, earn XP,
+            and unlock new stages.
           </p>
 
           <div className="mt-8 rounded-lg border border-cyan-400/20 bg-cyan-400/10 p-5">
@@ -27,8 +27,8 @@ export default function LoginPage() {
               MVP status
             </p>
             <p className="mt-2 text-sm leading-6 text-slate-300">
-              Lessons, XP, streaks, hearts, and unlocks continue to use the
-              current local progress system.
+              Signed-in progress syncs to your profile, with local progress
+              still available as a fallback on this device.
             </p>
           </div>
         </div>
@@ -50,7 +50,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-6 border-t border-white/10 pt-6 text-center text-sm text-slate-400">
-            New to RusQuest?{" "}
+            New to YazkUp?{" "}
             <Link
               href="/signup"
               className="font-bold text-cyan-300 transition hover:text-cyan-200"

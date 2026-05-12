@@ -1,4 +1,8 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# YazkUp
+
+YazkUp is a gamified language learning platform built with Next.js App Router.
+The current course is Russian, with quests, XP, worlds, boss challenges, and
+daily progress.
 
 ## Getting Started
 

@@ -13,8 +13,8 @@ const heroStats = [
 const howItWorks = [
   {
     step: "01",
-    title: "Start from English",
-    text: "Every lesson is written for English speakers, with Russian phrases introduced in short, practical chunks.",
+    title: "Start the current course",
+    text: "Begin with Russian, guided in English with practical phrases introduced in short, focused chunks.",
   },
   {
     step: "02",
@@ -74,18 +74,19 @@ export default function Home() {
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 pb-16 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:gap-14 lg:pb-24">
         <div>
           <p className="inline-flex max-w-full rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-200">
-            RusQuest is gamified Russian for English speakers
+            YazkUp is a gamified language learning platform
           </p>
 
           <h1 className="mt-6 max-w-4xl text-3xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            Learn Russian through levels, mini-games, challenges, and daily
+            Level up your language skills through quests, XP, worlds, and daily
             progress.
           </h1>
 
           <p className="mt-6 max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
-            Start with beginner Russian built around English explanations,
-            bite-size lessons, pronunciation practice, and game-style progress
-            through World 1: First Contact.
+            Current course: Russian. Start with bite-size lessons, pronunciation
+            practice, boss challenges, and game-style progress through World 1:
+            First Contact. Future courses can expand the same quest system to
+            more languages.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -136,7 +137,7 @@ export default function Home() {
           <SectionHeading
             eyebrow="How it works"
             title="A lesson path that feels like a game"
-            text="Move from English guidance to Russian recall through fast, repeatable practice."
+            text="Move from guided practice to confident recall through fast, repeatable language quests."
           />
 
           <div className="mt-8 grid gap-4 md:grid-cols-3">
@@ -149,7 +150,7 @@ export default function Home() {
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-20">
         <SectionHeading
-          eyebrow="World 1"
+          eyebrow="Current course: Russian"
           title="What you will learn in First Contact"
           text="World 1 focuses on the survival phrases a new Russian learner needs first."
         />
@@ -188,7 +189,7 @@ export default function Home() {
         <div className="rounded-lg border border-cyan-400/20 bg-cyan-400/10 p-5 sm:p-8 lg:flex lg:items-center lg:justify-between lg:gap-10">
           <div>
             <p className="text-sm font-bold uppercase tracking-widest text-cyan-200">
-              Ready for your first Russian quest?
+              Ready for your first language quest?
             </p>
             <h2 className="mt-3 text-2xl font-black tracking-tight sm:text-4xl">
               Start World 1 and learn your first useful phrases today.
@@ -228,7 +229,7 @@ function WorldPreview() {
           <p className="text-sm font-semibold text-cyan-300">World 1</p>
           <h2 className="mt-1 text-2xl font-black">{worldOne.title}</h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
-            English-guided Russian basics for real first conversations.
+            Current course: Russian basics for real first conversations.
           </p>
         </div>
         <span className="w-fit rounded-full bg-yellow-400 px-4 py-2 text-sm font-black text-slate-950">

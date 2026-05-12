@@ -211,8 +211,8 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
               {displayName}
             </h1>
             <p className="mt-4 max-w-2xl text-slate-400">
-              Track your Russian journey through XP, streaks, achievements, and
-              World 1 progress.
+              Track your language journey through XP, streaks, achievements,
+              and current course progress.
             </p>
             {syncError ? (
               <p className="mt-3 max-w-2xl text-sm text-yellow-200">
@@ -313,7 +313,7 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
               <div className="min-w-0">
                 <h2 className="text-2xl font-black">{displayName}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
-                  Beginner path: English speaker learning practical Russian.
+                  Current course: Russian for English speakers.
                 </p>
                 {profileUser?.email ? (
                   <p className="mt-1 break-words text-sm text-slate-500">

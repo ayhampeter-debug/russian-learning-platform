@@ -36,11 +36,11 @@ export default function DashboardPage() {
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
           <div>
             <p className="text-sm text-cyan-300">Welcome back</p>
-            <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Your Russian Journey</h1>
+            <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Your language journey</h1>
             <p className="mt-3 text-slate-400">
               {isLoaded && !isSignedIn
                 ? "Guest progress is saved on this device. Sign in when you want it synced."
-                : "Continue your progress through short lessons, XP rewards, and boss challenges."}
+                : "Continue learning through short lessons, XP rewards, and boss challenges."}
             </p>
             {noProgress ? (
               <p className="mt-3 max-w-2xl rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-100">
@@ -104,7 +104,7 @@ export default function DashboardPage() {
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6 lg:col-span-2">
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm text-slate-400">Current world</p>
+                <p className="text-sm text-slate-400">Current course: Russian</p>
                 <h2 className="text-xl font-bold sm:text-2xl">{currentWorld.subtitle}</h2>
               </div>
               <span className="w-fit rounded-full bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950">

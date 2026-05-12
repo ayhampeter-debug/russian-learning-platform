@@ -25,8 +25,8 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
           <p className="text-sm text-cyan-300">Choose your path</p>
           <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Worlds & Stages</h1>
           <p className="mt-3 max-w-2xl text-slate-400">
-            Progress through Russian step by step. Complete lessons, pass boss
-            challenges, and unlock the next stage.
+            Progress through your current Russian course step by step. Complete
+            lessons, pass boss challenges, and unlock the next stage.
           </p>
         </div>
 

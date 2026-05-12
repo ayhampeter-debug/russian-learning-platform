@@ -4,6 +4,7 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { BrandLogo } from "@/components/BrandLogo";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 type NavItem = {
@@ -36,19 +37,9 @@ export function Navigation() {
           <Link
             href="/"
             className="flex min-w-0 items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-white/10"
-            aria-label="RusQuest home"
+            aria-label="YazkUp home"
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cyan-400 text-sm font-black text-slate-950 shadow-sm shadow-cyan-950/20">
-              R
-            </span>
-            <span className="min-w-0">
-              <span className="block truncate text-base font-black leading-5 text-white">
-                RusQuest
-              </span>
-              <span className="hidden text-[0.65rem] font-bold uppercase leading-3 tracking-[0.16em] text-cyan-200 sm:block">
-                Learn RU
-              </span>
-            </span>
+            <BrandLogo />
           </Link>
 
           <div className="hidden min-w-0 items-center justify-center gap-1 lg:flex">
