@@ -23,6 +23,22 @@ export const metadata: Metadata = {
   description:
     "YazkUp helps learners build daily language momentum with quests, XP, worlds, and saved progress.",
   applicationName: "YazkUp",
+  icons: {
+    icon: [
+      {
+        url: "/brand/yazkup-icon.png",
+        sizes: "1254x1254",
+        type: "image/png",
+      },
+    ],
+    apple: [
+      {
+        url: "/brand/yazkup-icon.png",
+        sizes: "1254x1254",
+        type: "image/png",
+      },
+    ],
+  },
   openGraph: {
     title: "YazkUp - Gamified Language Learning",
     description:
