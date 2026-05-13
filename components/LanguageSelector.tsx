@@ -80,20 +80,20 @@ export function LanguageSelector({
     <div
       className={`min-w-0 ${
         isPanel
-          ? "rounded-2xl border border-white/10 bg-slate-900/80 p-4"
+          ? "rounded-2xl border border-[var(--card-border)] bg-[var(--app-surface-muted)] p-4"
           : "flex items-center gap-2"
       } ${className}`}
     >
       <label
         id={labelId}
         className={`shrink-0 text-xs font-bold uppercase tracking-wider ${
-          isPanel ? "text-slate-400" : "hidden text-slate-400 xl:block"
+          isPanel ? "text-[var(--app-text-muted)]" : "hidden text-[var(--app-text-muted)] xl:block"
         }`}
       >
         {isPanel ? tUi("explanationLanguage", language) : tUi("learnRussianWith", language)}
       </label>
       <div
-        className={`grid grid-cols-2 rounded-full border border-white/10 bg-slate-950/70 p-1 ${
+        className={`grid grid-cols-2 rounded-full border border-[var(--card-border)] bg-[var(--app-surface)] p-1 ${
           isPanel ? "mt-3 w-full max-w-xs" : "w-[7.25rem]"
         }`}
         role="radiogroup"
@@ -111,8 +111,8 @@ export function LanguageSelector({
               onClick={() => setLanguage(option.value)}
               className={`min-w-0 rounded-full px-2 py-1.5 text-xs font-black transition ${
                 isSelected
-                  ? "bg-cyan-400 text-slate-950"
-                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+                  ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
+                  : "text-[var(--app-text-muted)] hover:bg-[var(--app-primary-soft)] hover:text-[var(--app-text)]"
               }`}
             >
               {isPanel ? option.label : option.shortLabel}
@@ -121,7 +121,7 @@ export function LanguageSelector({
         })}
       </div>
       {isPanel ? (
-        <p className="mt-3 text-sm leading-6 text-slate-400">
+        <p className="mt-3 text-sm leading-6 text-[var(--app-text-muted)]">
           {language === "ar"
             ? "ستبقى الروسية كما هي، وستظهر المعاني والشرح بالعربية حيث تتوفر."
             : "Russian stays the course language; meanings and explanations appear in English."}

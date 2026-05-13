@@ -33,11 +33,11 @@ export function Navigation() {
 
   return (
     <nav className="mx-auto mb-5 w-full max-w-7xl px-3 pt-3 sm:mb-8 sm:px-6 sm:pt-5" aria-label="Primary navigation">
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/10 shadow-xl shadow-cyan-950/20 backdrop-blur">
+      <div className="overflow-hidden rounded-2xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl shadow-cyan-950/20 backdrop-blur">
         <div className="flex h-14 min-w-0 items-center justify-between gap-3 px-3 sm:px-4">
           <Link
             href="/"
-            className="flex min-w-0 items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-white/10"
+            className="flex min-w-0 items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-[var(--app-primary-soft)]"
             aria-label="YazkUp home"
           >
             <BrandLogo />
@@ -54,8 +54,8 @@ export function Navigation() {
                   aria-current={isActive ? "page" : undefined}
                   className={`rounded-full px-3 py-2 text-sm font-semibold transition xl:px-4 ${
                     isActive
-                      ? "bg-cyan-400 text-slate-950 shadow-sm shadow-cyan-950/20"
-                      : "text-slate-300 hover:bg-white/10 hover:text-white"
+                      ? "bg-[var(--primary)] text-[var(--primary-foreground)] shadow-sm shadow-cyan-950/20"
+                      : "text-[var(--app-text-muted)] hover:bg-[var(--app-primary-soft)] hover:text-[var(--app-text)]"
                   }`}
                 >
                   {item.label}
@@ -74,7 +74,7 @@ export function Navigation() {
             />
             <button
               type="button"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-slate-900/70 text-slate-200 transition hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-950 lg:hidden"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--card-border)] bg-[var(--app-surface-muted)] text-[var(--app-text-soft)] transition hover:border-[var(--brand-teal)] hover:bg-[var(--app-primary-soft)] hover:text-[var(--app-text)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--background)] lg:hidden"
               aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-navigation"
@@ -106,7 +106,7 @@ export function Navigation() {
 
         <div
           id="mobile-navigation"
-          className={`border-t border-white/10 px-3 transition lg:hidden ${
+          className={`border-t border-[var(--card-border)] px-3 transition lg:hidden ${
             isMenuOpen
               ? "max-h-96 py-3 opacity-100"
               : "max-h-0 overflow-hidden py-0 opacity-0"
@@ -124,15 +124,15 @@ export function Navigation() {
                   onClick={() => setIsMenuOpen(false)}
                   className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
                     isActive
-                      ? "bg-cyan-400 text-slate-950"
-                      : "text-slate-300 hover:bg-white/10 hover:text-white"
+                      ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
+                      : "text-[var(--app-text-muted)] hover:bg-[var(--app-primary-soft)] hover:text-[var(--app-text)]"
                   }`}
                 >
                   {item.label}
                 </Link>
               );
             })}
-            <div className="mt-2 border-t border-white/10 pt-3">
+            <div className="mt-2 border-t border-[var(--card-border)] pt-3">
               <LanguageSelector variant="panel" />
             </div>
           </div>
@@ -152,7 +152,7 @@ function AuthActions({ isLoaded, isSignedIn, pathname }: AuthActionsProps) {
   if (!isLoaded) {
     return (
       <span
-        className="h-9 w-9 animate-pulse rounded-full border border-white/10 bg-slate-900/70"
+        className="h-9 w-9 animate-pulse rounded-full border border-[var(--card-border)] bg-[var(--app-surface-muted)]"
         aria-hidden="true"
       />
     );
@@ -160,7 +160,7 @@ function AuthActions({ isLoaded, isSignedIn, pathname }: AuthActionsProps) {
 
   if (isSignedIn) {
     return (
-      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-slate-900/70">
+      <div className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--card-border)] bg-[var(--app-surface-muted)]">
         <UserButton
           appearance={{
             elements: {
@@ -176,8 +176,8 @@ function AuthActions({ isLoaded, isSignedIn, pathname }: AuthActionsProps) {
   const authLinkClass =
     "rounded-full border px-2.5 py-2 text-xs font-bold leading-none transition sm:px-3";
   const inactiveClass =
-    "border-white/10 bg-slate-900/70 text-slate-200 hover:border-cyan-400/50 hover:bg-cyan-400/10 hover:text-white";
-  const activeClass = "border-cyan-400 bg-cyan-400 text-slate-950";
+    "border-[var(--card-border)] bg-[var(--app-surface-muted)] text-[var(--app-text-soft)] hover:border-[var(--brand-teal)] hover:bg-[var(--app-primary-soft)] hover:text-[var(--app-text)]";
+  const activeClass = "border-[var(--brand-teal)] bg-[var(--primary)] text-[var(--primary-foreground)]";
 
   return (
     <div className="flex items-center gap-1.5">

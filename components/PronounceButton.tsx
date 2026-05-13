@@ -108,7 +108,7 @@ export function PronounceButton({
       disabled={disabled}
       aria-label={`Pronounce ${spokenText}`}
       title="Pronounce Russian"
-      className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-300/10 text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-300/20 disabled:cursor-not-allowed disabled:opacity-40 ${className}`}
+      className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-300/10 text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-300/20 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     >
       <svg
         aria-hidden="true"
