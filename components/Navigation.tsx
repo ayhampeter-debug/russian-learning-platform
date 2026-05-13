@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
 type NavItem = {
@@ -64,6 +65,7 @@ export function Navigation() {
           </div>
 
           <div className="flex shrink-0 items-center justify-end gap-2">
+            <LanguageSelector className="hidden sm:flex" />
             <ThemeToggle />
             <AuthActions
               isLoaded={isLoaded}
@@ -130,6 +132,9 @@ export function Navigation() {
                 </Link>
               );
             })}
+            <div className="mt-2 border-t border-white/10 pt-3">
+              <LanguageSelector variant="panel" />
+            </div>
           </div>
         </div>
       </div>

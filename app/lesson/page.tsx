@@ -1,11 +1,23 @@
 "use client";
 
 import { Navigation } from "@/components/Navigation";
+import { useExplanationLanguage } from "@/components/LanguageSelector";
 import {
   isRussianText,
   normalizeRussianText,
   PronounceButton,
 } from "@/components/PronounceButton";
+import {
+  type ExplanationLanguage,
+} from "@/lib/language-preference";
+import {
+  explanationTextProps,
+  localizeExplanation,
+  localizeLearningText,
+  localizeMeaning,
+  localizeNote,
+  tUi,
+} from "@/lib/russian-explanations";
 import {
   worldOne,
   type Lesson,
@@ -31,6 +43,7 @@ export default function LessonPage() {
 }
 
 export function LessonExperience({ lesson }: { lesson: Lesson }) {
+  const { language } = useExplanationLanguage();
   const progressState = useProgress();
   const lessonState = getLessonProgressState(lesson, progressState);
   const currentLesson = lesson;
@@ -180,7 +193,9 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
         <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-4xl items-center px-4 pb-8 sm:px-6">
           <div className="w-full overflow-hidden rounded-2xl border border-white/10 bg-white/10 shadow-2xl shadow-cyan-950/30 sm:rounded-3xl">
             <div className="bg-cyan-400 p-5 text-center text-slate-950 sm:p-8">
-              <p className="text-xs font-black uppercase tracking-[0.25em] sm:text-sm sm:tracking-[0.35em]">Lesson Complete</p>
+              <p className="text-xs font-black uppercase tracking-[0.25em] sm:text-sm sm:tracking-[0.35em]">
+                {tUi("lessonComplete", language)}
+              </p>
               <h1 className="mt-3 break-words text-3xl font-black md:text-6xl">{currentLesson.title} Cleared</h1>
               <p className="mx-auto mt-4 max-w-2xl font-semibold">
                 You practiced {currentLesson.description.toLowerCase()}
@@ -189,10 +204,10 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
 
             <div className="p-6 md:p-8">
               <div className="grid gap-4 sm:grid-cols-3">
-                <ResultStat title="XP earned" value={xp.toString()} tone="cyan" />
-                <ResultStat title="Hearts left" value={hearts.toString()} tone="red" />
+                <ResultStat title={tUi("xpEarned", language)} value={xp.toString()} tone="cyan" />
+                <ResultStat title={tUi("heartsLeft", language)} value={hearts.toString()} tone="red" />
                 <ResultStat
-                  title="Accuracy"
+                  title={tUi("accuracy", language)}
                   value={`${correctCount}/${lessonExercises.length}`}
                   tone="yellow"
                 />
@@ -210,7 +225,7 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
                   onClick={handleRestart}
                   className="inline-flex flex-1 justify-center rounded-full border border-white/10 bg-white/10 px-7 py-4 font-bold text-white transition hover:border-white/30 hover:bg-white/15"
                 >
-                  Replay Lesson
+                  {tUi("replayLesson", language)}
                 </button>
               </div>
             </div>
@@ -238,7 +253,7 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
 
           <div className="grid grid-cols-2 gap-3 text-center">
             <StatusPill label="XP" value={xp.toString()} tone="cyan" />
-            <StatusPill label="Hearts" value={hearts.toString()} tone="red" />
+            <StatusPill label={tUi("hearts", language)} value={hearts.toString()} tone="red" />
           </div>
         </div>
 
@@ -262,9 +277,14 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 sm:text-sm sm:tracking-[0.25em]">
-                  {getExerciseLabel(currentExercise.type)}
+                  {getExerciseLabel(currentExercise.type, language)}
                 </p>
-                <h2 className="mt-3 break-words text-xl font-bold sm:text-2xl md:text-3xl">{currentExercise.prompt}</h2>
+                <h2
+                  className="mt-3 break-words text-xl font-bold sm:text-2xl md:text-3xl"
+                  {...explanationTextProps(language)}
+                >
+                  {localizeLearningText(currentExercise.prompt, language)}
+                </h2>
               </div>
               <span className="w-fit rounded-full bg-yellow-400 px-4 py-2 text-sm font-black text-slate-950">
                 +{currentExercise.points} XP
@@ -286,6 +306,7 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
               onRussianMatchSelect={handleRussianMatchSelect}
               onEnglishMatchSelect={handleEnglishMatchSelect}
               onMatchingSubmit={handleMatchingSubmit}
+              language={language}
             />
 
             {isAnswered && (
@@ -295,9 +316,11 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
                 }`}
               >
                 <p className="font-bold">
-                  {lastAnswerWasCorrect ? "Correct." : "Not quite."}
+                  {lastAnswerWasCorrect ? tUi("correct", language) : tUi("tryAgain", language)}
                 </p>
-                <p className="mt-2 text-sm text-slate-300">{currentExercise.explanation}</p>
+                <p className="mt-2 text-sm text-slate-300" {...explanationTextProps(language)}>
+                  {localizeExplanation(currentExercise.explanation, language)}
+                </p>
               </div>
             )}
 
@@ -313,21 +336,21 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
               }`}
             >
               {currentExerciseIndex === lessonExercises.length - 1
-                ? "Finish Lesson"
-                : "Next Exercise"}
+                ? tUi("finishLesson", language)
+                : tUi("nextExercise", language)}
             </button>
           </div>
 
           <aside className="min-w-0 rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
-            <p className="text-sm text-slate-400">Run status</p>
+            <p className="text-sm text-slate-400">{tUi("runStatus", language)}</p>
             <div className="mt-5 space-y-3">
-              <SideStat label="Correct" value={correctCount.toString()} />
-              <SideStat label="Mistakes" value={(startingHearts - hearts).toString()} />
-              <SideStat label="Current type" value={getShortExerciseLabel(currentExercise.type)} />
+              <SideStat label={tUi("correct", language).replace(".", "")} value={correctCount.toString()} />
+              <SideStat label={tUi("mistakes", language)} value={(startingHearts - hearts).toString()} />
+              <SideStat label={tUi("currentType", language)} value={getShortExerciseLabel(currentExercise.type, language)} />
             </div>
 
             <div className="mt-6 border-t border-white/10 pt-6">
-              <p className="text-sm text-slate-400">Lesson vocabulary</p>
+              <p className="text-sm text-slate-400">{tUi("lessonVocabulary", language)}</p>
               <div className="mt-4 space-y-3">
                 {currentLesson.vocabulary.map((item) => (
                   <div
@@ -338,8 +361,14 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
                       <p className="text-lg font-black">{normalizeRussianText(item.russian)}</p>
                       <PronounceButton text={item.russian} />
                     </div>
-                    <p className="mt-1 text-sm text-slate-300">{item.english}</p>
-                    {item.note && <p className="mt-1 text-xs text-slate-500">{item.note}</p>}
+                    <p className="mt-1 text-sm text-slate-300" {...explanationTextProps(language)}>
+                      {localizeMeaning(item.english, language)}
+                    </p>
+                    {item.note && (
+                      <p className="mt-1 text-xs text-slate-500" {...explanationTextProps(language)}>
+                        {localizeNote(item.note, language)}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
@@ -393,6 +422,7 @@ function ExerciseView({
   onRussianMatchSelect,
   onEnglishMatchSelect,
   onMatchingSubmit,
+  language,
 }: {
   exercise: LessonExercise;
   selectedAnswer: string;
@@ -408,6 +438,7 @@ function ExerciseView({
   onRussianMatchSelect: (russian: string) => void;
   onEnglishMatchSelect: (english: string) => void;
   onMatchingSubmit: (exercise: MatchingExercise) => void;
+  language: ExplanationLanguage;
 }) {
   if (exercise.type === "multipleChoice") {
     return (
@@ -425,6 +456,7 @@ function ExerciseView({
           correctAnswer={exercise.correctAnswer}
           isAnswered={isAnswered}
           onSelect={(answer) => onChoiceAnswer(answer, exercise.correctAnswer)}
+          language={language}
         />
       </>
     );
@@ -448,6 +480,7 @@ function ExerciseView({
           correctAnswer={exercise.correctAnswer}
           isAnswered={isAnswered}
           onSelect={(answer) => onChoiceAnswer(answer, exercise.correctAnswer)}
+          language={language}
         />
       </>
     );
@@ -462,14 +495,21 @@ function ExerciseView({
     return (
       <div className="mt-8">
         <div className="rounded-2xl border border-violet-400/20 bg-slate-900/80 p-4 sm:rounded-3xl sm:p-6">
-          <p className="text-sm text-slate-400">English target</p>
-          <p className="mt-2 break-words text-xl font-black sm:text-2xl">{exercise.translation}</p>
+          <p className="text-sm text-slate-400">{tUi("targetMeaning", language)}</p>
+          <p
+            className="mt-2 break-words text-xl font-black sm:text-2xl"
+            {...explanationTextProps(language)}
+          >
+            {localizeMeaning(exercise.translation, language)}
+          </p>
         </div>
 
         <div className="mt-5 min-h-24 rounded-2xl border border-dashed border-violet-300/40 bg-violet-400/10 p-3 sm:rounded-3xl sm:p-4">
           <div className="flex flex-wrap gap-3">
             {selectedWords.length === 0 ? (
-              <span className="py-3 text-sm text-slate-500">Choose words below</span>
+              <span className="py-3 text-sm text-slate-500">
+                {tUi("chooseWordsBelow", language)}
+              </span>
             ) : (
               selectedWords.map((selectedWord) => (
                 <div key={selectedWord.index} className="flex items-center gap-2">
@@ -523,7 +563,7 @@ function ExerciseView({
               : "bg-slate-800 text-slate-500"
           }`}
         >
-          Check Sentence
+          {tUi("checkSentence", language)}
         </button>
       </div>
     );
@@ -541,7 +581,7 @@ function ExerciseView({
                   onClick={() => onRussianMatchSelect(pair.russian)}
                   disabled={isAnswered}
                   aria-disabled={isAnswered}
-                    className={`min-w-0 flex-1 rounded-2xl border p-3 text-left transition sm:p-4 ${
+                  className={`min-w-0 flex-1 rounded-2xl border p-3 text-left transition sm:p-4 ${
                     selectedRussian === pair.russian
                       ? "border-emerald-300 bg-emerald-300/20"
                       : "border-white/10 bg-slate-900/80 hover:border-emerald-300/50"
@@ -551,7 +591,10 @@ function ExerciseView({
                     {normalizeRussianText(pair.russian)}
                   </span>
                   <span className="mt-1 block text-sm text-slate-400">
-                    Matched to {matchingAnswers[pair.russian] || "..."}
+                    {tUi("matchedTo", language)}{" "}
+                    {matchingAnswers[pair.russian]
+                      ? localizeMeaning(matchingAnswers[pair.russian], language)
+                      : tUi("notMatched", language)}
                   </span>
                 </button>
                 <PronounceButton text={pair.russian} />
@@ -573,7 +616,9 @@ function ExerciseView({
                     : "border-white/10 bg-slate-900/80 hover:border-cyan-300/50"
                 }`}
               >
-                {english}
+                <span {...explanationTextProps(language)}>
+                  {localizeMeaning(english, language)}
+                </span>
               </button>
             ))}
           </div>
@@ -590,7 +635,7 @@ function ExerciseView({
               : "bg-slate-800 text-slate-500"
           }`}
         >
-          Check Matches
+          {tUi("checkMatches", language)}
         </button>
       </div>
     );
@@ -602,7 +647,12 @@ function ExerciseView({
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-orange-200 sm:text-sm sm:tracking-[0.25em]">
           Real-life situation
         </p>
-        <p className="mt-4 break-words text-lg font-bold leading-8 text-slate-100 sm:text-xl">{exercise.situation}</p>
+        <p
+          className="mt-4 break-words text-lg font-bold leading-8 text-slate-100 sm:text-xl"
+          {...explanationTextProps(language)}
+        >
+          {localizeLearningText(exercise.situation, language)}
+        </p>
       </div>
       <ChoiceGrid
         options={exercise.options}
@@ -610,6 +660,7 @@ function ExerciseView({
         correctAnswer={exercise.correctAnswer}
         isAnswered={isAnswered}
         onSelect={(answer) => onChoiceAnswer(answer, exercise.correctAnswer)}
+        language={language}
       />
     </>
   );
@@ -621,12 +672,14 @@ function ChoiceGrid({
   correctAnswer,
   isAnswered,
   onSelect,
+  language,
 }: {
   options: string[];
   selectedAnswer: string;
   correctAnswer: string;
   isAnswered: boolean;
   onSelect: (answer: string) => void;
+  language: ExplanationLanguage;
 }) {
   return (
     <div className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -652,7 +705,9 @@ function ChoiceGrid({
               aria-disabled={isAnswered}
               className={`min-w-0 flex-1 break-words rounded-2xl border p-4 text-left font-semibold transition sm:p-5 ${buttonStyle}`}
             >
-              {normalizeRussianText(option)}
+              <span {...(!isRussianText(option) ? explanationTextProps(language) : {})}>
+                {isRussianText(option) ? normalizeRussianText(option) : localizeMeaning(option, language)}
+              </span>
             </button>
             {isRussianText(option) && <PronounceButton text={option} />}
           </div>
@@ -716,7 +771,19 @@ function SideStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function getExerciseLabel(type: LessonExercise["type"]) {
+function getExerciseLabel(type: LessonExercise["type"], language: ExplanationLanguage) {
+  if (language === "ar") {
+    const arabicLabels = {
+      multipleChoice: tUi("chooseCorrectAnswer", language),
+      fillBlank: tUi("fillBlank", language),
+      sentenceOrder: tUi("putSentenceInOrder", language),
+      matching: tUi("matchPairs", language),
+      scenarioChoice: "اختيار موقف",
+    };
+
+    return arabicLabels[type];
+  }
+
   const labels = {
     multipleChoice: "Multiple choice",
     fillBlank: "Fill the blank",
@@ -728,7 +795,19 @@ function getExerciseLabel(type: LessonExercise["type"]) {
   return labels[type];
 }
 
-function getShortExerciseLabel(type: LessonExercise["type"]) {
+function getShortExerciseLabel(type: LessonExercise["type"], language: ExplanationLanguage) {
+  if (language === "ar") {
+    const arabicLabels = {
+      multipleChoice: "اختيار",
+      fillBlank: "فراغ",
+      sentenceOrder: "ترتيب",
+      matching: "مطابقة",
+      scenarioChoice: "موقف",
+    };
+
+    return arabicLabels[type];
+  }
+
   const labels = {
     multipleChoice: "Choice",
     fillBlank: "Blank",

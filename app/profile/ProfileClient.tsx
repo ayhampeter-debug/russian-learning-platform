@@ -1,6 +1,7 @@
 "use client";
 
 import { Navigation } from "@/components/Navigation";
+import { LanguageSelector, useExplanationLanguage } from "@/components/LanguageSelector";
 import type { ProfileAchievementRow } from "@/lib/achievement-service";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -138,6 +139,7 @@ function getDisplayAchievements(
 }
 
 export function ProfileClient({ achievements, syncError, user }: ProfileClientProps) {
+  const { language } = useExplanationLanguage();
   const { isLoaded, user: clerkUser } = useUser();
   const progress = useProgress();
   const summary = getProgressSummary(progress);
@@ -313,7 +315,7 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
               <div className="min-w-0">
                 <h2 className="text-2xl font-black">{displayName}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
-                  First live course: Russian for English speakers.
+                  First live course: Russian with {language === "ar" ? "Arabic" : "English"} explanations.
                 </p>
                 {profileUser?.email ? (
                   <p className="mt-1 break-words text-sm text-slate-500">
@@ -324,6 +326,10 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
             </div>
 
             <div className="mt-8 rounded-3xl border border-white/10 bg-slate-900/80 p-5">
+              <LanguageSelector variant="panel" />
+            </div>
+
+            <div className="mt-5 rounded-3xl border border-white/10 bg-slate-900/80 p-5">
               <p className="text-sm text-slate-400">Next goal</p>
               <p className="mt-2 text-xl font-bold">
                 {summary.nextGoalTitle}

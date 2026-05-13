@@ -66,7 +66,7 @@ const howItWorks = [
 
 const courseHighlights = [
   "Beginner-friendly Russian",
-  "English-guided explanations",
+  "English or Arabic explanations",
   "World 1 and World 2 available",
   "Built to support more languages later",
 ];
@@ -98,6 +98,7 @@ export default async function Home() {
 
           <div className="mt-6 max-w-2xl space-y-3 text-base leading-8 text-slate-300 sm:text-lg">
             <p>Learn languages through quests, levels, XP, and daily progress.</p>
+            <p>Learn Russian with English or Arabic explanations.</p>
             <p className="font-semibold text-cyan-200">
               Start with the first live course today.
             </p>
@@ -176,7 +177,7 @@ export default async function Home() {
             <p className="mt-4 leading-7 text-slate-400">
               YazkUp is designed as a language learning platform that can grow
               beyond the first course. The current path gives beginners an
-              English-guided route through practical basics in World 1 and
+              English- or Arabic-guided route through practical basics in World 1 and
               World 2.
             </p>
           </div>
@@ -260,7 +261,7 @@ function ProductPreview() {
           <p className="text-sm font-semibold text-cyan-300">Live course</p>
           <h2 className="mt-1 text-2xl font-black">Russian: First Contact</h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
-            Beginner-friendly lessons guided in English.
+            Beginner-friendly lessons guided in English or Arabic.
           </p>
         </div>
         <span className="w-fit rounded-full bg-yellow-400 px-4 py-2 text-sm font-black text-slate-950">

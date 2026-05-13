@@ -1,11 +1,20 @@
 "use client";
 
 import { Navigation } from "@/components/Navigation";
+import { useExplanationLanguage } from "@/components/LanguageSelector";
 import {
   isRussianText,
   normalizeRussianText,
   PronounceButton,
 } from "@/components/PronounceButton";
+import { type ExplanationLanguage } from "@/lib/language-preference";
+import {
+  explanationTextProps,
+  localizeExplanation,
+  localizeLearningText,
+  localizeMeaning,
+  tUi,
+} from "@/lib/russian-explanations";
 import {
   challengeQuestions,
   challengeSettings,
@@ -124,6 +133,7 @@ const staticBossChallenge: BossChallengeContent = {
 };
 
 export default function ChallengePage() {
+  const { language } = useExplanationLanguage();
   const savedProgress = useProgress();
   const bossState = getWorldBossState(worldOne, savedProgress);
   const bossAvailable = bossState !== "locked";
@@ -338,9 +348,9 @@ export default function ChallengePage() {
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                 <ResultStat title="State" value={finalPassed ? "Passed" : "Failed"} />
                 <ResultStat title="Score" value={score.toString()} />
-                <ResultStat title="XP Earned" value={xp.toString()} />
-                <ResultStat title="Hearts Left" value={hearts.toString()} />
-                <ResultStat title="Accuracy" value={`${accuracy}%`} />
+                <ResultStat title={tUi("xpEarned", language)} value={xp.toString()} />
+                <ResultStat title={tUi("heartsLeft", language)} value={hearts.toString()} />
+                <ResultStat title={tUi("accuracy", language)} value={`${accuracy}%`} />
               </div>
 
               <div className="mt-8 rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
@@ -411,7 +421,7 @@ export default function ChallengePage() {
 
           <div className="grid grid-cols-3 gap-2 text-center sm:gap-3">
             <StatusPill label="XP" value={xp.toString()} tone="cyan" />
-            <StatusPill label="Hearts" value={hearts.toString()} tone="red" />
+            <StatusPill label={tUi("hearts", language)} value={hearts.toString()} tone="red" />
             <StatusPill label="Score" value={score.toString()} tone="yellow" />
           </div>
         </div>
@@ -457,10 +467,13 @@ export default function ChallengePage() {
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 sm:text-sm sm:tracking-[0.25em]">
-                  {currentQuestion.phase} - {getQuestionLabel(currentQuestion.type)}
+                  {currentQuestion.phase} - {getQuestionLabel(currentQuestion.type, language)}
                 </p>
-                <h2 className="mt-3 break-words text-xl font-bold sm:text-2xl md:text-3xl">
-                  {currentQuestion.prompt}
+                <h2
+                  className="mt-3 break-words text-xl font-bold sm:text-2xl md:text-3xl"
+                  {...explanationTextProps(language)}
+                >
+                  {localizeLearningText(currentQuestion.prompt, language)}
                 </h2>
               </div>
               <span className="w-fit rounded-full bg-yellow-400 px-4 py-2 text-sm font-black text-slate-950">
@@ -497,6 +510,7 @@ export default function ChallengePage() {
               onWordClick={handleWordClick}
               onWordRemove={handleWordRemove}
               onSequenceSubmit={handleSequenceSubmit}
+              language={language}
             />
 
             {isAnswered && (
@@ -517,8 +531,8 @@ export default function ChallengePage() {
                       : "-1 heart"}
                   </p>
                 </div>
-                <p className="mt-3 text-sm leading-6 text-slate-300">
-                  {currentQuestion.explanation}
+                <p className="mt-3 text-sm leading-6 text-slate-300" {...explanationTextProps(language)}>
+                  {localizeExplanation(currentQuestion.explanation, language)}
                 </p>
               </div>
             )}
@@ -535,8 +549,8 @@ export default function ChallengePage() {
               }`}
             >
               {currentQuestionIndex === activeQuestions.length - 1 || hearts === 0
-                ? "Reveal Result"
-                : "Next Attack"}
+                ? tUi("continue", language)
+                : tUi("nextExercise", language)}
             </button>
           </div>
 
@@ -558,10 +572,10 @@ export default function ChallengePage() {
             <div className="mt-6 grid gap-3">
               <SideStat label="Correct hits" value={correctCount.toString()} />
               <SideStat
-                label="Mistakes"
+                label={tUi("mistakes", language)}
                 value={(activeSettings.startingHearts - hearts).toString()}
               />
-              <SideStat label="Accuracy" value={`${accuracy}%`} />
+              <SideStat label={tUi("accuracy", language)} value={`${accuracy}%`} />
               <SideStat
                 label="Pass score"
                 value={activeSettings.passScore.toString()}
@@ -751,6 +765,7 @@ function BossQuestionView({
   onWordClick,
   onWordRemove,
   onSequenceSubmit,
+  language,
 }: {
   question: BossQuestion;
   selectedAnswer: string;
@@ -763,6 +778,7 @@ function BossQuestionView({
   onWordClick: (wordIndex: number) => void;
   onWordRemove: (wordIndex: number) => void;
   onSequenceSubmit: () => void;
+  language: ExplanationLanguage;
 }) {
   if (question.type === "text") {
     return (
@@ -809,14 +825,19 @@ function BossQuestionView({
     return (
       <div className="mt-8">
         <div className="rounded-2xl border border-violet-300/20 bg-slate-900/80 p-4 sm:rounded-3xl sm:p-5">
-          <p className="text-sm text-slate-400">Target</p>
-          <p className="mt-2 break-words text-xl font-black sm:text-2xl">{question.translation}</p>
+          <p className="text-sm text-slate-400">{tUi("targetMeaning", language)}</p>
+          <p
+            className="mt-2 break-words text-xl font-black sm:text-2xl"
+            {...explanationTextProps(language)}
+          >
+            {localizeMeaning(question.translation, language)}
+          </p>
         </div>
         <div className="mt-5 min-h-24 rounded-2xl border border-dashed border-violet-300/40 bg-violet-400/10 p-3 sm:rounded-3xl sm:p-4">
           <div className="flex flex-wrap gap-3">
             {selectedWords.length === 0 ? (
               <span className="py-3 text-sm text-slate-500">
-                Assemble the counter below
+                {tUi("chooseWordsBelow", language)}
               </span>
             ) : (
               selectedWords.map((selectedWord) => (
@@ -871,7 +892,7 @@ function BossQuestionView({
               : "bg-slate-800 text-slate-500"
           }`}
         >
-          Strike With Sentence
+          {tUi("checkSentence", language)}
         </button>
       </div>
     );
@@ -884,8 +905,11 @@ function BossQuestionView({
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-orange-200 sm:text-sm sm:tracking-[0.25em]">
             Arena scenario
           </p>
-          <p className="mt-4 break-words text-lg font-bold leading-8 text-slate-100 sm:text-xl">
-            {question.situation}
+          <p
+            className="mt-4 break-words text-lg font-bold leading-8 text-slate-100 sm:text-xl"
+            {...explanationTextProps(language)}
+          >
+            {localizeLearningText(question.situation, language)}
           </p>
         </div>
       )}
@@ -895,6 +919,7 @@ function BossQuestionView({
         correctAnswer={question.correctAnswer}
         isAnswered={isAnswered}
         onSelect={onChoiceAnswer}
+        language={language}
       />
     </>
   );
@@ -906,12 +931,14 @@ function ChoiceGrid({
   correctAnswer,
   isAnswered,
   onSelect,
+  language,
 }: {
   options: string[];
   selectedAnswer: string;
   correctAnswer: string;
   isAnswered: boolean;
   onSelect: (answer: string) => void;
+  language: ExplanationLanguage;
 }) {
   return (
     <div className="mt-8 grid gap-4 sm:grid-cols-2">
@@ -937,7 +964,9 @@ function ChoiceGrid({
               aria-disabled={isAnswered}
               className={`min-w-0 flex-1 break-words rounded-2xl border p-4 text-left font-semibold transition sm:p-5 ${buttonStyle}`}
             >
-              {normalizeRussianText(option)}
+              <span {...(!isRussianText(option) ? explanationTextProps(language) : {})}>
+                {isRussianText(option) ? normalizeRussianText(option) : localizeMeaning(option, language)}
+              </span>
             </button>
             {isRussianText(option) && <PronounceButton text={option} />}
           </div>
@@ -988,7 +1017,18 @@ function SideStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function getQuestionLabel(type: BossQuestion["type"]) {
+function getQuestionLabel(type: BossQuestion["type"], language: ExplanationLanguage) {
+  if (language === "ar") {
+    const labels = {
+      choice: "ترجمة",
+      text: "إجابة مكتوبة",
+      sequence: "ترتيب جملة",
+      scenario: "اختيار موقف",
+    };
+
+    return labels[type];
+  }
+
   const labels = {
     choice: "Translation strike",
     text: "Typed counter",
