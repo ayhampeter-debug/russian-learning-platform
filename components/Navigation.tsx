@@ -37,7 +37,7 @@ export function Navigation() {
         <div className="flex h-14 min-w-0 items-center justify-between gap-3 px-3 sm:px-4">
           <Link
             href="/"
-            className="flex min-w-0 items-center gap-2 rounded-xl px-2 py-1.5 transition hover:bg-[var(--app-primary-soft)]"
+            className="flex min-w-0 items-center rounded-lg px-1 py-1 transition hover:bg-[var(--app-primary-soft)]"
             aria-label="YazkUp home"
           >
             <BrandLogo />
