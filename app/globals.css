@@ -6,6 +6,7 @@
   --brand-cyan: #57d4e8;
   --brand-lime: #b7e531;
   --brand-light: #f8fbff;
+  --yazkup-logo-text: #11203B;
 
   --background: var(--brand-light);
   --foreground: var(--brand-navy);
@@ -52,6 +53,7 @@
 :root[data-theme="dark"] {
   --background: #081323;
   --foreground: #f8fbff;
+  --yazkup-logo-text: #F8FBFF;
   --card: rgb(17 32 59 / 0.86);
   --card-border: rgb(87 212 232 / 0.14);
   --muted: #aab8ca;
@@ -83,6 +85,14 @@
   --app-locked: #94a3b8;
   --app-locked-soft: rgb(100 116 139 / 0.18);
   --app-shadow-cyan: rgb(8 47 73 / 0.3);
+}
+
+.dark {
+  --yazkup-logo-text: #F8FBFF;
+}
+
+[data-theme="dark"] {
+  --yazkup-logo-text: #F8FBFF;
 }
 
 body {
