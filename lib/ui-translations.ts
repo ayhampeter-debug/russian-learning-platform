@@ -717,6 +717,173 @@ export function uiTextProps(language: ExplanationLanguage) {
   };
 }
 
+const arabicContentTitles: Record<string, string> = {
+  "First Contact": "التواصل الأول",
+  "World 1: First Contact": "العالم 1: التواصل الأول",
+  "Everyday Basics": "أساسيات يومية",
+  "World 2: Everyday Basics": "العالم 2: أساسيات يومية",
+  "Opening Signals": "إشارات البداية",
+  "First Exchange": "أول تبادل",
+  "Survival Phrases": "عبارات النجاة",
+  "Question Basics": "أساسيات الأسئلة",
+  "Numbers 1-10": "الأرقام 1–10",
+  "Boss Level": "مرحلة الزعيم",
+  "People & Family": "الأشخاص والعائلة",
+  "Food & Drinks": "الطعام والمشروبات",
+  "Places & Directions": "الأماكن والاتجاهات",
+  "Everyday Checkpoint": "نقطة تحقق يومية",
+  "Say Hello": "قل مرحباً",
+  "Friendly or Polite": "ودّي أم رسمي؟",
+  "Yes, No, and OK": "نعم، لا، وحسناً",
+  "Introduce Yourself": "عرّف عن نفسك",
+  "Ask Someone's Name": "اسأل عن اسم شخص",
+  "Polite Words": "كلمات مهذبة",
+  "When You Need Help": "عندما تحتاج إلى مساعدة",
+  "Ask Basic Questions": "اسأل أسئلة بسيطة",
+  "Numbers 1-5": "الأرقام 1–5",
+  "Numbers 6-10": "الأرقام 6–10",
+  "Family Members": "أفراد العائلة",
+  "People Around You": "الأشخاص من حولك",
+  "Simple Descriptions": "أوصاف بسيطة",
+  "Basic Foods": "أطعمة أساسية",
+  "Drinks": "المشروبات",
+  "Ordering Politely": "الطلب بأدب",
+  "Common Places": "أماكن شائعة",
+  "Asking Where": "السؤال عن المكان",
+  "Left, Right, Straight": "يسار، يمين، إلى الأمام",
+  "Complete Introduce Yourself": "أكمل عرّف عن نفسك",
+  "Defeat the World 1 Boss": "اهزم زعيم العالم 1",
+  "Review your worlds": "راجع عوالمك",
+};
+
+const arabicContentDescriptions: Record<string, string> = {
+  "Practical greetings, introductions, survival phrases, question words, and numbers 1-10.":
+    "تحيات عملية، وتعارف، وعبارات نجاة، وكلمات أسئلة، والأرقام 1–10.",
+  "Complete your first basic Russian conversation.":
+    "أكمل أول محادثة روسية بسيطة.",
+  "Review practical World 1 phrases to keep your streak alive.":
+    "راجع عبارات عملية من العالم 1 للحفاظ على سلسلتك.",
+  "Beginner words and phrases for people, family, food, drinks, places, and directions.":
+    "كلمات وعبارات للمبتدئين عن الأشخاص والعائلة والطعام والمشروبات والأماكن والاتجاهات.",
+  "Show you can handle simple everyday Russian situations.":
+    "أظهر أنك تستطيع التعامل مع مواقف روسية يومية بسيطة.",
+  "Lessons 1-2: casual greetings and formal vs informal greetings.":
+    "الدرسان 1–2: التحيات العادية والتحيات الرسمية وغير الرسمية.",
+  "Lessons 3-5: yes/no, introduce yourself, and ask someone's name.":
+    "الدروس 3–5: نعم/لا، عرّف عن نفسك، واسأل عن اسم شخص.",
+  "Lessons 6-7: polite words and I do not understand.":
+    "الدرسان 6–7: كلمات مهذبة وعبارة لا أفهم.",
+  "Lesson 8: what, who, where, and how.":
+    "الدرس 8: ماذا، من، أين، وكيف.",
+  "Lessons 9-10: count from one to ten.":
+    "الدرسان 9–10: العد من واحد إلى عشرة.",
+  "Lessons 1-3: people, family members, and simple descriptions.":
+    "الدروس 1–3: الأشخاص وأفراد العائلة والأوصاف البسيطة.",
+  "Lessons 4-6: order simple food and talk about drinks.":
+    "الدروس 4–6: اطلب طعاماً بسيطاً وتحدث عن المشروبات.",
+  "Lessons 7-9: common places and basic direction phrases.":
+    "الدروس 7–9: أماكن شائعة وعبارات اتجاهات أساسية.",
+  "Use simple greetings for friends, strangers, and mornings.":
+    "استخدم تحيات بسيطة مع الأصدقاء والغرباء وفي الصباح.",
+  "Choose greetings that fit friends, adults, strangers, and groups.":
+    "اختر التحيات المناسبة للأصدقاء والبالغين والغرباء والمجموعات.",
+  "Give short answers and react to simple questions.":
+    "أعطِ إجابات قصيرة وتفاعل مع أسئلة بسيطة.",
+  "Say your name and respond when meeting someone.":
+    "قل اسمك وردّ عند مقابلة شخص.",
+  "Ask for a name in casual and polite first meetings.":
+    "اسأل عن الاسم في لقاءات أولى عادية ومهذبة.",
+  "Use please, thank you, excuse me, and simple apologies.":
+    "استخدم من فضلك، وشكراً، والمعذرة، واعتذارات بسيطة.",
+  "Say you do not understand and ask someone to repeat or slow down.":
+    "قل إنك لا تفهم واطلب من شخص أن يعيد الكلام أو يبطئ.",
+  "Use what, who, where, and how in practical beginner questions.":
+    "استخدم ماذا، ومن، وأين، وكيف في أسئلة عملية للمبتدئين.",
+  "Count small amounts for tickets, tables, and items.":
+    "عدّ كميات صغيرة للتذاكر والطاولات والأشياء.",
+  "Finish the first ten numbers for rooms, platforms, and times.":
+    "أكمل أول عشرة أرقام للغرف والأرصفة والأوقات.",
+  "Name close family members in simple Russian.":
+    "سمِّ أفراد العائلة المقربين بالروسية البسيطة.",
+  "Talk about friends, children, and people you meet.":
+    "تحدث عن الأصدقاء والأطفال والأشخاص الذين تقابلهم.",
+  "Use basic words like big, small, good, and new.":
+    "استخدم كلمات أساسية مثل كبير، صغير، جيد، وجديد.",
+  "Recognize simple food words for everyday meals.":
+    "تعرّف إلى كلمات طعام بسيطة للوجبات اليومية.",
+  "Ask for water, tea, coffee, and juice.":
+    "اطلب الماء والشاي والقهوة والعصير.",
+  "Use simple polite phrases for ordering food and drinks.":
+    "استخدم عبارات مهذبة بسيطة لطلب الطعام والمشروبات.",
+  "Recognize useful city and home location words.":
+    "تعرّف إلى كلمات مفيدة لأماكن المدينة والمنزل.",
+  "Ask where common places are.":
+    "اسأل أين توجد الأماكن الشائعة.",
+  "Understand basic direction words.":
+    "افهم كلمات الاتجاهات الأساسية.",
+  "Complete the final challenge to finish World 1 and unlock World 2.":
+    "أكمل التحدي النهائي لإنهاء العالم 1 وفتح العالم 2.",
+  "All available lessons are complete. Review unlocked worlds or replay the boss.":
+    "اكتملت كل الدروس المتاحة. راجع العوالم المفتوحة أو أعد تحدي الزعيم.",
+};
+
+function localizeContent(
+  value: string,
+  language: ExplanationLanguage,
+  translations: Record<string, string>,
+) {
+  return language === "ar" ? translations[value] ?? value : value;
+}
+
+export function localizeWorldTitle(title: string, language: ExplanationLanguage) {
+  return localizeContent(title, language, arabicContentTitles);
+}
+
+export function localizeWorldSubtitle(subtitle: string, language: ExplanationLanguage) {
+  return localizeContent(subtitle, language, arabicContentTitles);
+}
+
+export function localizeWorldDescription(description: string, language: ExplanationLanguage) {
+  return localizeContent(description, language, arabicContentDescriptions);
+}
+
+export function localizeLessonTitle(title: string, language: ExplanationLanguage) {
+  return localizeContent(title, language, arabicContentTitles);
+}
+
+export function localizeLessonDescription(description: string, language: ExplanationLanguage) {
+  return localizeContent(description, language, arabicContentDescriptions);
+}
+
+export function localizeProgressTitle(title: string, language: ExplanationLanguage) {
+  if (language === "en") {
+    return title;
+  }
+
+  if (title.startsWith("Complete ")) {
+    return `أكمل ${localizeLessonTitle(title.slice("Complete ".length), language)}`;
+  }
+
+  return localizeContent(title, language, arabicContentTitles);
+}
+
+export function localizeProgressDescription(description: string, language: ExplanationLanguage) {
+  if (language === "en") {
+    return description;
+  }
+
+  const earnedXpMatch = description.match(/^Earn (\d+) XP and keep moving through (.+)\.$/);
+
+  if (earnedXpMatch) {
+    return `اكسب ${earnedXpMatch[1]} نقطة XP وتابع التقدم في ${localizeWorldSubtitle(
+      earnedXpMatch[2],
+      language,
+    )}.`;
+  }
+
+  return localizeContent(description, language, arabicContentDescriptions);
+}
+
 export function translateStatus(
   status: "Completed" | "Current" | "Available" | "Locked" | "Unlocked" | "In progress",
   language: ExplanationLanguage,
@@ -742,7 +909,7 @@ export function localizeActionLabel(label: string, language: ExplanationLanguage
   }
 
   if (label.startsWith("Continue:")) {
-    return label.replace("Continue:", "متابعة:");
+    return `متابعة: ${localizeLessonTitle(label.slice("Continue:".length).trim(), language)}`;
   }
 
   if (label === "Start Boss Challenge") {

@@ -3,7 +3,16 @@
 import { Navigation } from "@/components/Navigation";
 import { useExplanationLanguage } from "@/components/LanguageSelector";
 import { userProgress, worldOne, worlds } from "@/lib/learning-data";
-import { getUiText, localizeActionLabel, translateStatus, uiTextProps } from "@/lib/ui-translations";
+import {
+  getUiText,
+  localizeActionLabel,
+  localizeLessonTitle,
+  localizeProgressDescription,
+  localizeWorldDescription,
+  localizeWorldSubtitle,
+  translateStatus,
+  uiTextProps,
+} from "@/lib/ui-translations";
 import {
   getLessonDisplayState,
   getLessonProgressState,
@@ -119,7 +128,9 @@ export default function DashboardPage() {
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.dashboard.currentCoursePath}</p>
-                <h2 className="text-xl font-bold sm:text-2xl">{currentWorld.subtitle}</h2>
+                <h2 className="text-xl font-bold sm:text-2xl" {...uiTextProps(language)}>
+                  {localizeWorldSubtitle(currentWorld.subtitle, language)}
+                </h2>
               </div>
               <span className="w-fit rounded-full bg-yellow-400 px-4 py-2 text-sm font-bold text-slate-950">
                 {text.dashboard.level} {Math.max(userProgress.level, Math.floor(progress.totalXp / 500) + 1)}
@@ -148,7 +159,7 @@ export default function DashboardPage() {
                 return (
                   <LessonMiniCard
                     key={lesson.id}
-                    title={lesson.title}
+                    title={localizeLessonTitle(lesson.title, language)}
                     status={
                       displayState === "Current"
                         ? text.dashboard.currentContinue
@@ -157,6 +168,7 @@ export default function DashboardPage() {
                     lockedLabel={text.dashboard.locked}
                     locked={lessonState.locked}
                     current={displayState === "Current"}
+                    language={language}
                   />
                 );
               })}
@@ -166,15 +178,18 @@ export default function DashboardPage() {
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
             <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.dashboard.nextRecommended}</p>
             <h2 className="mt-2 text-xl font-bold sm:text-2xl">
-              {summary.nextRecommendedLesson?.title ??
-                (summary.bossCompleted ? text.dashboard.worldOneCompleted : worldOne.bossTitle)}
-            </h2>
-            <p className="mt-3 text-slate-300">
               {summary.nextRecommendedLesson
-                ? summary.nextGoalDescription
+                ? localizeLessonTitle(summary.nextRecommendedLesson.title, language)
+                : summary.bossCompleted
+                  ? text.dashboard.worldOneCompleted
+                  : localizeLessonTitle(worldOne.bossTitle, language)}
+            </h2>
+            <p className="mt-3 text-slate-300" {...uiTextProps(language)}>
+              {summary.nextRecommendedLesson
+                ? localizeProgressDescription(summary.nextGoalDescription, language)
                 : summary.bossCompleted
                   ? text.dashboard.bossDefeatedNext
-                  : text.dashboard.bossReady}
+                  : localizeWorldDescription(text.dashboard.bossReady, language)}
             </p>
 
             <div className="mt-6 grid gap-3 text-sm">
@@ -287,12 +302,14 @@ function LessonMiniCard({
   lockedLabel,
   locked = false,
   current = false,
+  language,
 }: {
   title: string;
   status: string;
   lockedLabel: string;
   locked?: boolean;
   current?: boolean;
+  language: "en" | "ar";
 }) {
   return (
     <div
@@ -304,7 +321,7 @@ function LessonMiniCard({
             : "border-white/10 bg-slate-900/70"
       }`}
     >
-      <p className="font-semibold">{locked ? `${lockedLabel}: ` : ""}{title}</p>
+      <p className="font-semibold" {...uiTextProps(language)}>{locked ? `${lockedLabel}: ` : ""}{title}</p>
       <p className="mt-2 text-sm text-slate-400">{status}</p>
     </div>
   );

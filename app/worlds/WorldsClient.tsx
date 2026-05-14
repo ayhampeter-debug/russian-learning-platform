@@ -3,7 +3,14 @@
 import { Navigation } from "@/components/Navigation";
 import { useExplanationLanguage } from "@/components/LanguageSelector";
 import type { StageStatus, World } from "@/lib/learning-data";
-import { getUiText, translateStatus, uiTextProps } from "@/lib/ui-translations";
+import {
+  getUiText,
+  localizeLessonTitle,
+  localizeWorldDescription,
+  localizeWorldTitle,
+  translateStatus,
+  uiTextProps,
+} from "@/lib/ui-translations";
 import type { UiText } from "@/lib/ui-translations";
 import type { ExplanationLanguage } from "@/lib/language-preference";
 import {
@@ -72,8 +79,12 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
                 <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
                   <div>
                     <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.worlds.world} {world.number}</p>
-                    <h2 className="text-2xl font-bold sm:text-3xl">{world.title}</h2>
-                    <p className="mt-2 max-w-3xl text-slate-400">{world.description}</p>
+                    <h2 className="text-2xl font-bold sm:text-3xl" {...uiTextProps(language)}>
+                      {localizeWorldTitle(world.title, language)}
+                    </h2>
+                    <p className="mt-2 max-w-3xl text-slate-400" {...uiTextProps(language)}>
+                      {localizeWorldDescription(world.description, language)}
+                    </p>
                     {!worldUnlocked ? (
                       <p className="mt-3 text-sm font-semibold text-yellow-200">
                         {text.worlds.lockedUntilBoss}
@@ -122,8 +133,8 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
                         key={stage.id}
                         worldId={world.id}
                         number={stage.number}
-                        title={stage.title}
-                        description={stage.description}
+                        title={localizeWorldTitle(stage.title, language)}
+                        description={localizeWorldDescription(stage.description, language)}
                         status={locked ? "Locked" : stageState.status}
                         statusLabel={translateStatus(getProgressStatusLabel(locked ? "Locked" : stageState.status), language)}
                         locked={locked}
@@ -134,7 +145,7 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
                         lessonCount={stageLessons.length}
                         lessons={stageLessons.map((lesson) => ({
                           id: lesson.id,
-                          title: lesson.title,
+                          title: localizeLessonTitle(lesson.title, language),
                           state: !worldUnlocked ? "Locked" : getLessonDisplayState(lesson, progress),
                         }))}
                         text={text}
@@ -247,8 +258,10 @@ function StageCard({
         <StatusBadge label={badgeLabel} locked={locked} completed={isCompleted} boss={boss} />
       </div>
 
-      <h3 className="text-xl font-bold">{title}</h3>
-      <p className="mt-3 min-h-16 text-sm leading-6 text-slate-400">{description}</p>
+      <h3 className="text-xl font-bold" {...uiTextProps(language)}>{title}</h3>
+      <p className="mt-3 min-h-16 text-sm leading-6 text-slate-400" {...uiTextProps(language)}>
+        {description}
+      </p>
 
       {!boss && (
         <div className="mt-4 space-y-3">
@@ -314,7 +327,7 @@ function LessonStateRow({
   return (
     <div className={`rounded-2xl border px-3 py-2 ${stateClass}`}>
       <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-        <span className="min-w-0 truncate text-sm font-semibold">{title}</span>
+        <span className="min-w-0 truncate text-sm font-semibold" {...uiTextProps(language)}>{title}</span>
         <span className="shrink-0 text-xs font-bold">{label}</span>
       </div>
     </div>

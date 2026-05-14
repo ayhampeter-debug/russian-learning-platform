@@ -8,7 +8,7 @@ import {
   PronounceButton,
 } from "@/components/PronounceButton";
 import { type ExplanationLanguage } from "@/lib/language-preference";
-import { getUiText, uiTextProps } from "@/lib/ui-translations";
+import { getUiText, localizeLessonTitle, uiTextProps } from "@/lib/ui-translations";
 import {
   explanationTextProps,
   localizeExplanation,
@@ -410,7 +410,7 @@ export default function ChallengePage() {
               {text.challenge.backToWorlds}
             </Link>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-red-300 sm:text-sm sm:tracking-[0.3em]">
-              {bossChallenge.title} - {text.challenge.finalStage}
+              {localizeLessonTitle(bossChallenge.title, language)} - {text.challenge.finalStage}
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
               {text.challenge.firstContactSentinel}

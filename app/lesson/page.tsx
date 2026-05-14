@@ -10,7 +10,13 @@ import {
 import {
   type ExplanationLanguage,
 } from "@/lib/language-preference";
-import { getUiText, localizeActionLabel, uiTextProps } from "@/lib/ui-translations";
+import {
+  getUiText,
+  localizeActionLabel,
+  localizeLessonDescription,
+  localizeLessonTitle,
+  uiTextProps,
+} from "@/lib/ui-translations";
 import {
   explanationTextProps,
   localizeExplanation,
@@ -49,6 +55,8 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
   const progressState = useProgress();
   const lessonState = getLessonProgressState(lesson, progressState);
   const currentLesson = lesson;
+  const currentLessonTitle = localizeLessonTitle(currentLesson.title, language);
+  const currentLessonDescription = localizeLessonDescription(currentLesson.description, language);
   const lessonExercises: LessonExercise[] = currentLesson.exercises;
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState("");
@@ -198,9 +206,11 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
               <p className="text-xs font-black uppercase tracking-[0.25em] sm:text-sm sm:tracking-[0.35em]">
                 {tUi("lessonComplete", language)}
               </p>
-              <h1 className="mt-3 break-words text-3xl font-black md:text-6xl">{currentLesson.title} {text.lesson.cleared}</h1>
-              <p className="mx-auto mt-4 max-w-2xl font-semibold">
-                {text.lesson.practiced} {currentLesson.description.toLowerCase()}
+              <h1 className="mt-3 break-words text-3xl font-black md:text-6xl" {...uiTextProps(language)}>
+                {currentLessonTitle} {text.lesson.cleared}
+              </h1>
+              <p className="mx-auto mt-4 max-w-2xl font-semibold" {...uiTextProps(language)}>
+                {text.lesson.practiced} {currentLessonDescription.toLowerCase()}
               </p>
             </div>
 
@@ -249,8 +259,12 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300 sm:text-sm sm:tracking-[0.3em]">
               {text.nav.lesson} {currentLesson.number}
             </p>
-            <h1 className="mt-3 break-words text-3xl font-black sm:text-4xl md:text-6xl">{currentLesson.title}</h1>
-            <p className="mt-3 max-w-2xl text-slate-400">{currentLesson.description}</p>
+            <h1 className="mt-3 break-words text-3xl font-black sm:text-4xl md:text-6xl" {...uiTextProps(language)}>
+              {currentLessonTitle}
+            </h1>
+            <p className="mt-3 max-w-2xl text-slate-400" {...uiTextProps(language)}>
+              {currentLessonDescription}
+            </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-center">
@@ -399,7 +413,7 @@ function LockedLesson({
             {text.lesson.lessonLocked}
           </p>
           <h1 className="mt-4 text-3xl font-black md:text-5xl">
-            {lesson.title} {text.lesson.unavailableYet}
+            {localizeLessonTitle(lesson.title, language)} {text.lesson.unavailableYet}
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
             {text.lesson.unlockStep}

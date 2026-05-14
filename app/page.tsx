@@ -3,7 +3,14 @@
 import { Navigation } from "@/components/Navigation";
 import { useExplanationLanguage } from "@/components/LanguageSelector";
 import { worldOne, worlds } from "@/lib/learning-data";
-import { getUiText, uiTextProps, type UiText } from "@/lib/ui-translations";
+import {
+  getUiText,
+  localizeLessonDescription,
+  localizeLessonTitle,
+  localizeWorldDescription,
+  uiTextProps,
+  type UiText,
+} from "@/lib/ui-translations";
 import type { ExplanationLanguage } from "@/lib/language-preference";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
@@ -292,16 +299,19 @@ function ProductPreview({
           <LessonPreview
             key={lesson.id}
             number={lesson.number}
-            title={lesson.title}
-            description={lesson.description}
+            title={localizeLessonTitle(lesson.title, language)}
+            description={localizeLessonDescription(lesson.description, language)}
             locked={lesson.locked}
+            language={language}
           />
         ))}
       </div>
 
       <div className="mt-5 rounded-lg border border-violet-400/25 bg-violet-400/10 p-4">
         <p className="text-sm font-semibold text-violet-200" {...uiTextProps(language)}>{text.home.bossChallenge}</p>
-        <p className="mt-1 text-lg font-bold">{worldOne.bossDescription}</p>
+        <p className="mt-1 text-lg font-bold" {...uiTextProps(language)}>
+          {localizeWorldDescription(worldOne.bossDescription, language)}
+        </p>
       </div>
     </div>
   );
@@ -401,11 +411,13 @@ function LessonPreview({
   title,
   description,
   locked = false,
+  language,
 }: {
   number: string;
   title: string;
   description: string;
   locked?: boolean;
+  language: ExplanationLanguage;
 }) {
   return (
     <div
@@ -419,8 +431,10 @@ function LessonPreview({
         {locked ? "L" : number}
       </span>
       <div className="min-w-0">
-        <h3 className="font-bold">{title}</h3>
-        <p className="mt-1 text-sm leading-6 text-slate-400">{description}</p>
+        <h3 className="font-bold" {...uiTextProps(language)}>{title}</h3>
+        <p className="mt-1 text-sm leading-6 text-slate-400" {...uiTextProps(language)}>
+          {description}
+        </p>
       </div>
     </div>
   );

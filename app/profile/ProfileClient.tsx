@@ -3,7 +3,14 @@
 import { Navigation } from "@/components/Navigation";
 import { LanguageSelector, useExplanationLanguage } from "@/components/LanguageSelector";
 import type { ProfileAchievementRow } from "@/lib/achievement-service";
-import { getUiText, translateStatus, uiTextProps } from "@/lib/ui-translations";
+import {
+  getUiText,
+  localizeProgressDescription,
+  localizeProgressTitle,
+  localizeWorldTitle,
+  translateStatus,
+  uiTextProps,
+} from "@/lib/ui-translations";
 import { useUser } from "@clerk/nextjs";
 import {
   recentActivity,
@@ -249,7 +256,9 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
               <div>
                 <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.profile.world1Progress}</p>
-                <h2 className="mt-2 text-2xl font-black sm:text-3xl">{worldOne.title}</h2>
+                <h2 className="mt-2 text-2xl font-black sm:text-3xl" {...uiTextProps(language)}>
+                  {localizeWorldTitle(worldOne.title, language)}
+                </h2>
                 <p className="mt-3 max-w-2xl leading-7 text-slate-300">
                   {text.profile.world1ProgressText}
                 </p>
@@ -289,9 +298,10 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
                 return (
                   <WorldStep
                     key={stage.id}
-                    title={stage.title}
+                    title={localizeWorldTitle(stage.title, language)}
                     status={translateStatus(statusLabel, language)}
                     tone={tone}
+                    language={language}
                   />
                 );
               })}
@@ -333,10 +343,10 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
             <div className="mt-5 rounded-3xl border border-white/10 bg-slate-900/80 p-5">
               <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.profile.nextGoal}</p>
               <p className="mt-2 text-xl font-bold">
-                {summary.nextGoalTitle}
+                {localizeProgressTitle(summary.nextGoalTitle, language)}
               </p>
-              <p className="mt-3 text-sm leading-6 text-slate-400">
-                {summary.nextGoalDescription}
+              <p className="mt-3 text-sm leading-6 text-slate-400" {...uiTextProps(language)}>
+                {localizeProgressDescription(summary.nextGoalDescription, language)}
               </p>
             </div>
           </div>
@@ -414,10 +424,12 @@ function WorldStep({
   title,
   status,
   tone,
+  language,
 }: {
   title: string;
   status: string;
   tone: "done" | "active" | "locked";
+  language: ExplanationLanguage;
 }) {
   const toneClass = {
     done: "border-green-400/30 bg-green-400/10 text-green-200",
@@ -427,7 +439,7 @@ function WorldStep({
 
   return (
     <div className={`min-w-0 rounded-2xl border p-4 sm:p-5 ${toneClass}`}>
-      <p className="break-words font-bold">{title}</p>
+      <p className="break-words font-bold" {...uiTextProps(language)}>{title}</p>
       <p className="mt-2 text-sm opacity-80">{status}</p>
     </div>
   );
