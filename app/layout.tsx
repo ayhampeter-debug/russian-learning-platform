@@ -26,16 +26,9 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/brand/yazkup-icon.png",
-        sizes: "1254x1254",
-        type: "image/png",
-      },
-    ],
-    apple: [
-      {
-        url: "/brand/yazkup-icon.png",
-        sizes: "1254x1254",
-        type: "image/png",
+        url: "/brand/yazkup-icon.svg",
+        sizes: "any",
+        type: "image/svg+xml",
       },
     ],
   },
