@@ -5,30 +5,32 @@ type BrandLogoProps = {
 };
 
 export function BrandLogo({ compact = false }: BrandLogoProps) {
-  const logoWidth = compact ? 96 : 120;
+  const iconClassName = compact
+    ? "h-7 w-7 sm:h-7 sm:w-7"
+    : "h-7 w-7 sm:h-8 sm:w-8";
+  const textClassName = compact
+    ? "text-[1.35rem] sm:text-[1.4rem]"
+    : "text-[1.4rem] sm:text-[1.55rem]";
 
   return (
-    <span className="flex min-w-0 items-center" aria-label="YazkUp">
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white p-1.5 shadow-sm shadow-cyan-950/15 ring-1 ring-[color:rgb(17_32_59_/_0.08)] sm:hidden">
-        <Image
-          src="/brand/yazkup-icon.svg"
-          alt="YazkUp"
-          width={512}
-          height={512}
-          className="h-full w-full object-contain"
-          sizes="40px"
-        />
-      </span>
-      <span className="hidden shrink-0 rounded-xl bg-white px-2.5 py-1.5 shadow-sm shadow-cyan-950/15 ring-1 ring-[color:rgb(17_32_59_/_0.08)] sm:flex">
-        <Image
-          src="/brand/yazkup-logo.svg"
-          alt="YazkUp"
-          width={980}
-          height={260}
-          className="h-auto max-w-full object-contain"
-          style={{ width: logoWidth, height: "auto" }}
-          sizes={`${logoWidth}px`}
-        />
+    <span className="flex min-w-0 items-center gap-2" aria-label="YazkUp">
+      <Image
+        src="/brand/yazkup-icon.svg"
+        alt=""
+        width={512}
+        height={512}
+        className={`${iconClassName} shrink-0 object-contain`}
+        sizes={compact ? "28px" : "(min-width: 640px) 32px, 28px"}
+        aria-hidden="true"
+      />
+      <span
+        className={`${textClassName} shrink-0 font-extrabold leading-none tracking-normal`}
+        aria-hidden="true"
+      >
+        <span className="text-[var(--app-text)]">Yazk</span>
+        <span className="bg-gradient-to-br from-[var(--brand-teal)] to-[var(--brand-cyan)] bg-clip-text text-transparent">
+          Up
+        </span>
       </span>
     </span>
   );
