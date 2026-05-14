@@ -23,4 +23,3 @@ export function getExplanationDirection(language: ExplanationLanguage) {
 export function isArabicExplanation(language: ExplanationLanguage) {
   return language === "ar";
 }
-

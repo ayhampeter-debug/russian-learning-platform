@@ -1,6 +1,11 @@
+"use client";
+
 import { Navigation } from "@/components/Navigation";
+import { useExplanationLanguage } from "@/components/LanguageSelector";
 import { worldOne, worlds } from "@/lib/learning-data";
-import { auth } from "@clerk/nextjs/server";
+import { getUiText, uiTextProps, type UiText } from "@/lib/ui-translations";
+import type { ExplanationLanguage } from "@/lib/language-preference";
+import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -8,79 +13,77 @@ type Tone = "cyan" | "yellow" | "red" | "green" | "violet";
 
 const worldTwo = worlds.find((world) => world.number === 2);
 
-const heroStats = [
-  { label: "First course live", value: "Russian" },
-  { label: "Available worlds", value: worldTwo ? "2" : "1" },
-  { label: "Starter XP path", value: `${worldOne.xp}` },
-];
-
-const features: Array<{
-  title: string;
-  text: string;
-  badge: string;
-  tone: Tone;
-}> = [
-  {
-    title: "Quest-based lessons",
-    text: "Move through focused lessons that feel like a path, not a worksheet.",
-    badge: "Q",
-    tone: "cyan",
-  },
-  {
-    title: "XP and progress tracking",
-    text: "Earn XP, see what is complete, and always know what to do next.",
-    badge: "XP",
-    tone: "yellow",
-  },
-  {
-    title: "Boss challenges",
-    text: "Checkpoint challenges test whether you can use what you learned.",
-    badge: "B",
-    tone: "red",
-  },
-  {
-    title: "Saved progress anywhere",
-    text: "Practice as a guest or sign in to keep progress synced to your account.",
-    badge: "OK",
-    tone: "green",
-  },
-];
-
-const howItWorks = [
-  {
-    step: "1",
-    title: "Choose a world",
-    text: "Start with a themed path that groups lessons into clear goals.",
-  },
-  {
-    step: "2",
-    title: "Complete short lessons",
-    text: "Practice vocabulary, choices, matching, sentence order, and scenarios.",
-  },
-  {
-    step: "3",
-    title: "Level up and unlock challenges",
-    text: "Build XP, save progress, and open boss gates as you advance.",
-  },
-];
-
-const courseHighlights = [
-  "Beginner-friendly Russian",
-  "English or Arabic explanations",
-  "World 1 and World 2 available",
-  "Built to support more languages later",
-];
-
-const productHighlights = [
-  "Built for daily practice",
-  "Short lessons",
-  "Progress saved with account",
-  "Guest mode available",
-];
-
-export default async function Home() {
-  const { userId } = await auth();
+export default function Home() {
+  const { language } = useExplanationLanguage();
+  const text = getUiText(language);
+  const { isSignedIn } = useUser();
+  const userId = isSignedIn ? "signed-in" : null;
   const startHref = userId ? "/dashboard" : "/signup";
+  const heroStats = [
+    { label: text.home.firstCourseLive, value: text.lesson.russian },
+    { label: text.home.availableWorlds, value: worldTwo ? "2" : "1" },
+    { label: text.home.starterXpPath, value: `${worldOne.xp}` },
+  ];
+  const features: Array<{
+    title: string;
+    text: string;
+    badge: string;
+    tone: Tone;
+  }> = [
+    {
+      title: text.home.questLessons,
+      text: text.home.questLessonsText,
+      badge: "Q",
+      tone: "cyan",
+    },
+    {
+      title: text.home.xpTracking,
+      text: text.home.xpTrackingText,
+      badge: "XP",
+      tone: "yellow",
+    },
+    {
+      title: text.home.bossChallenges,
+      text: text.home.bossChallengesText,
+      badge: "B",
+      tone: "red",
+    },
+    {
+      title: text.home.savedProgress,
+      text: text.home.savedProgressText,
+      badge: "OK",
+      tone: "green",
+    },
+  ];
+  const howItWorks = [
+    {
+      step: "1",
+      title: text.home.chooseWorld,
+      text: text.home.chooseWorldText,
+    },
+    {
+      step: "2",
+      title: text.home.completeShortLessons,
+      text: text.home.completeShortLessonsText,
+    },
+    {
+      step: "3",
+      title: text.home.levelUp,
+      text: text.home.levelUpText,
+    },
+  ];
+  const courseHighlights = [
+    text.home.beginnerFriendly,
+    text.home.guidedMode,
+    text.home.worldsAvailable,
+    text.home.moreLanguagesLater,
+  ];
+  const productHighlights = [
+    text.home.dailyPractice,
+    text.home.shortLessons,
+    text.home.progressSavedAccount,
+    text.home.guestModeAvailable,
+  ];
 
   return (
     <main className="min-h-screen overflow-hidden bg-slate-950 text-white">
@@ -88,19 +91,19 @@ export default async function Home() {
 
       <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 pb-14 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14 lg:pb-20">
         <div className="min-w-0">
-          <p className="inline-flex max-w-full rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-bold text-cyan-200">
-            Gamified language learning for daily momentum
+          <p className="inline-flex max-w-full rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-bold text-cyan-200" {...uiTextProps(language)}>
+            {text.home.eyebrow}
           </p>
 
-          <h1 className="mt-6 max-w-4xl text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl">
-            YazkUp helps you level up languages through quests.
+          <h1 className="mt-6 max-w-4xl text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl" {...uiTextProps(language)}>
+            {text.home.title}
           </h1>
 
-          <div className="mt-6 max-w-2xl space-y-3 text-base leading-8 text-slate-300 sm:text-lg">
-            <p>Learn languages through quests, levels, XP, and daily progress.</p>
-            <p>Learn Russian with English or Arabic explanations.</p>
+          <div className="mt-6 max-w-2xl space-y-3 text-base leading-8 text-slate-300 sm:text-lg" {...uiTextProps(language)}>
+            <p>{text.home.tagline}</p>
+            <p>{text.home.guided}</p>
             <p className="font-semibold text-cyan-200">
-              Start with the first live course today.
+              {text.home.startToday}
             </p>
           </div>
 
@@ -109,13 +112,13 @@ export default async function Home() {
               href={startHref}
               className="w-full rounded-full bg-cyan-400 px-7 py-3 text-center font-bold text-slate-950 shadow-lg shadow-cyan-950/30 transition hover:bg-cyan-300 sm:w-auto"
             >
-              {userId ? "Continue Learning" : "Create Free Account"}
+              {userId ? text.home.continueLearning : text.home.createFreeAccount}
             </Link>
             <Link
               href="/worlds"
               className="w-full rounded-full border border-white/20 bg-white/10 px-7 py-3 text-center font-bold text-white transition hover:bg-white/15 sm:w-auto"
             >
-              Explore Worlds
+              {text.home.exploreWorlds}
             </Link>
           </div>
 
@@ -132,15 +135,16 @@ export default async function Home() {
           </div>
         </div>
 
-        <ProductPreview />
+        <ProductPreview text={text} language={language} />
       </section>
 
       <section className="border-y border-cyan-400/10 bg-slate-900/60">
         <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-20">
           <SectionHeading
-            eyebrow="Why YazkUp"
-            title="Language practice with a clear game loop"
-            text="YazkUp turns small daily sessions into visible progress, world unlocks, and checkpoints that make practice easier to return to."
+            eyebrow={text.home.whyYazkUp}
+            title={text.home.gameLoopTitle}
+            text={text.home.gameLoopText}
+            language={language}
           />
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -153,9 +157,10 @@ export default async function Home() {
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-20">
         <SectionHeading
-          eyebrow="How it works"
-          title="Pick a path, practice, then unlock the next challenge"
-          text="The first course is organized into short worlds and lessons, so a new learner can start quickly without guessing where to go."
+          eyebrow={text.home.howItWorks}
+          title={text.home.howTitle}
+          text={text.home.howText}
+          language={language}
         />
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">
@@ -169,16 +174,13 @@ export default async function Home() {
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:py-20">
           <div>
             <p className="text-sm font-bold uppercase tracking-widest text-cyan-300">
-              Current course
+              {text.home.currentCourse}
             </p>
             <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-              Russian is live now. More languages can come later.
+              {text.home.russianLive}
             </h2>
             <p className="mt-4 leading-7 text-slate-400">
-              YazkUp is designed as a language learning platform that can grow
-              beyond the first course. The current path gives beginners an
-              English- or Arabic-guided route through practical basics in World 1 and
-              World 2.
+              {text.home.courseText}
             </p>
           </div>
 
@@ -194,15 +196,13 @@ export default async function Home() {
         <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
           <div>
             <p className="text-sm font-bold uppercase tracking-widest text-cyan-300">
-              Product highlights
+              {text.home.productHighlights}
             </p>
             <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-              Honest tools for steady practice
+              {text.home.honestTools}
             </h2>
             <p className="mt-4 leading-7 text-slate-400">
-              No inflated promises or fake testimonials. YazkUp focuses on
-              concise lessons, saved progress, and a friendly game structure
-              that helps learners keep going.
+              {text.home.honestToolsText}
             </p>
           </div>
 
@@ -222,14 +222,13 @@ export default async function Home() {
         <div className="rounded-lg border border-cyan-400/20 bg-cyan-400/10 p-5 sm:p-8 lg:flex lg:items-center lg:justify-between lg:gap-10">
           <div>
             <p className="text-sm font-bold uppercase tracking-widest text-cyan-200">
-              Ready to start?
+              {text.home.ready}
             </p>
             <h2 className="mt-3 text-2xl font-black tracking-tight sm:text-4xl">
-              Begin with World 1 and build your first Russian phrases.
+              {text.home.beginWorldOne}
             </h2>
             <p className="mt-4 max-w-2xl leading-7 text-slate-300">
-              Start the live Russian course, explore the worlds, or continue
-              from your dashboard when you are signed in.
+              {text.home.startLiveCourse}
             </p>
           </div>
 
@@ -238,13 +237,13 @@ export default async function Home() {
               href={startHref}
               className="w-full rounded-full bg-cyan-400 px-7 py-3 text-center font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
             >
-              {userId ? "Continue Learning" : "Create Free Account"}
+              {userId ? text.home.continueLearning : text.home.createFreeAccount}
             </Link>
             <Link
               href="/worlds"
               className="w-full rounded-full border border-white/20 px-7 py-3 text-center font-bold text-white transition hover:bg-white/10 sm:w-auto"
             >
-              Explore Worlds
+              {text.home.exploreWorlds}
             </Link>
           </div>
         </div>
@@ -253,15 +252,21 @@ export default async function Home() {
   );
 }
 
-function ProductPreview() {
+function ProductPreview({
+  text,
+  language,
+}: {
+  text: UiText;
+  language: ExplanationLanguage;
+}) {
   return (
     <div className="rounded-lg border border-white/10 bg-white/10 p-4 shadow-2xl shadow-cyan-950/30 backdrop-blur sm:p-6">
       <div className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm font-semibold text-cyan-300">Live course</p>
-          <h2 className="mt-1 text-2xl font-black">Russian: First Contact</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-400">
-            Beginner-friendly lessons guided in English or Arabic.
+          <p className="text-sm font-semibold text-cyan-300" {...uiTextProps(language)}>{text.home.liveCourse}</p>
+          <h2 className="mt-1 text-2xl font-black" {...uiTextProps(language)}>{text.home.russianFirstContact}</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-400" {...uiTextProps(language)}>
+            {text.home.beginnerGuided}
           </p>
         </div>
         <span className="w-fit rounded-full bg-yellow-400 px-4 py-2 text-sm font-black text-slate-950">
@@ -271,7 +276,7 @@ function ProductPreview() {
 
       <div className="mt-5">
         <div className="mb-2 flex justify-between gap-3 text-sm text-slate-400">
-          <span>World progress preview</span>
+          <span {...uiTextProps(language)}>{text.home.worldProgressPreview}</span>
           <span>{worldOne.progressPercent}%</span>
         </div>
         <div className="h-3 overflow-hidden rounded-full bg-slate-800">
@@ -295,7 +300,7 @@ function ProductPreview() {
       </div>
 
       <div className="mt-5 rounded-lg border border-violet-400/25 bg-violet-400/10 p-4">
-        <p className="text-sm font-semibold text-violet-200">Boss challenge</p>
+        <p className="text-sm font-semibold text-violet-200" {...uiTextProps(language)}>{text.home.bossChallenge}</p>
         <p className="mt-1 text-lg font-bold">{worldOne.bossDescription}</p>
       </div>
     </div>
@@ -306,13 +311,15 @@ function SectionHeading({
   eyebrow,
   title,
   text,
+  language,
 }: {
   eyebrow: string;
   title: string;
   text: string;
+  language: ExplanationLanguage;
 }) {
   return (
-    <div className="max-w-3xl">
+    <div className="max-w-3xl" {...uiTextProps(language)}>
       <p className="text-sm font-bold uppercase tracking-widest text-cyan-300">
         {eyebrow}
       </p>

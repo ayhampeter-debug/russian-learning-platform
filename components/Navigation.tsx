@@ -5,26 +5,29 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { BrandLogo } from "@/components/BrandLogo";
-import { LanguageSelector } from "@/components/LanguageSelector";
+import { LanguageSelector, useExplanationLanguage } from "@/components/LanguageSelector";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { getUiText } from "@/lib/ui-translations";
 
 type NavItem = {
   href: string;
-  label: string;
+  labelKey: keyof ReturnType<typeof getUiText>["nav"];
 };
 
 const navItems: NavItem[] = [
-  { href: "/", label: "Home" },
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/worlds", label: "Worlds" },
-  { href: "/lesson", label: "Lesson" },
-  { href: "/challenge", label: "Challenge" },
-  { href: "/profile", label: "Profile" },
+  { href: "/", labelKey: "home" },
+  { href: "/dashboard", labelKey: "dashboard" },
+  { href: "/worlds", labelKey: "worlds" },
+  { href: "/lesson", labelKey: "lesson" },
+  { href: "/challenge", labelKey: "challenge" },
+  { href: "/profile", labelKey: "profile" },
 ];
 
 export function Navigation() {
   const pathname = usePathname();
   const { isLoaded, isSignedIn } = useUser();
+  const { language } = useExplanationLanguage();
+  const text = getUiText(language);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isNavActive = (href: string) =>
@@ -34,14 +37,10 @@ export function Navigation() {
   return (
     <nav className="mx-auto mb-5 w-full max-w-7xl px-3 pt-3 sm:mb-8 sm:px-6 sm:pt-5" aria-label="Primary navigation">
       <div className="overflow-hidden rounded-2xl border border-[var(--card-border)] bg-[var(--card)] shadow-xl shadow-cyan-950/20 backdrop-blur">
-        <div className="flex h-14 min-w-0 items-center justify-between gap-3 px-3 sm:px-4">
-          <Link
-            href="/"
-            className="flex min-w-0 items-center rounded-lg px-1 py-1 transition hover:bg-[var(--app-primary-soft)]"
-            aria-label="YazkUp home"
-          >
+        <div className="flex h-14 min-w-0 items-center justify-between gap-2 px-3 sm:gap-3 sm:px-4">
+          <div className="flex min-w-0 items-center">
             <BrandLogo />
-          </Link>
+          </div>
 
           <div className="hidden min-w-0 items-center justify-center gap-1 lg:flex">
             {navItems.map((item) => {
@@ -58,7 +57,7 @@ export function Navigation() {
                       : "text-[var(--app-text-muted)] hover:bg-[var(--app-primary-soft)] hover:text-[var(--app-text)]"
                   }`}
                 >
-                  {item.label}
+                  {text.nav[item.labelKey]}
                 </Link>
               );
             })}
@@ -71,17 +70,19 @@ export function Navigation() {
               isLoaded={isLoaded}
               isSignedIn={Boolean(isSignedIn)}
               pathname={pathname}
+              signInLabel={text.nav.signIn}
+              signUpLabel={text.nav.signUp}
             />
             <button
               type="button"
               className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--card-border)] bg-[var(--app-surface-muted)] text-[var(--app-text-soft)] transition hover:border-[var(--brand-teal)] hover:bg-[var(--app-primary-soft)] hover:text-[var(--app-text)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-cyan)] focus:ring-offset-2 focus:ring-offset-[var(--background)] lg:hidden"
-              aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-label={isMenuOpen ? text.nav.closeMenu : text.nav.openMenu}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-navigation"
               onClick={() => setIsMenuOpen((current) => !current)}
             >
               <span className="sr-only">
-                {isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+                {isMenuOpen ? text.nav.closeMenu : text.nav.openMenu}
               </span>
               <span className="flex h-4 w-4 flex-col justify-center gap-1">
                 <span
@@ -128,7 +129,7 @@ export function Navigation() {
                       : "text-[var(--app-text-muted)] hover:bg-[var(--app-primary-soft)] hover:text-[var(--app-text)]"
                   }`}
                 >
-                  {item.label}
+                  {text.nav[item.labelKey]}
                 </Link>
               );
             })}
@@ -146,9 +147,17 @@ type AuthActionsProps = {
   isLoaded: boolean;
   isSignedIn: boolean;
   pathname: string;
+  signInLabel: string;
+  signUpLabel: string;
 };
 
-function AuthActions({ isLoaded, isSignedIn, pathname }: AuthActionsProps) {
+function AuthActions({
+  isLoaded,
+  isSignedIn,
+  pathname,
+  signInLabel,
+  signUpLabel,
+}: AuthActionsProps) {
   if (!isLoaded) {
     return (
       <span
@@ -188,7 +197,7 @@ function AuthActions({ isLoaded, isSignedIn, pathname }: AuthActionsProps) {
           pathname.startsWith("/login") ? activeClass : inactiveClass
         }`}
       >
-        Login
+        {signInLabel}
       </Link>
       <Link
         href="/signup"
@@ -197,7 +206,7 @@ function AuthActions({ isLoaded, isSignedIn, pathname }: AuthActionsProps) {
           pathname.startsWith("/signup") ? activeClass : inactiveClass
         }`}
       >
-        Sign up
+        {signUpLabel}
       </Link>
     </div>
   );

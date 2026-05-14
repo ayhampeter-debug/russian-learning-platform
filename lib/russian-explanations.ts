@@ -193,10 +193,15 @@ const noteArabic: Record<string, string> = {
 };
 
 const learningTextArabic: Record<string, string> = {
+  "Phase 1": "المرحلة 1",
+  "Phase 2": "المرحلة 2",
+  "Phase 3": "المرحلة 3",
   "Build the Russian phrase.": "ابن العبارة الروسية.",
   "Build the Russian question.": "ابن السؤال الروسي.",
   "Build the Russian sentence.": "ابن الجملة الروسية.",
+  "Break the armor by building the Russian sentence.": "اكسر الدرع ببناء الجملة الروسية.",
   "Choose the answer.": "اختر الإجابة.",
+  "Choose the line that keeps the conversation alive.": "اختر العبارة التي تبقي المحادثة مستمرة.",
   "Choose the best English meaning.": "اختر المعنى الصحيح.",
   "Choose the best phrase for the situation.": "اختر أفضل عبارة للموقف.",
   "Choose the direction.": "اختر الاتجاه.",
@@ -232,6 +237,20 @@ const learningTextArabic: Record<string, string> = {
   "What does this question word mean?": "ماذا تعني أداة السؤال هذه؟",
   "What does this word mean?": "ماذا تعني هذه الكلمة؟",
   "What number is this?": "ما هذا الرقم؟",
+  "Moscow station encounter": "موقف في محطة موسكو",
+  "A stranger asks if you understand the announcement. You do not. What do you say?":
+    "يسألك شخص غريب هل تفهم الإعلان. أنت لا تفهم. ماذا تقول؟",
+  "The arena goes quiet. Pick the survival phrase.": "تهدأ الساحة. اختر عبارة النجاة.",
+  "The final shield comes up. One clean answer can end the fight.":
+    "ظهر الدرع الأخير. إجابة صحيحة واحدة يمكن أن تنهي القتال.",
+  "The sentinel scrambles the words. Put them back in order.":
+    "بعثر الحارس الكلمات. أعد ترتيبها.",
+  "The sentinel tests your First Contact basics.": "يختبر الحارس أساسيات التواصل الأول لديك.",
+  "The Gatekeeper says: Привет. What does it mean?": "يقول حارس البوابة: Привет. ماذا تعني؟",
+  "Type the English meaning of Спасибо.": "اكتب معنى Спасибо بالإنجليزية.",
+  "What is the correct answer to Как тебя зовут?":
+    "ما الإجابة الصحيحة على Как тебя зовут؟",
+  "Type the English word for Да.": "اكتب الكلمة الإنجليزية المقابلة لـ Да.",
 };
 
 export function tUi(key: UiKey, language: ExplanationLanguage) {

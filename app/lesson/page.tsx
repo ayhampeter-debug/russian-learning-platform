@@ -10,6 +10,7 @@ import {
 import {
   type ExplanationLanguage,
 } from "@/lib/language-preference";
+import { getUiText, localizeActionLabel, uiTextProps } from "@/lib/ui-translations";
 import {
   explanationTextProps,
   localizeExplanation,
@@ -44,6 +45,7 @@ export default function LessonPage() {
 
 export function LessonExperience({ lesson }: { lesson: Lesson }) {
   const { language } = useExplanationLanguage();
+  const text = getUiText(language);
   const progressState = useProgress();
   const lessonState = getLessonProgressState(lesson, progressState);
   const currentLesson = lesson;
@@ -183,7 +185,7 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
   }
 
   if (lessonState.locked) {
-    return <LockedLesson lesson={currentLesson} />;
+    return <LockedLesson lesson={currentLesson} language={language} />;
   }
 
   if (isFinished) {
@@ -196,9 +198,9 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
               <p className="text-xs font-black uppercase tracking-[0.25em] sm:text-sm sm:tracking-[0.35em]">
                 {tUi("lessonComplete", language)}
               </p>
-              <h1 className="mt-3 break-words text-3xl font-black md:text-6xl">{currentLesson.title} Cleared</h1>
+              <h1 className="mt-3 break-words text-3xl font-black md:text-6xl">{currentLesson.title} {text.lesson.cleared}</h1>
               <p className="mx-auto mt-4 max-w-2xl font-semibold">
-                You practiced {currentLesson.description.toLowerCase()}
+                {text.lesson.practiced} {currentLesson.description.toLowerCase()}
               </p>
             </div>
 
@@ -218,7 +220,7 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
                   href={getNextAvailablePath(completionProgress ?? progressState)}
                   className="inline-flex flex-1 justify-center rounded-full bg-cyan-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-cyan-300"
                 >
-                  {getNextAvailableLabel(completionProgress ?? progressState)}
+                  {localizeActionLabel(getNextAvailableLabel(completionProgress ?? progressState), language)}
                 </Link>
                 <button
                   type="button"
@@ -241,11 +243,11 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
       <section className="mx-auto max-w-5xl px-4 pb-8 sm:px-6">
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-end">
           <div>
-            <Link href="/worlds" className="text-sm text-slate-400 hover:text-white">
-              Back to Worlds
+            <Link href="/worlds" className="text-sm text-slate-400 hover:text-white" {...uiTextProps(language)}>
+              {text.lesson.backToWorlds}
             </Link>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300 sm:text-sm sm:tracking-[0.3em]">
-              Lesson {currentLesson.number}
+              {text.nav.lesson} {currentLesson.number}
             </p>
             <h1 className="mt-3 break-words text-3xl font-black sm:text-4xl md:text-6xl">{currentLesson.title}</h1>
             <p className="mt-3 max-w-2xl text-slate-400">{currentLesson.description}</p>
@@ -260,7 +262,7 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
         <div className="mb-8 rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-5">
           <div className="mb-3 flex items-center justify-between text-sm text-slate-400">
             <span>
-              Exercise {currentExerciseIndex + 1} of {lessonExercises.length}
+              {text.lesson.exercise} {currentExerciseIndex + 1} of {lessonExercises.length}
             </span>
             <span>{Math.round(progress)}%</span>
           </div>
@@ -380,26 +382,33 @@ export function LessonExperience({ lesson }: { lesson: Lesson }) {
   );
 }
 
-function LockedLesson({ lesson }: { lesson: Lesson }) {
+function LockedLesson({
+  lesson,
+  language,
+}: {
+  lesson: Lesson;
+  language: ExplanationLanguage;
+}) {
+  const text = getUiText(language);
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <Navigation />
       <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-3xl items-center px-4 pb-8 sm:px-6">
         <div className="w-full rounded-2xl border border-white/10 bg-white/10 p-5 text-center shadow-2xl shadow-cyan-950/30 sm:rounded-3xl sm:p-8">
           <p className="text-xs font-black uppercase tracking-[0.25em] text-slate-400 sm:text-sm sm:tracking-[0.35em]">
-            Lesson Locked
+            {text.lesson.lessonLocked}
           </p>
           <h1 className="mt-4 text-3xl font-black md:text-5xl">
-            {lesson.title} is not available yet.
+            {lesson.title} {text.lesson.unavailableYet}
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
-            Complete the previous required lesson or boss challenge to unlock this step.
+            {text.lesson.unlockStep}
           </p>
           <Link
             href="/worlds"
             className="mt-8 inline-flex w-full justify-center rounded-full bg-cyan-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
           >
-            Back to Worlds
+            {text.lesson.backToWorlds}
           </Link>
         </div>
       </section>
@@ -444,7 +453,9 @@ function ExerciseView({
     return (
       <>
         <div className="mt-8 rounded-2xl border border-cyan-400/20 bg-slate-900/80 p-4 text-center sm:rounded-3xl sm:p-8">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-500 sm:text-sm sm:tracking-[0.25em]">Russian</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-500 sm:text-sm sm:tracking-[0.25em]" {...explanationTextProps(language)}>
+            {getUiText(language).lesson.russian}
+          </p>
           <div className="mt-4 flex min-w-0 flex-wrap items-center justify-center gap-3">
             <p className="break-words text-3xl font-black sm:text-5xl">{normalizeRussianText(exercise.display)}</p>
             <PronounceButton text={exercise.display} />
@@ -772,48 +783,26 @@ function SideStat({ label, value }: { label: string; value: string }) {
 }
 
 function getExerciseLabel(type: LessonExercise["type"], language: ExplanationLanguage) {
-  if (language === "ar") {
-    const arabicLabels = {
-      multipleChoice: tUi("chooseCorrectAnswer", language),
-      fillBlank: tUi("fillBlank", language),
-      sentenceOrder: tUi("putSentenceInOrder", language),
-      matching: tUi("matchPairs", language),
-      scenarioChoice: "اختيار موقف",
-    };
-
-    return arabicLabels[type];
-  }
-
+  const lessonText = getUiText(language).lesson;
   const labels = {
-    multipleChoice: "Multiple choice",
-    fillBlank: "Fill the blank",
-    sentenceOrder: "Sentence order",
-    matching: "Matching",
-    scenarioChoice: "Scenario choice",
+    multipleChoice: lessonText.multipleChoice,
+    fillBlank: lessonText.fillBlank,
+    sentenceOrder: lessonText.sentenceOrder,
+    matching: lessonText.matching,
+    scenarioChoice: lessonText.scenarioChoice,
   };
 
   return labels[type];
 }
 
 function getShortExerciseLabel(type: LessonExercise["type"], language: ExplanationLanguage) {
-  if (language === "ar") {
-    const arabicLabels = {
-      multipleChoice: "اختيار",
-      fillBlank: "فراغ",
-      sentenceOrder: "ترتيب",
-      matching: "مطابقة",
-      scenarioChoice: "موقف",
-    };
-
-    return arabicLabels[type];
-  }
-
+  const lessonText = getUiText(language).lesson;
   const labels = {
-    multipleChoice: "Choice",
-    fillBlank: "Blank",
-    sentenceOrder: "Order",
-    matching: "Match",
-    scenarioChoice: "Scenario",
+    multipleChoice: lessonText.choice,
+    fillBlank: lessonText.blank,
+    sentenceOrder: lessonText.order,
+    matching: lessonText.match,
+    scenarioChoice: lessonText.scenario,
   };
 
   return labels[type];

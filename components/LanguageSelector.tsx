@@ -7,7 +7,7 @@ import {
   normalizeExplanationLanguage,
   type ExplanationLanguage,
 } from "@/lib/language-preference";
-import { tUi } from "@/lib/russian-explanations";
+import { getUiText, uiTextProps } from "@/lib/ui-translations";
 import { useId, useSyncExternalStore } from "react";
 
 type LanguageSelectorProps = {
@@ -73,6 +73,7 @@ export function LanguageSelector({
   className = "",
 }: LanguageSelectorProps) {
   const { language, setLanguage } = useExplanationLanguage();
+  const text = getUiText(language);
   const labelId = useId();
   const isPanel = variant === "panel";
 
@@ -90,7 +91,7 @@ export function LanguageSelector({
           isPanel ? "text-[var(--app-text-muted)]" : "hidden text-[var(--app-text-muted)] xl:block"
         }`}
       >
-        {isPanel ? tUi("explanationLanguage", language) : tUi("learnRussianWith", language)}
+        {isPanel ? text.nav.explanationLanguage : text.nav.learnRussianWith}
       </label>
       <div
         className={`grid grid-cols-2 rounded-full border border-[var(--card-border)] bg-[var(--app-surface)] p-1 ${
@@ -115,15 +116,18 @@ export function LanguageSelector({
                   : "text-[var(--app-text-muted)] hover:bg-[var(--app-primary-soft)] hover:text-[var(--app-text)]"
               }`}
             >
-              {isPanel ? option.label : option.shortLabel}
+              {isPanel ? (option.value === "ar" ? text.common.arabic : text.common.english) : option.shortLabel}
             </button>
           );
         })}
       </div>
       {isPanel ? (
-        <p className="mt-3 text-sm leading-6 text-[var(--app-text-muted)]">
+        <p
+          className="mt-3 text-sm leading-6 text-[var(--app-text-muted)]"
+          {...uiTextProps(language)}
+        >
           {language === "ar"
-            ? "ستبقى الروسية كما هي، وستظهر المعاني والشرح بالعربية حيث تتوفر."
+            ? "تبقى الروسية لغة المساق، وتظهر المعاني والشرح بالعربية حيث تتوفر."
             : "Russian stays the course language; meanings and explanations appear in English."}
         </p>
       ) : null}

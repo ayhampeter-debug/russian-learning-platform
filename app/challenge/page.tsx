@@ -8,6 +8,7 @@ import {
   PronounceButton,
 } from "@/components/PronounceButton";
 import { type ExplanationLanguage } from "@/lib/language-preference";
+import { getUiText, uiTextProps } from "@/lib/ui-translations";
 import {
   explanationTextProps,
   localizeExplanation,
@@ -88,9 +89,9 @@ const bossQuestions: BossQuestion[] = [
     prompt: "Break the armor by building the Russian sentence.",
     display: "My name is Alex.",
     translation: "My name is Alex.",
-    words: ["Алекс", "зовут", "Меня"],
-    correctOrder: ["Меня", "зовут", "Алекс"],
-    explanation: "Меня зовут Алекс is the natural Russian sentence for My name is Alex.",
+    words: ["�����", "�����", "����"],
+    correctOrder: ["����", "�����", "�����"],
+    explanation: "���� ����� ����� is the natural Russian sentence for My name is Alex.",
     points: 170,
     damage: 170,
     bossLine: "The sentinel scrambles the words. Put them back in order.",
@@ -104,9 +105,9 @@ const bossQuestions: BossQuestion[] = [
     display: "Moscow station encounter",
     situation:
       "A stranger asks if you understand the announcement. You do not. What do you say?",
-    options: ["Я не понимаю", "Пока", "Да", "Спасибо"],
-    correctAnswer: "Я не понимаю",
-    explanation: "Я не понимаю means I do not understand, which fits this situation.",
+    options: ["� �� �������", "����", "��", "�������"],
+    correctAnswer: "� �� �������",
+    explanation: "� �� ������� means I do not understand, which fits this situation.",
     points: 190,
     damage: 190,
     bossLine: "The arena goes quiet. Pick the survival phrase.",
@@ -134,6 +135,7 @@ const staticBossChallenge: BossChallengeContent = {
 
 export default function ChallengePage() {
   const { language } = useExplanationLanguage();
+  const text = getUiText(language);
   const savedProgress = useProgress();
   const bossState = getWorldBossState(worldOne, savedProgress);
   const bossAvailable = bossState !== "locked";
@@ -189,10 +191,10 @@ export default function ChallengePage() {
   const bossHealthPercent = (bossHealth / maxBossHealth) * 100;
   const accuracy = Math.round((correctCount / activeQuestions.length) * 100);
   const finalPassed = score >= activeSettings.passScore && hearts > 0;
-  const resultTitle = finalPassed ? "Boss Defeated" : "Boss Survived";
+  const resultTitle = finalPassed ? text.challenge.bossDefeated : text.challenge.bossSurvived;
   const resultMessage = finalPassed
-    ? "You cleared the First Contact boss fight and proved you can handle a real opening exchange."
-    : "The sentinel held the gate. Tighten the basics, protect your hearts, and try the fight again.";
+    ? text.challenge.resultWin
+    : text.challenge.resultLose;
 
   function applyResult(isCorrect: boolean, question: BossQuestion) {
     if (isAnswered) return;
@@ -306,13 +308,14 @@ export default function ChallengePage() {
   }
 
   if (!bossAvailable) {
-    return <LockedBossChallenge />;
+    return <LockedBossChallenge language={language} />;
   }
 
   if (!hasStarted && !isFinished) {
     return (
       <BossGate
         state={bossState}
+        language={language}
         onStart={() => {
           setHasStarted(true);
         }}
@@ -334,7 +337,7 @@ export default function ChallengePage() {
               }`}
             >
               <p className="text-xs font-black uppercase tracking-[0.25em] sm:text-sm sm:tracking-[0.35em]">
-                Final Stage Result
+                {text.challenge.finalStageResult}
               </p>
               <h1 className="mt-3 text-3xl font-black md:text-6xl">
                 {resultTitle}
@@ -346,8 +349,8 @@ export default function ChallengePage() {
 
             <div className="p-6 md:p-8">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                <ResultStat title="State" value={finalPassed ? "Passed" : "Failed"} />
-                <ResultStat title="Score" value={score.toString()} />
+                <ResultStat title={text.challenge.state} value={finalPassed ? text.challenge.passed : text.challenge.failed} />
+                <ResultStat title={text.challenge.score} value={score.toString()} />
                 <ResultStat title={tUi("xpEarned", language)} value={xp.toString()} />
                 <ResultStat title={tUi("heartsLeft", language)} value={hearts.toString()} />
                 <ResultStat title={tUi("accuracy", language)} value={`${accuracy}%`} />
@@ -356,7 +359,7 @@ export default function ChallengePage() {
               <div className="mt-8 rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <span className="text-sm font-semibold uppercase tracking-[0.25em] text-slate-400">
-                    Boss core integrity
+                    {text.challenge.bossCoreIntegrity}
                   </span>
                   <span className="font-black text-yellow-300">
                     {bossHealth}/{maxBossHealth} HP
@@ -371,8 +374,7 @@ export default function ChallengePage() {
                   />
                 </div>
                 <p className="mt-4 text-sm text-slate-400">
-                  Pass requires {activeSettings.passScore} score and at least
-                  one heart. You landed {correctCount} of {activeQuestions.length} attacks.
+                  {text.challenge.passRequires} {activeSettings.passScore} {text.challenge.scoreAndHeart} {text.challenge.landedAttacks} {correctCount} of {activeQuestions.length} {text.challenge.attacks}
                 </p>
               </div>
 
@@ -382,13 +384,13 @@ export default function ChallengePage() {
                   onClick={handleRetry}
                   className="inline-flex flex-1 justify-center rounded-full bg-yellow-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-yellow-300"
                 >
-                  Retry Boss
+                  {text.challenge.retryBoss}
                 </button>
                 <Link
                   href={finalPassed ? "/worlds" : "/dashboard"}
                   className="inline-flex flex-1 justify-center rounded-full border border-white/10 bg-white/10 px-7 py-4 font-bold text-white transition hover:border-white/30 hover:bg-white/15"
                 >
-                  {finalPassed ? "View Unlocked Worlds" : "Back to Dashboard"}
+                  {finalPassed ? text.challenge.viewUnlockedWorlds : text.challenge.backToDashboard}
                 </Link>
               </div>
             </div>
@@ -405,31 +407,30 @@ export default function ChallengePage() {
         <div className="mb-8 flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
             <Link href="/worlds" className="text-sm text-slate-400 hover:text-white">
-              Back to Worlds
+              {text.challenge.backToWorlds}
             </Link>
             <p className="mt-6 text-xs font-semibold uppercase tracking-[0.2em] text-red-300 sm:text-sm sm:tracking-[0.3em]">
-              {bossChallenge.title} - Final Stage
+              {bossChallenge.title} - {text.challenge.finalStage}
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
-              First Contact Sentinel
+              {text.challenge.firstContactSentinel}
             </h1>
             <p className="mt-4 max-w-2xl text-slate-400">
-              Survive a mixed boss flow: translation strikes, typed counters,
-              sentence assembly, and scenario decisions.
+              {text.challenge.mixedBossFlow}
             </p>
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-center sm:gap-3">
             <StatusPill label="XP" value={xp.toString()} tone="cyan" />
-            <StatusPill label={tUi("hearts", language)} value={hearts.toString()} tone="red" />
-            <StatusPill label="Score" value={score.toString()} tone="yellow" />
+            <StatusPill label={text.challenge.hearts} value={hearts.toString()} tone="red" />
+            <StatusPill label={text.challenge.score} value={score.toString()} tone="yellow" />
           </div>
         </div>
 
         <div className="mb-8 grid gap-4 lg:grid-cols-[1fr_0.65fr]">
           <div className="rounded-2xl border border-red-400/20 bg-red-400/10 p-4 sm:rounded-3xl sm:p-5">
             <div className="mb-3 flex items-center justify-between gap-4 text-sm">
-              <span className="font-bold text-red-200">Boss Health</span>
+              <span className="font-bold text-red-200">{text.challenge.bossHealth}</span>
               <span className="text-slate-300">
                 {bossHealth}/{maxBossHealth} HP
               </span>
@@ -445,7 +446,7 @@ export default function ChallengePage() {
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-5">
             <div className="mb-3 flex items-center justify-between text-sm text-slate-400">
               <span>
-                Attack {currentQuestionIndex + 1} of {activeQuestions.length}
+                {text.challenge.attack} {currentQuestionIndex + 1} of {activeQuestions.length}
               </span>
               <span>{Math.round(progress)}%</span>
             </div>
@@ -467,7 +468,7 @@ export default function ChallengePage() {
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 sm:text-sm sm:tracking-[0.25em]">
-                  {currentQuestion.phase} - {getQuestionLabel(currentQuestion.type, language)}
+                  {localizeLearningText(currentQuestion.phase, language)} - {getQuestionLabel(currentQuestion.type, language)}
                 </p>
                 <h2
                   className="mt-3 break-words text-xl font-bold sm:text-2xl md:text-3xl"
@@ -483,14 +484,16 @@ export default function ChallengePage() {
 
             <div className="mt-8 rounded-2xl border border-white/10 bg-slate-950/80 p-4 sm:rounded-3xl sm:p-6">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-red-200 sm:text-sm sm:tracking-[0.25em]">
-                Boss action
+                {text.challenge.bossAction}
               </p>
               <p className="mt-3 text-lg font-bold text-slate-200">
-                {currentQuestion.bossLine}
+                {localizeLearningText(currentQuestion.bossLine, language)}
               </p>
               <div className="mt-6 flex min-w-0 flex-wrap items-center justify-center gap-3 text-center">
                 <p className="break-words text-3xl font-black sm:text-4xl md:text-6xl">
-                  {normalizeRussianText(currentQuestion.display)}
+                  {isRussianText(currentQuestion.display)
+                    ? normalizeRussianText(currentQuestion.display)
+                    : localizeLearningText(currentQuestion.display, language)}
                 </p>
                 {isRussianText(currentQuestion.display) && (
                   <PronounceButton text={currentQuestion.display} />
@@ -523,12 +526,12 @@ export default function ChallengePage() {
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <p className="font-black">
-                    {lastAnswerWasCorrect ? "Critical hit." : "Counterattack landed."}
+                    {lastAnswerWasCorrect ? text.challenge.criticalHit : text.challenge.counterattack}
                   </p>
                   <p className="text-sm font-bold text-slate-300">
                     {lastAnswerWasCorrect
                       ? `-${currentQuestion.damage} boss HP`
-                      : "-1 heart"}
+                      : `-1 ${text.challenge.heart}`}
                   </p>
                 </div>
                 <p className="mt-3 text-sm leading-6 text-slate-300" {...explanationTextProps(language)}>
@@ -556,28 +559,27 @@ export default function ChallengePage() {
 
           <aside className="min-w-0 rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 sm:text-sm sm:tracking-[0.25em]">
-              Encounter
+              {text.challenge.encounter}
             </p>
             <div className="mt-5 rounded-2xl border border-red-300/20 bg-slate-950/80 p-4 text-center sm:rounded-3xl sm:p-6">
               <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full border-4 border-red-300 bg-red-400/10 text-6xl font-black text-red-200 shadow-2xl shadow-red-950/50">
-                Б
+                �
               </div>
-              <h2 className="mt-5 text-2xl font-black">Gate Sentinel</h2>
+              <h2 className="mt-5 text-2xl font-black">{text.challenge.gateSentinel}</h2>
               <p className="mt-3 text-sm leading-6 text-slate-400">
-                Drop the health bar by answering correctly. Passing the score
-                threshold with a heart left clears the world boss.
+                {text.challenge.gateText}
               </p>
             </div>
 
             <div className="mt-6 grid gap-3">
-              <SideStat label="Correct hits" value={correctCount.toString()} />
+              <SideStat label={text.challenge.correctHits} value={correctCount.toString()} />
               <SideStat
                 label={tUi("mistakes", language)}
                 value={(activeSettings.startingHearts - hearts).toString()}
               />
               <SideStat label={tUi("accuracy", language)} value={`${accuracy}%`} />
               <SideStat
-                label="Pass score"
+                label={text.challenge.passScore}
                 value={activeSettings.passScore.toString()}
               />
             </div>
@@ -588,26 +590,27 @@ export default function ChallengePage() {
   );
 }
 
-function LockedBossChallenge() {
+function LockedBossChallenge({ language }: { language: ExplanationLanguage }) {
+  const text = getUiText(language);
   return (
     <main className="min-h-screen bg-slate-950 text-white">
       <Navigation />
       <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-3xl items-center px-4 pb-8 sm:px-6">
         <div className="w-full rounded-2xl border border-white/10 bg-white/10 p-5 text-center shadow-2xl shadow-cyan-950/30 sm:rounded-3xl sm:p-8">
           <p className="text-xs font-black uppercase tracking-[0.25em] text-slate-400 sm:text-sm sm:tracking-[0.35em]">
-            Boss Locked
+            {text.challenge.bossLocked}
           </p>
           <h1 className="mt-4 text-3xl font-black md:text-5xl">
-            Finish every World 1 lesson first.
+            {text.challenge.finishWorldOneFirst}
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-slate-400">
-            Complete all World 1 lessons to unlock the Boss Challenge.
+            {text.challenge.completeWorldOneLessons}
           </p>
           <Link
             href="/worlds"
             className="mt-8 inline-flex w-full justify-center rounded-full bg-cyan-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
           >
-            Back to Worlds
+            {text.challenge.backToWorlds}
           </Link>
         </div>
       </section>
@@ -617,12 +620,15 @@ function LockedBossChallenge() {
 
 function BossGate({
   state,
+  language,
   onStart,
 }: {
   state: "locked" | "available" | "completed";
+  language: ExplanationLanguage;
   onStart: () => void;
 }) {
   const completed = state === "completed";
+  const text = getUiText(language);
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
@@ -630,15 +636,15 @@ function BossGate({
       <section className="mx-auto flex min-h-[calc(100vh-12rem)] max-w-4xl items-center px-4 pb-8 sm:px-6">
         <div className="w-full rounded-2xl border border-white/10 bg-white/10 p-5 text-center shadow-2xl shadow-cyan-950/30 sm:rounded-3xl sm:p-8">
           <p className="text-xs font-black uppercase tracking-[0.25em] text-yellow-300 sm:text-sm sm:tracking-[0.35em]">
-            {completed ? "Boss Completed" : "Boss Available"}
+            {completed ? text.challenge.bossCompleted : text.challenge.bossAvailable}
           </p>
           <h1 className="mt-4 text-3xl font-black md:text-5xl">
-            {completed ? "Boss defeated" : "World 1 Boss Challenge"}
+            {completed ? text.challenge.bossDefeated : `${language === "ar" ? "العالم 1" : "World 1"} ${text.challenge.bossChallenge}`}
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-slate-300">
             {completed
-              ? "World 2 is unlocked. You can continue into Everyday Basics or replay the boss for practice."
-              : "All World 1 lessons are complete. Defeat the boss to unlock World 2: Everyday Basics."}
+              ? text.challenge.worldTwoUnlocked
+              : text.challenge.defeatToUnlock}
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <button
@@ -646,13 +652,13 @@ function BossGate({
               onClick={onStart}
               className="w-full rounded-full bg-yellow-400 px-7 py-4 font-bold text-slate-950 transition hover:bg-yellow-300 sm:w-auto"
             >
-              {completed ? "Replay Boss Challenge" : "Start Boss Challenge"}
+              {completed ? text.challenge.replayBossChallenge : text.challenge.startBossChallenge}
             </button>
             <Link
               href={completed ? "/worlds" : "/dashboard"}
               className="w-full rounded-full border border-white/10 bg-white/10 px-7 py-4 font-bold text-white transition hover:border-white/30 hover:bg-white/15 sm:w-auto"
             >
-              {completed ? "Go to World 2" : "Back to Dashboard"}
+              {completed ? text.challenge.goToWorld2 : text.challenge.backToDashboard}
             </Link>
           </div>
         </div>
@@ -689,56 +695,56 @@ function repairImportedBossQuestion(question: BossQuestion): BossQuestion {
   if (question.id === "gatekeeper-privet" && question.type === "choice") {
     return {
       ...question,
-      prompt: "The Gatekeeper says: Привет. What does it mean?",
-      display: "Привет",
-      explanation: "Привет is the common informal way to say Hello.",
+      prompt: "The Gatekeeper says: ������. What does it mean?",
+      display: "������",
+      explanation: "������ is the common informal way to say Hello.",
     };
   }
 
   if (question.id === "type-spasibo" && question.type === "text") {
     return {
       ...question,
-      prompt: "Type the English meaning of Спасибо.",
-      display: "Спасибо",
-      explanation: "Спасибо means Thank you or Thanks.",
+      prompt: "Type the English meaning of �������.",
+      display: "�������",
+      explanation: "������� means Thank you or Thanks.",
     };
   }
 
   if (question.id === "polite-greeting" && question.type === "choice") {
     return {
       ...question,
-      options: ["Пока", "Здравствуйте", "Нет", "Кто"],
-      correctAnswer: "Здравствуйте",
-      explanation: "Здравствуйте is the polite/formal greeting.",
+      options: ["����", "������������", "���", "���"],
+      correctAnswer: "������������",
+      explanation: "������������ is the polite/formal greeting.",
     };
   }
 
   if (question.id === "your-name-answer" && question.type === "choice") {
     return {
       ...question,
-      prompt: "What is the correct answer to Как тебя зовут?",
-      display: "Как тебя зовут?",
-      options: ["Меня зовут Alex", "Я не понимаю", "До свидания", "Где?"],
-      correctAnswer: "Меня зовут Alex",
-      explanation: "Как тебя зовут? asks What is your name?",
+      prompt: "What is the correct answer to ��� ���� �����?",
+      display: "��� ���� �����?",
+      options: ["���� ����� Alex", "� �� �������", "�� ��������", "���?"],
+      correctAnswer: "���� ����� Alex",
+      explanation: "��� ���� �����? asks What is your name?",
     };
   }
 
   if (question.id === "type-da" && question.type === "text") {
     return {
       ...question,
-      prompt: "Type the English word for Да.",
-      display: "Да",
-      explanation: "Да means Yes.",
+      prompt: "Type the English word for ��.",
+      display: "��",
+      explanation: "�� means Yes.",
     };
   }
 
   if (question.id === "survival-phrase-understand" && question.type === "choice") {
     return {
       ...question,
-      options: ["Я не понимаю", "Пожалуйста", "Спасибо", "Привет"],
-      correctAnswer: "Я не понимаю",
-      explanation: "Я не понимаю means I do not understand.",
+      options: ["� �� �������", "����������", "�������", "������"],
+      correctAnswer: "� �� �������",
+      explanation: "� �� ������� means I do not understand.",
     };
   }
 
@@ -783,8 +789,8 @@ function BossQuestionView({
   if (question.type === "text") {
     return (
       <div className="mt-8">
-        <label htmlFor="boss-answer" className="text-sm text-slate-400">
-          Counter phrase
+        <label htmlFor="boss-answer" className="text-sm text-slate-400" {...uiTextProps(language)}>
+          {getUiText(language).challenge.counterPhrase}
         </label>
         <input
           id="boss-answer"
@@ -797,7 +803,7 @@ function BossQuestionView({
           }}
           disabled={isAnswered}
           className="mt-3 w-full rounded-2xl border border-white/10 bg-slate-900/80 px-5 py-4 font-semibold text-white outline-none transition placeholder:text-slate-600 focus:border-cyan-400"
-          placeholder="Type the English answer"
+          placeholder={getUiText(language).challenge.typeEnglishAnswer}
         />
         <button
           type="button"
@@ -810,7 +816,7 @@ function BossQuestionView({
               : "bg-slate-800 text-slate-500"
           }`}
         >
-          Lock Counter
+          {getUiText(language).challenge.lockCounter}
         </button>
       </div>
     );
@@ -903,7 +909,7 @@ function BossQuestionView({
       {question.type === "scenario" && (
         <div className="mt-8 rounded-2xl border border-orange-300/20 bg-slate-900/80 p-4 sm:rounded-3xl sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-orange-200 sm:text-sm sm:tracking-[0.25em]">
-            Arena scenario
+            {getUiText(language).challenge.arenaScenario}
           </p>
           <p
             className="mt-4 break-words text-lg font-bold leading-8 text-slate-100 sm:text-xl"
@@ -1018,22 +1024,12 @@ function SideStat({ label, value }: { label: string; value: string }) {
 }
 
 function getQuestionLabel(type: BossQuestion["type"], language: ExplanationLanguage) {
-  if (language === "ar") {
-    const labels = {
-      choice: "ترجمة",
-      text: "إجابة مكتوبة",
-      sequence: "ترتيب جملة",
-      scenario: "اختيار موقف",
-    };
-
-    return labels[type];
-  }
-
+  const text = getUiText(language).challenge;
   const labels = {
-    choice: "Translation strike",
-    text: "Typed counter",
-    sequence: "Sentence forge",
-    scenario: "Survival choice",
+    choice: text.translationStrike,
+    text: text.typedCounter,
+    sequence: text.sentenceForge,
+    scenario: text.survivalChoice,
   };
 
   return labels[type];

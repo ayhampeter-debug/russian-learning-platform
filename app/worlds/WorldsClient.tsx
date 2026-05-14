@@ -1,7 +1,11 @@
 "use client";
 
 import { Navigation } from "@/components/Navigation";
+import { useExplanationLanguage } from "@/components/LanguageSelector";
 import type { StageStatus, World } from "@/lib/learning-data";
+import { getUiText, translateStatus, uiTextProps } from "@/lib/ui-translations";
+import type { UiText } from "@/lib/ui-translations";
+import type { ExplanationLanguage } from "@/lib/language-preference";
 import {
   getLessonDisplayState,
   getProgressStatusLabel,
@@ -15,6 +19,8 @@ import {
 import Link from "next/link";
 
 export function WorldsClient({ worlds }: { worlds: World[] }) {
+  const { language } = useExplanationLanguage();
+  const text = getUiText(language);
   const progress = useProgress();
 
   return (
@@ -22,11 +28,10 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
       <Navigation />
       <section className="mx-auto max-w-7xl px-4 pb-8 sm:px-6">
         <div className="mb-10">
-          <p className="text-sm text-cyan-300">Choose your path</p>
-          <h1 className="mt-2 text-3xl font-bold sm:text-4xl">Worlds & Stages</h1>
-          <p className="mt-3 max-w-2xl text-slate-400">
-            Progress through the live course path step by step. Complete
-            lessons, pass boss challenges, and unlock the next stage or world.
+          <p className="text-sm text-cyan-300" {...uiTextProps(language)}>{text.worlds.choosePath}</p>
+          <h1 className="mt-2 text-3xl font-bold sm:text-4xl" {...uiTextProps(language)}>{text.worlds.worldsStages}</h1>
+          <p className="mt-3 max-w-2xl text-slate-400" {...uiTextProps(language)}>
+            {text.worlds.intro}
           </p>
         </div>
 
@@ -48,12 +53,12 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
                 ? `/lesson/${(nextLesson ?? firstAvailableLesson)?.id}`
                 : undefined;
             const ctaLabel = !worldUnlocked
-              ? "Locked"
+              ? text.worlds.locked
               : summary.completed
-                ? "Review"
+                ? text.worlds.review
                 : summary.completedLessonCount > 0
-                  ? "Continue World"
-                  : "Start World";
+                  ? text.worlds.continueWorld
+                  : text.worlds.startWorld;
 
             return (
               <div
@@ -66,22 +71,22 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
               >
                 <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
                   <div>
-                    <p className="text-sm text-slate-400">World {world.number}</p>
+                    <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.worlds.world} {world.number}</p>
                     <h2 className="text-2xl font-bold sm:text-3xl">{world.title}</h2>
                     <p className="mt-2 max-w-3xl text-slate-400">{world.description}</p>
                     {!worldUnlocked ? (
                       <p className="mt-3 text-sm font-semibold text-yellow-200">
-                        Locked until all World 1 lessons are complete and the World 1 boss is defeated.
+                        {text.worlds.lockedUntilBoss}
                       </p>
                     ) : null}
                   </div>
 
                   <div className="flex flex-col gap-3 sm:items-end">
                     <div className="w-fit rounded-full bg-yellow-400 px-5 py-2 font-bold text-slate-950">
-                      {summary.progressPercent}% Complete
+                      {summary.progressPercent}% {text.worlds.complete}
                     </div>
                     <p className="text-sm text-slate-400">
-                      {summary.completedLessonCount}/{summary.totalLessons} lessons complete
+                      {summary.completedLessonCount}/{summary.totalLessons} {text.worlds.lessonsComplete}
                     </p>
                     {worldHref ? (
                       <Link
@@ -120,7 +125,7 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
                         title={stage.title}
                         description={stage.description}
                         status={locked ? "Locked" : stageState.status}
-                        statusLabel={getProgressStatusLabel(locked ? "Locked" : stageState.status)}
+                        statusLabel={translateStatus(getProgressStatusLabel(locked ? "Locked" : stageState.status), language)}
                         locked={locked}
                         xp={`${stage.xp} XP`}
                         boss={stage.boss}
@@ -132,6 +137,8 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
                           title: lesson.title,
                           state: !worldUnlocked ? "Locked" : getLessonDisplayState(lesson, progress),
                         }))}
+                        text={text}
+                        language={language}
                       />
                     );
                   })}
@@ -171,6 +178,8 @@ function StageCard({
   completedLessonCount,
   lessonCount,
   lessons,
+  text,
+  language,
 }: {
   worldId: string;
   number: string;
@@ -185,25 +194,27 @@ function StageCard({
   completedLessonCount: number;
   lessonCount: number;
   lessons: { id: string; title: string; state: "Completed" | "Current" | "Available" | "Locked" }[];
+  text: UiText;
+  language: ExplanationLanguage;
 }) {
   const href = boss ? (worldId === "world-1" ? "/challenge" : undefined) : lessonId ? `/lesson/${lessonId}` : undefined;
   const isCompleted = status === "Completed";
-  const isAvailable = statusLabel === "Available";
+  const isAvailable = status === "Unlocked";
   const actionLabel = isCompleted
     ? boss
-      ? "Replay Boss"
-      : "Review"
+      ? text.worlds.replayBoss
+      : text.worlds.review
     : boss
-      ? "Start Boss"
+      ? text.worlds.startBoss
       : completedLessonCount > 0
-        ? "Continue"
-        : "Start";
+        ? text.common.continue
+        : text.common.start;
   const badgeLabel = boss
     ? isCompleted
-      ? "Boss Completed"
+      ? text.worlds.bossCompleted
       : isAvailable
-        ? "Boss Unlocked"
-        : "Boss Locked"
+        ? text.worlds.bossUnlocked
+        : text.worlds.bossLocked
     : statusLabel;
 
   return (
@@ -242,11 +253,11 @@ function StageCard({
       {!boss && (
         <div className="mt-4 space-y-3">
           <p className="text-sm font-semibold text-slate-300">
-            {completedLessonCount} of {lessonCount} lessons complete
+            {completedLessonCount} {text.worlds.of} {lessonCount} {text.worlds.lessonsComplete}
           </p>
           <div className="grid gap-2">
             {lessons.map((lesson) => (
-              <LessonStateRow key={lesson.id} title={lesson.title} state={lesson.state} />
+              <LessonStateRow key={lesson.id} title={lesson.title} state={lesson.state} language={language} text={text} />
             ))}
           </div>
         </div>
@@ -260,7 +271,7 @@ function StageCard({
             aria-disabled="true"
             className="w-full cursor-not-allowed rounded-full border border-white/5 bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-500 sm:w-auto"
           >
-            {boss && !locked ? "Coming Soon" : "Locked"}
+            {boss && !locked ? text.worlds.comingSoon : text.worlds.locked}
           </button>
         ) : (
           <Link
@@ -284,9 +295,13 @@ function StageCard({
 function LessonStateRow({
   title,
   state,
+  language,
+  text,
 }: {
   title: string;
   state: "Completed" | "Current" | "Available" | "Locked";
+  language: ExplanationLanguage;
+  text: UiText;
 }) {
   const stateClass = {
     Completed: "border-green-400/25 bg-green-400/10 text-green-200",
@@ -294,7 +309,7 @@ function LessonStateRow({
     Available: "border-white/10 bg-white/5 text-slate-300",
     Locked: "border-white/5 bg-slate-900/40 text-slate-500",
   }[state];
-  const label = state === "Current" ? "Current/Continue" : state;
+  const label = state === "Current" ? text.worlds.currentContinue : translateStatus(state, language);
 
   return (
     <div className={`rounded-2xl border px-3 py-2 ${stateClass}`}>

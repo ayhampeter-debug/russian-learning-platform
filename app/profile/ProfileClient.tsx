@@ -3,6 +3,7 @@
 import { Navigation } from "@/components/Navigation";
 import { LanguageSelector, useExplanationLanguage } from "@/components/LanguageSelector";
 import type { ProfileAchievementRow } from "@/lib/achievement-service";
+import { getUiText, translateStatus, uiTextProps } from "@/lib/ui-translations";
 import { useUser } from "@clerk/nextjs";
 import {
   recentActivity,
@@ -19,6 +20,7 @@ import {
   useProgress,
 } from "@/lib/progress-storage";
 import Link from "next/link";
+import type { ExplanationLanguage } from "@/lib/language-preference";
 
 type ProfileUser = {
   email: string;
@@ -140,6 +142,7 @@ function getDisplayAchievements(
 
 export function ProfileClient({ achievements, syncError, user }: ProfileClientProps) {
   const { language } = useExplanationLanguage();
+  const text = getUiText(language);
   const { isLoaded, user: clerkUser } = useUser();
   const progress = useProgress();
   const summary = getProgressSummary(progress);
@@ -175,23 +178,23 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
     profileUser?.profile?.displayName ?? profileUser?.name ?? userProgress.userName;
   const initials = profileUser?.profile?.initials ?? userProgress.initials;
   const dynamicStats: StatCardProps[] = [
-    { title: "Total XP", value: progress.totalXp.toLocaleString(), accent: "cyan" },
-    { title: "Current Streak", value: `${progress.currentStreak} days`, accent: "red" },
+    { title: text.profile.totalXp, value: progress.totalXp.toLocaleString(), accent: "cyan" },
+    { title: text.profile.currentStreak, value: `${progress.currentStreak} ${text.profile.days}`, accent: "red" },
     {
-      title: "Longest Streak",
-      value: `${profileUser?.profile?.longestStreak ?? userProgress.longestStreak} days`,
+      title: text.profile.longestStreak,
+      value: `${profileUser?.profile?.longestStreak ?? userProgress.longestStreak} ${text.profile.days}`,
       accent: "yellow",
     },
-    { title: "Completed Lessons", value: summary.totalCompletedLessons.toString(), accent: "green" },
-    { title: "Completed Stages", value: summary.completedStageIds.length.toString(), accent: "cyan" },
+    { title: text.profile.completedLessons, value: summary.totalCompletedLessons.toString(), accent: "green" },
+    { title: text.profile.completedStages, value: summary.completedStageIds.length.toString(), accent: "cyan" },
     {
-      title: "Boss Challenge",
-      value: summary.bossCompleted ? "Completed" : summary.bossUnlocked ? "Available" : "Locked",
+      title: text.profile.bossChallenge,
+      value: summary.bossCompleted ? text.profile.completed : summary.bossUnlocked ? text.profile.available : text.profile.locked,
       accent: summary.bossCompleted ? "green" : summary.bossUnlocked ? "cyan" : "red",
     },
     {
-      title: "World 2",
-      value: worldTwoSummary?.unlocked ? "Unlocked" : "Locked",
+      title: text.profile.world2,
+      value: worldTwoSummary?.unlocked ? text.profile.unlocked : text.profile.locked,
       accent: worldTwoSummary?.unlocked ? "green" : "red",
     },
   ];
@@ -207,23 +210,22 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
         <div className="mb-8 flex flex-col justify-between gap-5 md:flex-row md:items-center">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-300">
-              Player profile
+              {text.profile.playerProfile}
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-4xl md:text-6xl">
               {displayName}
             </h1>
             <p className="mt-4 max-w-2xl text-slate-400">
-              Track your language journey through XP, streaks, achievements,
-              and current course progress.
+              {text.profile.profileText}
             </p>
             {syncError ? (
               <p className="mt-3 max-w-2xl text-sm text-yellow-200">
-                {syncError} Local progress is still available on this device.
+                {syncError} {text.profile.localProgressAvailable}
               </p>
             ) : null}
             {isLoaded && isGuestProfile(clerkUser, profileUser) ? (
               <p className="mt-3 max-w-2xl rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-100">
-                You are browsing as a guest. Your quest log stays on this device until you sign in.
+                {text.profile.guestProfile}
               </p>
             ) : null}
           </div>
@@ -232,7 +234,7 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
             href="/dashboard"
             className="inline-flex w-full justify-center rounded-full bg-cyan-400 px-6 py-3 font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-fit"
           >
-            Back to Dashboard
+            {text.profile.backToDashboard}
           </Link>
         </div>
 
@@ -246,25 +248,24 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
           <div className="rounded-2xl border border-cyan-400/20 bg-white/10 p-4 shadow-2xl shadow-cyan-950/30 sm:rounded-3xl sm:p-6 md:p-8">
             <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
               <div>
-                <p className="text-sm text-slate-400">World 1 progress</p>
+                <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.profile.world1Progress}</p>
                 <h2 className="mt-2 text-2xl font-black sm:text-3xl">{worldOne.title}</h2>
                 <p className="mt-3 max-w-2xl leading-7 text-slate-300">
-                  Greetings, introductions, survival phrases, basic questions,
-                  and the first conversation challenge.
+                  {text.profile.world1ProgressText}
                 </p>
               </div>
 
               <span className="w-fit rounded-full bg-yellow-400 px-5 py-2 text-sm font-black text-slate-950">
-                {worldOneSummary.progressPercent}% Complete
+                {worldOneSummary.progressPercent}% {text.profile.complete}
               </span>
             </div>
 
             <div className="mt-8">
               <div className="mb-3 flex flex-col gap-1 text-sm text-slate-400 sm:flex-row sm:justify-between">
                 <span>
-                  {worldOneSummary.clearedSteps} of {worldOneSummary.totalSteps} steps cleared
+                  {worldOneSummary.clearedSteps} of {worldOneSummary.totalSteps} {text.profile.stepsCleared}
                 </span>
-                <span>{worldOneXp} XP earned</span>
+                <span>{worldOneXp} {text.profile.xpEarned}</span>
               </div>
               <div className="h-4 overflow-hidden rounded-full bg-slate-800">
                 <div
@@ -289,7 +290,7 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
                   <WorldStep
                     key={stage.id}
                     title={stage.title}
-                    status={statusLabel}
+                    status={translateStatus(statusLabel, language)}
                     tone={tone}
                   />
                 );
@@ -298,7 +299,7 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6 md:p-8">
-            <p className="text-sm text-slate-400">Learning identity</p>
+            <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.profile.learningIdentity}</p>
             <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
               <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-cyan-400/30 bg-cyan-400 text-3xl font-black text-slate-950">
                 {profileUser?.imageUrl ? (
@@ -315,7 +316,7 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
               <div className="min-w-0">
                 <h2 className="text-2xl font-black">{displayName}</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-400">
-                  First live course: Russian with {language === "ar" ? "Arabic" : "English"} explanations.
+                  {language === "ar" ? text.profile.firstLiveCourseArabic : text.profile.firstLiveCourse}
                 </p>
                 {profileUser?.email ? (
                   <p className="mt-1 break-words text-sm text-slate-500">
@@ -330,7 +331,7 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
             </div>
 
             <div className="mt-5 rounded-3xl border border-white/10 bg-slate-900/80 p-5">
-              <p className="text-sm text-slate-400">Next goal</p>
+              <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.profile.nextGoal}</p>
               <p className="mt-2 text-xl font-bold">
                 {summary.nextGoalTitle}
               </p>
@@ -345,11 +346,11 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
           <section className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6 md:p-8">
             <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm text-slate-400">Trophy shelf</p>
-                <h2 className="mt-2 text-2xl font-black">Achievements</h2>
+                <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.profile.trophyShelf}</p>
+                <h2 className="mt-2 text-2xl font-black" {...uiTextProps(language)}>{text.profile.achievements}</h2>
               </div>
               <span className="rounded-full bg-white/10 px-4 py-2 text-sm text-slate-300">
-                {unlockedAchievementCount} unlocked
+                {unlockedAchievementCount} {text.profile.unlockedCount}
               </span>
             </div>
 
@@ -358,6 +359,7 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
                 <AchievementCard
                   key={achievement.id}
                   achievement={achievement}
+                  language={language}
                 />
               ))}
             </div>
@@ -365,13 +367,17 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
 
           <section className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6 md:p-8">
             <div className="mb-6">
-              <p className="text-sm text-slate-400">Quest log</p>
-              <h2 className="mt-2 text-2xl font-black">Recent Activity</h2>
+              <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.profile.questLog}</p>
+              <h2 className="mt-2 text-2xl font-black" {...uiTextProps(language)}>{text.profile.recentActivity}</h2>
             </div>
 
             <div className="space-y-4">
               {recentActivity.map((activity) => (
-                <ActivityItem key={`${activity.title}-${activity.time}`} activity={activity} />
+                <ActivityItem
+                  key={`${activity.title}-${activity.time}`}
+                  activity={localizeRecentActivity(activity, language)}
+                  language={language}
+                />
               ))}
             </div>
           </section>
@@ -427,8 +433,16 @@ function WorldStep({
   );
 }
 
-function AchievementCard({ achievement }: { achievement: DisplayAchievement }) {
+function AchievementCard({
+  achievement,
+  language,
+}: {
+  achievement: DisplayAchievement;
+  language: ExplanationLanguage;
+}) {
+  const text = getUiText(language);
   const isUnlocked = achievement.status === "Unlocked";
+  const localizedAchievement = localizeAchievement(achievement, language);
 
   return (
     <div
@@ -440,12 +454,12 @@ function AchievementCard({ achievement }: { achievement: DisplayAchievement }) {
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div className="min-w-0">
-          <h3 className="font-bold">{achievement.title}</h3>
+          <h3 className="font-bold" {...uiTextProps(language)}>{localizedAchievement.title}</h3>
           <p className="mt-2 text-sm leading-6 text-slate-400">
-            {achievement.description}
+            {localizedAchievement.description}
           </p>
           <p className="mt-2 text-xs font-semibold text-slate-500">
-            {achievement.detail}
+            {localizedAchievement.detail}
           </p>
         </div>
         <span
@@ -455,22 +469,98 @@ function AchievementCard({ achievement }: { achievement: DisplayAchievement }) {
               : "bg-white/10 text-slate-300"
           }`}
         >
-          {achievement.status}
+          {isUnlocked ? text.profile.unlocked : text.profile.inProgress}
         </span>
       </div>
     </div>
   );
 }
 
-function ActivityItem({ activity }: { activity: RecentActivity }) {
+function localizeAchievement(achievement: DisplayAchievement, language: ExplanationLanguage) {
+  if (language === "en") {
+    return achievement;
+  }
+
+  const text = getUiText(language).profile;
+  const byId: Record<string, { title: string; description: string }> = {
+    "first-lesson-completed": {
+      title: text.firstLessonCompleted,
+      description: text.firstLessonDescription,
+    },
+    "first-contact-completed": {
+      title: text.world1Completed,
+      description: text.world1Description,
+    },
+    "boss-defeated": {
+      title: text.bossDefeatedAchievement,
+      description: text.bossDescription,
+    },
+    "world-2-unlocked": {
+      title: text.world2Unlocked,
+      description: text.world2Description,
+    },
+    "xp-starter": {
+      title: text.xpStarter,
+      description: text.xpStarterDescription,
+    },
+  };
+
+  const localized = byId[achievement.id];
+
+  return {
+    ...achievement,
+    title: localized?.title ?? achievement.title,
+    description: localized?.description ?? achievement.description,
+    detail:
+      achievement.detail === "Synced from your profile achievements."
+        ? text.syncedDetail
+        : achievement.detail === "Unlocked from current progress."
+          ? text.unlockedFromProgress
+          : text.keepLearning,
+  };
+}
+
+function localizeRecentActivity(activity: RecentActivity, language: ExplanationLanguage) {
+  if (language === "en") {
+    return activity;
+  }
+
+  const text = getUiText(language).profile;
+  const byTitle: Record<string, Pick<RecentActivity, "title" | "detail" | "time">> = {
+    "Finished Say Hello": {
+      title: text.finishedSayHello,
+      detail: text.finishedSayHelloDetail,
+      time: text.today,
+    },
+    "Daily Challenge": {
+      title: text.dailyChallenge,
+      detail: text.dailyChallengeDetail,
+      time: text.yesterday,
+    },
+    "Unlocked Introduce Yourself": {
+      title: text.unlockedIntroduceYourself,
+      detail: text.unlockedIntroduceYourselfDetail,
+      time: text.twoDaysAgo,
+    },
+    "Streak milestone": {
+      title: text.streakMilestone,
+      detail: text.streakMilestoneDetail,
+      time: text.thisWeek,
+    },
+  };
+
+  return byTitle[activity.title] ?? activity;
+}
+
+function ActivityItem({ activity, language }: { activity: RecentActivity; language: ExplanationLanguage }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-slate-900/70 p-5">
       <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-start">
-        <div>
+        <div {...uiTextProps(language)}>
           <p className="font-bold">{activity.title}</p>
           <p className="mt-2 text-sm text-slate-400">{activity.detail}</p>
         </div>
-        <span className="text-sm text-cyan-300">{activity.time}</span>
+        <span className="text-sm text-cyan-300" {...uiTextProps(language)}>{activity.time}</span>
       </div>
     </div>
   );
