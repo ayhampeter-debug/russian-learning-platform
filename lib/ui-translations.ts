@@ -720,8 +720,8 @@ export function uiTextProps(language: ExplanationLanguage) {
 const arabicContentTitles: Record<string, string> = {
   "First Contact": "التواصل الأول",
   "World 1: First Contact": "العالم 1: التواصل الأول",
-  "Everyday Basics": "أساسيات يومية",
-  "World 2: Everyday Basics": "العالم 2: أساسيات يومية",
+  "Everyday Basics": "أساسيات الحياة اليومية",
+  "World 2: Everyday Basics": "العالم 2: أساسيات الحياة اليومية",
   "Opening Signals": "إشارات البداية",
   "First Exchange": "أول تبادل",
   "Survival Phrases": "عبارات النجاة",
@@ -744,7 +744,9 @@ const arabicContentTitles: Record<string, string> = {
   "Numbers 6-10": "الأرقام 6–10",
   "Family Members": "أفراد العائلة",
   "People Around You": "الأشخاص من حولك",
+  "Friends & People": "الأصدقاء والأشخاص",
   "Simple Descriptions": "أوصاف بسيطة",
+  "This Is My Family": "هذه عائلتي",
   "Basic Foods": "أطعمة أساسية",
   "Drinks": "المشروبات",
   "Ordering Politely": "الطلب بأدب",
@@ -765,6 +767,8 @@ const arabicContentDescriptions: Record<string, string> = {
     "راجع عبارات عملية من العالم 1 للحفاظ على سلسلتك.",
   "Beginner words and phrases for people, family, food, drinks, places, and directions.":
     "كلمات وعبارات للمبتدئين عن الأشخاص والعائلة والطعام والمشروبات والأماكن والاتجاهات.",
+  "A1 words and short phrases for family, food, places, and simple directions.":
+    "كلمات وعبارات قصيرة بمستوى A1 عن العائلة والطعام والأماكن والاتجاهات البسيطة.",
   "Show you can handle simple everyday Russian situations.":
     "أظهر أنك تستطيع التعامل مع مواقف روسية يومية بسيطة.",
   "Lessons 1-2: casual greetings and formal vs informal greetings.":
@@ -779,10 +783,16 @@ const arabicContentDescriptions: Record<string, string> = {
     "الدرسان 9–10: العد من واحد إلى عشرة.",
   "Lessons 1-3: people, family members, and simple descriptions.":
     "الدروس 1–3: الأشخاص وأفراد العائلة والأوصاف البسيطة.",
+  "Lessons 1-3: family, friends, and saying who someone is.":
+    "الدروس 1–3: العائلة والأصدقاء والتعريف بشخص ما.",
   "Lessons 4-6: order simple food and talk about drinks.":
     "الدروس 4–6: اطلب طعاماً بسيطاً وتحدث عن المشروبات.",
+  "Lessons 4-6: everyday food, drinks, and polite cafe phrases.":
+    "الدروس 4–6: طعام ومشروبات يومية وعبارات مهذبة في المقهى.",
   "Lessons 7-9: common places and basic direction phrases.":
     "الدروس 7–9: أماكن شائعة وعبارات اتجاهات أساسية.",
+  "Lessons 7-9: common places, where questions, and simple directions.":
+    "الدروس 7–9: أماكن شائعة وأسئلة أين واتجاهات بسيطة.",
   "Use simple greetings for friends, strangers, and mornings.":
     "استخدم تحيات بسيطة مع الأصدقاء والغرباء وفي الصباح.",
   "Choose greetings that fit friends, adults, strangers, and groups.":
@@ -807,18 +817,30 @@ const arabicContentDescriptions: Record<string, string> = {
     "أكمل أول عشرة أرقام للغرف والأرصفة والأوقات.",
   "Name close family members in simple Russian.":
     "سمِّ أفراد العائلة المقربين بالروسية البسيطة.",
+  "Name close family members and say this is my mom or dad.":
+    "سمِّ أفراد العائلة المقرّبين وقل: هذه أمي أو هذا أبي.",
   "Talk about friends, children, and people you meet.":
     "تحدث عن الأصدقاء والأطفال والأشخاص الذين تقابلهم.",
+  "Talk about friends and people around you.":
+    "تحدث عن الأصدقاء والأشخاص من حولك.",
   "Use basic words like big, small, good, and new.":
     "استخدم كلمات أساسية مثل كبير، صغير، جيد، وجديد.",
+  "Use simple this is phrases with family and friends.":
+    "استخدم عبارات بسيطة مثل هذا/هذه مع العائلة والأصدقاء.",
   "Recognize simple food words for everyday meals.":
     "تعرّف إلى كلمات طعام بسيطة للوجبات اليومية.",
+  "Recognize everyday foods and say what you want.":
+    "تعرّف إلى أطعمة يومية وقل ما تريد.",
   "Ask for water, tea, coffee, and juice.":
     "اطلب الماء والشاي والقهوة والعصير.",
+  "Ask for common drinks with short polite phrases.":
+    "اطلب مشروبات شائعة بعبارات قصيرة ومهذبة.",
   "Use simple polite phrases for ordering food and drinks.":
     "استخدم عبارات مهذبة بسيطة لطلب الطعام والمشروبات.",
   "Recognize useful city and home location words.":
     "تعرّف إلى كلمات مفيدة لأماكن المدينة والمنزل.",
+  "Recognize useful places around town and school.":
+    "تعرّف إلى أماكن مفيدة في المدينة وحول المدرسة.",
   "Ask where common places are.":
     "اسأل أين توجد الأماكن الشائعة.",
   "Understand basic direction words.":
