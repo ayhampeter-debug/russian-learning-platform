@@ -26,6 +26,7 @@ import {
   getWorldProgressSummary,
   useProgress,
 } from "@/lib/progress-storage";
+import { useMistakeCount } from "@/lib/mistake-storage";
 import Link from "next/link";
 import type { ExplanationLanguage } from "@/lib/language-preference";
 
@@ -152,6 +153,7 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
   const text = getUiText(language);
   const { isLoaded, user: clerkUser } = useUser();
   const progress = useProgress();
+  const mistakeCount = useMistakeCount();
   const summary = getProgressSummary(progress);
   const explanationLanguage =
     language === "ar"
@@ -197,6 +199,7 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
       accent: "yellow",
     },
     { title: text.profile.completedLessons, value: summary.totalCompletedLessons.toString(), accent: "green" },
+    { title: text.profile.mistakesToReview, value: mistakeCount.toString(), accent: mistakeCount > 0 ? "yellow" : "green" },
     { title: text.profile.completedStages, value: summary.completedStageIds.length.toString(), accent: "cyan" },
     {
       title: text.profile.bossChallenge,
@@ -369,6 +372,17 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
               <p className="mt-3 text-sm leading-6 text-slate-400" {...uiTextProps(language)}>
                 {localizeProgressDescription(summary.nextGoalDescription, language)}
               </p>
+            </div>
+
+            <div className="mt-5 rounded-3xl border border-yellow-400/25 bg-yellow-400/10 p-5">
+              <p className="text-sm text-yellow-100" {...uiTextProps(language)}>{text.profile.mistakesToReview}</p>
+              <p className="mt-2 text-2xl font-black text-yellow-100">{mistakeCount}</p>
+              <Link
+                href="/practice"
+                className="mt-4 inline-flex w-full justify-center rounded-full bg-yellow-300 px-5 py-3 font-black text-slate-950 transition hover:bg-yellow-200"
+              >
+                {text.profile.practiceLink}
+              </Link>
             </div>
           </div>
         </div>

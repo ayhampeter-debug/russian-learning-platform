@@ -22,6 +22,7 @@ import {
   resetProgress,
   useProgress,
 } from "@/lib/progress-storage";
+import { useMistakeCount } from "@/lib/mistake-storage";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 
@@ -30,6 +31,7 @@ export default function DashboardPage() {
   const text = getUiText(language);
   const { isLoaded, isSignedIn } = useUser();
   const progress = useProgress();
+  const mistakeCount = useMistakeCount();
   const summary = getProgressSummary(progress);
   const explanationLanguage =
     language === "ar"
@@ -156,6 +158,7 @@ export default function DashboardPage() {
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <QuickLink href="/courses" label={text.dashboard.courses} />
               <QuickLink href="/worlds" label={text.dashboard.worlds} />
+              <QuickLink href="/practice" label={text.dashboard.reviewMistakes} />
               <QuickLink href="/profile" label={text.dashboard.profile} />
               <QuickLink href="/settings" label={text.dashboard.settings} />
             </div>
@@ -222,6 +225,25 @@ export default function DashboardPage() {
                 );
               })}
             </div>
+          </div>
+
+          <div className="grid gap-6">
+          <div className="rounded-2xl border border-yellow-400/25 bg-yellow-400/10 p-4 sm:rounded-3xl sm:p-6">
+            <p className="text-sm text-yellow-200" {...uiTextProps(language)}>{text.dashboard.mistakesToReview}</p>
+            <h2 className="mt-2 text-3xl font-black text-yellow-100">
+              {mistakeCount}
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-slate-300" {...uiTextProps(language)}>
+              {mistakeCount > 0
+                ? text.dashboard.reviewMistakes
+                : text.dashboard.noMistakesToReviewYet}
+            </p>
+            <Link
+              href="/practice"
+              className="mt-5 block w-full rounded-full bg-yellow-300 px-5 py-3 text-center font-black text-slate-950 transition hover:bg-yellow-200"
+            >
+              {text.dashboard.practiceAgain}
+            </Link>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
@@ -293,6 +315,7 @@ export default function DashboardPage() {
                 {text.dashboard.completeWorldOneLessons}
               </button>
             )}
+          </div>
           </div>
         </div>
       </section>

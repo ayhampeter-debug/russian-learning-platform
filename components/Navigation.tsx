@@ -24,6 +24,12 @@ const navItems: NavItem[] = [
   { href: "/settings", labelKey: "settings" },
 ];
 
+const mobileNavItems: NavItem[] = [
+  ...navItems.slice(0, 4),
+  { href: "/practice", labelKey: "practice" },
+  ...navItems.slice(4),
+];
+
 export function Navigation() {
   const pathname = usePathname();
   const { isLoaded, isSignedIn } = useUser();
@@ -115,7 +121,7 @@ export function Navigation() {
           }`}
         >
           <div className="grid gap-1.5">
-            {navItems.map((item) => {
+            {mobileNavItems.map((item) => {
               const isActive = isNavActive(item.href);
 
               return (
