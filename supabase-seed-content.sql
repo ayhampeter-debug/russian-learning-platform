@@ -101,66 +101,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:saying-hello:hello-privet-meaning', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'saying-hello'), 'hello-privet-meaning', 'multipleChoice', 'Choose the best English meaning.', '{"display":"Привет","options":["Goodbye","Hi","Thank you","Please"],"correctAnswer":"Hi"}'::jsonb, '{"correctAnswer":"Hi"}'::jsonb, 'Привет means Hi or Hello. Use it with people you know.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:saying-hello:hello-fill-morning', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'saying-hello'), 'hello-fill-morning', 'fillBlank', 'Complete the morning greeting.', '{"beforeBlank":"Доброе","afterBlank":".","options":["утро","пока","да","вас"],"correctAnswer":"утро"}'::jsonb, '{"correctAnswer":"утро"}'::jsonb, 'Доброе утро means Good morning.', 10, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:saying-hello:hello-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'saying-hello'), 'hello-match', 'matching', 'Match each phrase with its meaning.', '{"pairs":[{"russian":"Привет","english":"Hi"},{"russian":"Здравствуйте","english":"Hello"},{"russian":"Пока","english":"Bye"},{"russian":"До свидания","english":"Goodbye"}],"englishOptions":["Goodbye","Hello","Bye","Hi"]}'::jsonb, '{"pairs":[{"russian":"Привет","english":"Hi"},{"russian":"Здравствуйте","english":"Hello"},{"russian":"Пока","english":"Bye"},{"russian":"До свидания","english":"Goodbye"}]}'::jsonb, 'These cover casual and polite ways to start or end a conversation.', 15, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:saying-hello:hello-scenario-stranger', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'saying-hello'), 'hello-scenario-stranger', 'scenarioChoice', 'Pick the best phrase for the situation.', '{"situation":"You enter a small shop and greet the worker politely.","options":["Здравствуйте","Пока","Да","Кто?"],"correctAnswer":"Здравствуйте"}'::jsonb, '{"correctAnswer":"Здравствуйте"}'::jsonb, 'Здравствуйте is the safe polite greeting for strangers.', 15, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:saying-hello:hello-order-goodbye', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'saying-hello'), 'hello-order-goodbye', 'sentenceOrder', 'Build the Russian phrase.', '{"translation":"Goodbye.","words":["свидания","До"],"correctOrder":["До","свидания"]}'::jsonb, '{"correctOrder":["До","свидания"]}'::jsonb, 'До свидания is the standard polite goodbye.', 15, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -179,66 +179,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:formal-informal-greetings:formal-zdravstvuyte', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'formal-informal-greetings'), 'formal-zdravstvuyte', 'multipleChoice', 'Which phrase is best for greeting a teacher?', '{"display":"Polite greeting","options":["Привет","Здравствуйте","Пока","Да"],"correctAnswer":"Здравствуйте"}'::jsonb, '{"correctAnswer":"Здравствуйте"}'::jsonb, 'Здравствуйте is polite and works with adults, strangers, or groups.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:formal-informal-greetings:formal-fill-day', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'formal-informal-greetings'), 'formal-fill-day', 'fillBlank', 'Complete the daytime greeting.', '{"beforeBlank":"Добрый","afterBlank":".","options":["день","утро","пока","нет"],"correctAnswer":"день"}'::jsonb, '{"correctAnswer":"день"}'::jsonb, 'Добрый день means Good afternoon or Good day.', 10, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:formal-informal-greetings:formal-match-use', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'formal-informal-greetings'), 'formal-match-use', 'matching', 'Match each phrase with its natural use.', '{"pairs":[{"russian":"Привет","english":"A friend"},{"russian":"Здравствуй","english":"One familiar person"},{"russian":"Здравствуйте","english":"A stranger or group"},{"russian":"Добрый вечер","english":"Evening greeting"}],"englishOptions":["A stranger or group","Evening greeting","A friend","One familiar person"]}'::jsonb, '{"pairs":[{"russian":"Привет","english":"A friend"},{"russian":"Здравствуй","english":"One familiar person"},{"russian":"Здравствуйте","english":"A stranger or group"},{"russian":"Добрый вечер","english":"Evening greeting"}]}'::jsonb, 'Russian greetings change depending on formality and audience.', 15, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:formal-informal-greetings:formal-scenario-friend', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'formal-informal-greetings'), 'formal-scenario-friend', 'scenarioChoice', 'Pick the natural greeting.', '{"situation":"You see your friend after class.","options":["Привет","Здравствуйте","Добрый вечер","До свидания"],"correctAnswer":"Привет"}'::jsonb, '{"correctAnswer":"Привет"}'::jsonb, 'Привет is natural with a friend.', 15, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:formal-informal-greetings:formal-order-good-evening', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'formal-informal-greetings'), 'formal-order-good-evening', 'sentenceOrder', 'Build the Russian phrase.', '{"translation":"Good evening.","words":["вечер","Добрый"],"correctOrder":["Добрый","вечер"]}'::jsonb, '{"correctOrder":["Добрый","вечер"]}'::jsonb, 'Добрый вечер is the normal evening greeting.', 20, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -257,66 +257,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:yes-and-no:yes-da', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'yes-and-no'), 'yes-da', 'multipleChoice', 'What does this word mean?', '{"display":"Да","options":["No","Yes","Where","Please"],"correctAnswer":"Yes"}'::jsonb, '{"correctAnswer":"Yes"}'::jsonb, 'Да means Yes.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:yes-and-no:no-fill', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'yes-and-no'), 'no-fill', 'fillBlank', 'Fill the blank with the Russian word for No.', '{"beforeBlank":"The opposite of Да is","afterBlank":".","options":["Нет","Кто","Спасибо","Привет"],"correctAnswer":"Нет"}'::jsonb, '{"correctAnswer":"Нет"}'::jsonb, 'Нет means No.', 10, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:yes-and-no:yes-no-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'yes-and-no'), 'yes-no-match', 'matching', 'Match the short answers.', '{"pairs":[{"russian":"Да","english":"Yes"},{"russian":"Нет","english":"No"},{"russian":"Хорошо","english":"OK"},{"russian":"Не знаю","english":"I do not know"}],"englishOptions":["No","I do not know","Yes","OK"]}'::jsonb, '{"pairs":[{"russian":"Да","english":"Yes"},{"russian":"Нет","english":"No"},{"russian":"Хорошо","english":"OK"},{"russian":"Не знаю","english":"I do not know"}]}'::jsonb, 'These short answers are useful in everyday first conversations.', 15, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:yes-and-no:yes-no-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'yes-and-no'), 'yes-no-scenario', 'scenarioChoice', 'Choose the answer.', '{"situation":"Someone asks if you are ready. You want to say yes.","options":["Да","Нет","Пока","Что?"],"correctAnswer":"Да"}'::jsonb, '{"correctAnswer":"Да"}'::jsonb, 'Да is the direct Russian answer for Yes.', 15, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:yes-and-no:yes-order-dont-know', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'yes-and-no'), 'yes-order-dont-know', 'sentenceOrder', 'Build the Russian sentence.', '{"translation":"I do not know.","words":["знаю","Не"],"correctOrder":["Не","знаю"]}'::jsonb, '{"correctOrder":["Не","знаю"]}'::jsonb, 'Не знаю is a short, common way to say I do not know.', 20, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -335,66 +335,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:introduce-yourself:intro-menya-zovut', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'introduce-yourself'), 'intro-menya-zovut', 'multipleChoice', 'Choose the best English meaning.', '{"display":"Меня зовут Alex","options":["My name is Alex","Where is Alex?","Goodbye Alex","Thank you Alex"],"correctAnswer":"My name is Alex"}'::jsonb, '{"correctAnswer":"My name is Alex"}'::jsonb, 'Меня зовут Alex is the standard way to say My name is Alex.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:introduce-yourself:intro-fill-from-america', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'introduce-yourself'), 'intro-fill-from-america', 'fillBlank', 'Complete the phrase I am from America.', '{"beforeBlank":"Я из","afterBlank":".","options":["Америки","спасибо","тебя","нет"],"correctAnswer":"Америки"}'::jsonb, '{"correctAnswer":"Америки"}'::jsonb, 'Я из Америки means I am from America.', 10, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:introduce-yourself:intro-order-name', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'introduce-yourself'), 'intro-order-name', 'sentenceOrder', 'Build the Russian sentence.', '{"translation":"My name is Alex.","words":["Alex","зовут","Меня"],"correctOrder":["Меня","зовут","Alex"]}'::jsonb, '{"correctOrder":["Меня","зовут","Alex"]}'::jsonb, 'Меня зовут Alex is the natural introduction pattern.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:introduce-yourself:intro-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'introduce-yourself'), 'intro-match', 'matching', 'Match each introduction phrase.', '{"pairs":[{"russian":"Я","english":"I"},{"russian":"Меня зовут Alex","english":"My name is Alex"},{"russian":"Очень приятно","english":"Nice to meet you"},{"russian":"А ты?","english":"And you?"}],"englishOptions":["Nice to meet you","I","And you?","My name is Alex"]}'::jsonb, '{"pairs":[{"russian":"Я","english":"I"},{"russian":"Меня зовут Alex","english":"My name is Alex"},{"russian":"Очень приятно","english":"Nice to meet you"},{"russian":"А ты?","english":"And you?"}]}'::jsonb, 'These phrases make a short first introduction.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:introduce-yourself:intro-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'introduce-yourself'), 'intro-scenario', 'scenarioChoice', 'Pick the best phrase for the situation.', '{"situation":"A new classmate says hello. You want to tell them your name.","options":["Меня зовут Alex","Пока","Где?","Нет"],"correctAnswer":"Меня зовут Alex"}'::jsonb, '{"correctAnswer":"Меня зовут Alex"}'::jsonb, 'Меня зовут Alex gives your name clearly.', 20, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -413,66 +413,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:ask-someones-name:ask-name-informal', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'ask-someones-name'), 'ask-name-informal', 'multipleChoice', 'Choose the meaning.', '{"display":"Как тебя зовут?","options":["What is your name?","Where are you?","How are you?","Who is there?"],"correctAnswer":"What is your name?"}'::jsonb, '{"correctAnswer":"What is your name?"}'::jsonb, 'Как тебя зовут? asks What is your name? informally.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:ask-someones-name:ask-name-formal-fill', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'ask-someones-name'), 'ask-name-formal-fill', 'fillBlank', 'Complete the polite question.', '{"beforeBlank":"Как","afterBlank":"зовут?","options":["вас","тебя","я","нет"],"correctAnswer":"вас"}'::jsonb, '{"correctAnswer":"вас"}'::jsonb, 'Как вас зовут? is the polite version of What is your name?', 10, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:ask-someones-name:ask-name-order', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'ask-someones-name'), 'ask-name-order', 'sentenceOrder', 'Build the Russian question.', '{"translation":"What is your name? (informal)","words":["зовут?","тебя","Как"],"correctOrder":["Как","тебя","зовут?"]}'::jsonb, '{"correctOrder":["Как","тебя","зовут?"]}'::jsonb, 'Как тебя зовут? is the common informal name question.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:ask-someones-name:ask-name-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'ask-someones-name'), 'ask-name-match', 'matching', 'Match the name questions.', '{"pairs":[{"russian":"Как тебя зовут?","english":"What is your name? (informal)"},{"russian":"Как вас зовут?","english":"What is your name? (polite)"},{"russian":"А ты?","english":"And you? (informal)"},{"russian":"А вас?","english":"And you? (polite)"}],"englishOptions":["And you? (polite)","What is your name? (informal)","And you? (informal)","What is your name? (polite)"]}'::jsonb, '{"pairs":[{"russian":"Как тебя зовут?","english":"What is your name? (informal)"},{"russian":"Как вас зовут?","english":"What is your name? (polite)"},{"russian":"А ты?","english":"And you? (informal)"},{"russian":"А вас?","english":"And you? (polite)"}]}'::jsonb, 'Use ты or тебя with friends. Use вы or вас with adults, strangers, or groups.', 15, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:ask-someones-name:ask-name-scenario-adult', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'ask-someones-name'), 'ask-name-scenario-adult', 'scenarioChoice', 'Pick the polite question.', '{"situation":"You meet an adult neighbor and want to ask their name.","options":["Как вас зовут?","Как тебя зовут?","Привет","Не знаю"],"correctAnswer":"Как вас зовут?"}'::jsonb, '{"correctAnswer":"Как вас зовут?"}'::jsonb, 'Как вас зовут? is the polite choice for an adult or stranger.', 20, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -491,66 +491,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:polite-words:polite-spasibo', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'polite-words'), 'polite-spasibo', 'multipleChoice', 'What does this word mean?', '{"display":"Спасибо","options":["Thank you","Hello","No","Where"],"correctAnswer":"Thank you"}'::jsonb, '{"correctAnswer":"Thank you"}'::jsonb, 'Спасибо means Thank you.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:polite-words:polite-fill-please', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'polite-words'), 'polite-fill-please', 'fillBlank', 'Fill the blank with Please.', '{"beforeBlank":"Скажите,","afterBlank":".","options":["пожалуйста","спасибо","пока","кто"],"correctAnswer":"пожалуйста"}'::jsonb, '{"correctAnswer":"пожалуйста"}'::jsonb, 'Пожалуйста makes a request polite.', 10, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:polite-words:polite-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'polite-words'), 'polite-match', 'matching', 'Match the polite words.', '{"pairs":[{"russian":"Спасибо","english":"Thank you"},{"russian":"Пожалуйста","english":"Please"},{"russian":"Извините","english":"Excuse me"},{"russian":"Ничего","english":"It''s OK"}],"englishOptions":["Excuse me","Please","It''s OK","Thank you"]}'::jsonb, '{"pairs":[{"russian":"Спасибо","english":"Thank you"},{"russian":"Пожалуйста","english":"Please"},{"russian":"Извините","english":"Excuse me"},{"russian":"Ничего","english":"It''s OK"}]}'::jsonb, 'These words keep short Russian interactions polite.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:polite-words:polite-order-excuse-me', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'polite-words'), 'polite-order-excuse-me', 'sentenceOrder', 'Build the polite phrase.', '{"translation":"Excuse me, please.","words":["пожалуйста","Извините,"],"correctOrder":["Извините,","пожалуйста"]}'::jsonb, '{"correctOrder":["Извините,","пожалуйста"]}'::jsonb, 'Извините, пожалуйста is useful when getting someone''s attention.', 15, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:polite-words:polite-scenario-cafe', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'polite-words'), 'polite-scenario-cafe', 'scenarioChoice', 'Pick the best phrase for the situation.', '{"situation":"A barista gives you coffee. What do you say?","options":["Спасибо","Кто?","Нет","Пока"],"correctAnswer":"Спасибо"}'::jsonb, '{"correctAnswer":"Спасибо"}'::jsonb, 'Спасибо is the right polite response after receiving something.', 20, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -569,66 +569,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:i-dont-understand:understand-meaning', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'i-dont-understand'), 'understand-meaning', 'multipleChoice', 'Choose the meaning.', '{"display":"Я не понимаю","options":["I do not understand","I am Alex","Good morning","Where is it?"],"correctAnswer":"I do not understand"}'::jsonb, '{"correctAnswer":"I do not understand"}'::jsonb, 'Я не понимаю means I do not understand.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:i-dont-understand:understand-fill-repeat', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'i-dont-understand'), 'understand-fill-repeat', 'fillBlank', 'Complete the phrase Help me, please.', '{"beforeBlank":"Помогите,","afterBlank":".","options":["пожалуйста","спасибо","привет","нет"],"correctAnswer":"пожалуйста"}'::jsonb, '{"correctAnswer":"пожалуйста"}'::jsonb, 'Помогите, пожалуйста means Help me, please.', 10, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:i-dont-understand:understand-order', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'i-dont-understand'), 'understand-order', 'sentenceOrder', 'Build the Russian sentence.', '{"translation":"I do not understand.","words":["понимаю","не","Я"],"correctOrder":["Я","не","понимаю"]}'::jsonb, '{"correctOrder":["Я","не","понимаю"]}'::jsonb, 'Я не понимаю is the core survival phrase here.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:i-dont-understand:understand-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'i-dont-understand'), 'understand-match', 'matching', 'Match each help phrase.', '{"pairs":[{"russian":"Я не понимаю","english":"I do not understand"},{"russian":"Помогите, пожалуйста","english":"Help me, please"},{"russian":"Повторите, пожалуйста","english":"Repeat, please"},{"russian":"Что это значит?","english":"What does this mean?"}],"englishOptions":["What does this mean?","Help me, please","Repeat, please","I do not understand"]}'::jsonb, '{"pairs":[{"russian":"Я не понимаю","english":"I do not understand"},{"russian":"Помогите, пожалуйста","english":"Help me, please"},{"russian":"Повторите, пожалуйста","english":"Repeat, please"},{"russian":"Что это значит?","english":"What does this mean?"}]}'::jsonb, 'These phrases help you ask for help or keep a conversation going.', 15, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:i-dont-understand:understand-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'i-dont-understand'), 'understand-scenario', 'scenarioChoice', 'Choose the useful phrase.', '{"situation":"You are lost and need someone to help you.","options":["Помогите, пожалуйста","Да","Меня зовут Alex","Доброе утро"],"correctAnswer":"Помогите, пожалуйста"}'::jsonb, '{"correctAnswer":"Помогите, пожалуйста"}'::jsonb, 'Помогите, пожалуйста is a polite way to ask for help.', 20, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -647,79 +647,79 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:basic-question-words:question-chto', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-chto', 'multipleChoice', 'What does this question word mean?', '{"display":"Что это?","options":["What is this?","Who is this?","Where is it?","How is it?"],"correctAnswer":"What is this?"}'::jsonb, '{"correctAnswer":"What is this?"}'::jsonb, 'Что это? means What is this?', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:basic-question-words:question-fill-where', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-fill-where', 'fillBlank', 'Fill the blank with Where?', '{"beforeBlank":"","afterBlank":"метро?","options":["Где","Кто","Что","Как"],"correctAnswer":"Где"}'::jsonb, '{"correctAnswer":"Где"}'::jsonb, 'Где метро? means Where is the metro?', 10, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:basic-question-words:question-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-match', 'matching', 'Match the question words.', '{"pairs":[{"russian":"Что это?","english":"What is this?"},{"russian":"Кто это?","english":"Who is this?"},{"russian":"Где?","english":"Where?"},{"russian":"Как?","english":"How?"}],"englishOptions":["Where?","How?","What is this?","Who is this?"]}'::jsonb, '{"pairs":[{"russian":"Что это?","english":"What is this?"},{"russian":"Кто это?","english":"Who is this?"},{"russian":"Где?","english":"Where?"},{"russian":"Как?","english":"How?"}]}'::jsonb, 'These short questions are useful when you need basic information.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:basic-question-words:question-order-metro', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-order-metro', 'sentenceOrder', 'Build the Russian question.', '{"translation":"Where is the metro?","words":["метро?","Где"],"correctOrder":["Где","метро?"]}'::jsonb, '{"correctOrder":["Где","метро?"]}'::jsonb, 'Где метро? is a short, useful location question.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:basic-question-words:question-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-scenario', 'scenarioChoice', 'Pick the best question word.', '{"situation":"You point to an object and want to ask what it is.","options":["Что это?","Кто это?","Где?","Да"],"correctAnswer":"Что это?"}'::jsonb, '{"correctAnswer":"Что это?"}'::jsonb, 'Use Что это? when asking What is this?', 20, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:basic-question-words:question-scenario-where', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-scenario-where', 'scenarioChoice', 'Pick the best question word.', '{"situation":"You want to ask where the cafe is.","options":["Где?","Кто это?","Что это?","Да"],"correctAnswer":"Где?"}'::jsonb, '{"correctAnswer":"Где?"}'::jsonb, 'Use Где? when asking where something is.', 10, 6, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -738,66 +738,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:numbers-1-5:numbers-one', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'numbers-1-5'), 'numbers-one', 'multipleChoice', 'What number is this?', '{"display":"один","options":["one","two","four","five"],"correctAnswer":"one"}'::jsonb, '{"correctAnswer":"one"}'::jsonb, 'один means one.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:numbers-1-5:numbers-fill-three', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'numbers-1-5'), 'numbers-fill-three', 'fillBlank', 'Fill the blank with three.', '{"beforeBlank":"один, два,","afterBlank":".","options":["три","два","пять","один"],"correctAnswer":"три"}'::jsonb, '{"correctAnswer":"три"}'::jsonb, 'три means three.', 10, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:numbers-1-5:numbers-match-1-5', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'numbers-1-5'), 'numbers-match-1-5', 'matching', 'Match the numbers.', '{"pairs":[{"russian":"один","english":"one"},{"russian":"два","english":"two"},{"russian":"четыре","english":"four"},{"russian":"пять","english":"five"}],"englishOptions":["five","one","four","two"]}'::jsonb, '{"pairs":[{"russian":"один","english":"one"},{"russian":"два","english":"two"},{"russian":"четыре","english":"four"},{"russian":"пять","english":"five"}]}'::jsonb, 'These are the first numbers you need for small counts.', 15, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:numbers-1-5:numbers-order-1-5', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'numbers-1-5'), 'numbers-order-1-5', 'sentenceOrder', 'Put the numbers in order.', '{"translation":"one, two, three, four, five","words":["три","пять","один","четыре","два"],"correctOrder":["один","два","три","четыре","пять"]}'::jsonb, '{"correctOrder":["один","два","три","четыре","пять"]}'::jsonb, 'The order is один, два, три, четыре, пять.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:numbers-1-5:numbers-scenario-5', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'numbers-1-5'), 'numbers-scenario-5', 'scenarioChoice', 'Choose the number.', '{"situation":"You need five tickets. Which word means five?","options":["пять","два","один","четыре"],"correctAnswer":"пять"}'::jsonb, '{"correctAnswer":"пять"}'::jsonb, 'пять means five.', 20, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -816,66 +816,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:numbers-6-10:numbers-six', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'numbers-6-10'), 'numbers-six', 'multipleChoice', 'What number is this?', '{"display":"шесть","options":["six","seven","nine","ten"],"correctAnswer":"six"}'::jsonb, '{"correctAnswer":"six"}'::jsonb, 'шесть means six.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:numbers-6-10:numbers-fill-ten', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'numbers-6-10'), 'numbers-fill-ten', 'fillBlank', 'Fill the blank with ten.', '{"beforeBlank":"The Russian word for 10 is","afterBlank":".","options":["десять","семь","шесть","девять"],"correctAnswer":"десять"}'::jsonb, '{"correctAnswer":"десять"}'::jsonb, 'десять means ten.', 10, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:numbers-6-10:numbers-match-6-10', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'numbers-6-10'), 'numbers-match-6-10', 'matching', 'Match the numbers.', '{"pairs":[{"russian":"шесть","english":"six"},{"russian":"семь","english":"seven"},{"russian":"восемь","english":"eight"},{"russian":"десять","english":"ten"}],"englishOptions":["ten","six","eight","seven"]}'::jsonb, '{"pairs":[{"russian":"шесть","english":"six"},{"russian":"семь","english":"seven"},{"russian":"восемь","english":"eight"},{"russian":"десять","english":"ten"}]}'::jsonb, 'These finish your first count from one to ten.', 15, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:numbers-6-10:numbers-order-6-10', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'numbers-6-10'), 'numbers-order-6-10', 'sentenceOrder', 'Put the numbers in order.', '{"translation":"six, seven, eight, nine, ten","words":["десять","семь","шесть","девять","восемь"],"correctOrder":["шесть","семь","восемь","девять","десять"]}'::jsonb, '{"correctOrder":["шесть","семь","восемь","девять","десять"]}'::jsonb, 'The order is шесть, семь, восемь, девять, десять.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:numbers-6-10:numbers-scenario-8', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'numbers-6-10'), 'numbers-scenario-8', 'scenarioChoice', 'Choose the number.', '{"situation":"A train leaves from platform eight. Which word means eight?","options":["восемь","шесть","десять","семь"],"correctAnswer":"восемь"}'::jsonb, '{"correctAnswer":"восемь"}'::jsonb, 'восемь means eight.', 20, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -968,66 +968,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:family-members:family-mama-meaning', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'family-members'), 'family-mama-meaning', 'multipleChoice', 'Choose the English meaning.', '{"display":"мама","options":["mom","brother","friend","child"],"correctAnswer":"mom"}'::jsonb, '{"correctAnswer":"mom"}'::jsonb, 'мама means mom.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:family-members:family-fill-sestra', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'family-members'), 'family-fill-sestra', 'fillBlank', 'Complete the phrase This is my sister.', '{"beforeBlank":"Это моя","afterBlank":".","options":["сестра","папа","брат","семья"],"correctAnswer":"сестра"}'::jsonb, '{"correctAnswer":"сестра"}'::jsonb, 'моя сестра means my sister. Use моя with сестра.', 15, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:family-members:family-order-my-dad', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'family-members'), 'family-order-my-dad', 'sentenceOrder', 'Build the Russian sentence.', '{"translation":"This is my dad.","words":["мой","Это","папа."],"correctOrder":["Это","мой","папа."]}'::jsonb, '{"correctOrder":["Это","мой","папа."]}'::jsonb, 'Это мой папа means This is my dad. Use мой with папа.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:family-members:family-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'family-members'), 'family-match', 'matching', 'Match the family words.', '{"pairs":[{"russian":"мама","english":"mom"},{"russian":"папа","english":"dad"},{"russian":"брат","english":"brother"},{"russian":"семья","english":"family"}],"englishOptions":["family","dad","mom","brother"]}'::jsonb, '{"pairs":[{"russian":"мама","english":"mom"},{"russian":"папа","english":"dad"},{"russian":"брат","english":"brother"},{"russian":"семья","english":"family"}]}'::jsonb, 'These are core A1 family words.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:family-members:family-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'family-members'), 'family-scenario', 'scenarioChoice', 'Pick the best word.', '{"situation":"You point to your mom. What phrase fits?","options":["Это моя мама.","Это мой папа.","Это брат.","Где мама?"],"correctAnswer":"Это моя мама."}'::jsonb, '{"correctAnswer":"Это моя мама."}'::jsonb, 'Это моя мама is the natural way to say This is my mom.', 15, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -1046,66 +1046,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:people-around-you:people-drug-meaning', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'people-around-you'), 'people-drug-meaning', 'multipleChoice', 'What does this word mean?', '{"display":"друг","options":["friend","dad","water","school"],"correctAnswer":"friend"}'::jsonb, '{"correctAnswer":"friend"}'::jsonb, 'друг means a male friend or friend in general.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:people-around-you:people-fill-person', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'people-around-you'), 'people-fill-person', 'fillBlank', 'Complete the phrase one person.', '{"beforeBlank":"один","afterBlank":".","options":["человек","подруга","мама","чай"],"correctAnswer":"человек"}'::jsonb, '{"correctAnswer":"человек"}'::jsonb, 'один человек means one person.', 15, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:people-around-you:people-order-my-friend', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'people-around-you'), 'people-order-my-friend', 'sentenceOrder', 'Build the Russian phrase.', '{"translation":"My friend.","words":["друг","мой"],"correctOrder":["мой","друг"]}'::jsonb, '{"correctOrder":["мой","друг"]}'::jsonb, 'мой друг means my friend. Use мой with друг.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:people-around-you:people-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'people-around-you'), 'people-match', 'matching', 'Match the people words.', '{"pairs":[{"russian":"подруга","english":"female friend"},{"russian":"человек","english":"person"},{"russian":"ребёнок","english":"child"},{"russian":"студент","english":"student"}],"englishOptions":["student","child","female friend","person"]}'::jsonb, '{"pairs":[{"russian":"подруга","english":"female friend"},{"russian":"человек","english":"person"},{"russian":"ребёнок","english":"child"},{"russian":"студент","english":"student"}]}'::jsonb, 'These words help you identify common people around you.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:people-around-you:people-scenario-female-friend', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'people-around-you'), 'people-scenario-female-friend', 'scenarioChoice', 'Pick the best phrase.', '{"situation":"You want to say my female friend.","options":["моя подруга","мой папа","моя мама","мой брат"],"correctAnswer":"моя подруга"}'::jsonb, '{"correctAnswer":"моя подруга"}'::jsonb, 'моя подруга means my female friend. Use моя with подруга.', 15, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -1124,66 +1124,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:simple-descriptions:descriptions-good', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'simple-descriptions'), 'descriptions-good', 'multipleChoice', 'Choose the meaning.', '{"display":"это","options":["this is","where","water","please"],"correctAnswer":"this is"}'::jsonb, '{"correctAnswer":"this is"}'::jsonb, 'это means this is or it is.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:simple-descriptions:descriptions-fill-new', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'simple-descriptions'), 'descriptions-fill-new', 'fillBlank', 'Complete the phrase my brother.', '{"beforeBlank":"","afterBlank":"брат.","options":["мой","моя","это","где"],"correctAnswer":"мой"}'::jsonb, '{"correctAnswer":"мой"}'::jsonb, 'мой брат means my brother. Use мой with брат.', 15, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:simple-descriptions:descriptions-order-this-is-family', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'simple-descriptions'), 'descriptions-order-this-is-family', 'sentenceOrder', 'Build the Russian sentence.', '{"translation":"This is my family.","words":["моя","Это","семья."],"correctOrder":["Это","моя","семья."]}'::jsonb, '{"correctOrder":["Это","моя","семья."]}'::jsonb, 'Это моя семья means This is my family.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:simple-descriptions:descriptions-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'simple-descriptions'), 'descriptions-match', 'matching', 'Match each short phrase.', '{"pairs":[{"russian":"мой брат","english":"my brother"},{"russian":"моя сестра","english":"my sister"},{"russian":"моя семья","english":"my family"},{"russian":"это","english":"this is"}],"englishOptions":["my family","this is","my sister","my brother"]}'::jsonb, '{"pairs":[{"russian":"мой брат","english":"my brother"},{"russian":"моя сестра","english":"my sister"},{"russian":"моя семья","english":"my family"},{"russian":"это","english":"this is"}]}'::jsonb, 'мой is used with брат. моя is used with сестра and семья.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:simple-descriptions:descriptions-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'simple-descriptions'), 'descriptions-scenario', 'scenarioChoice', 'Pick the best phrase.', '{"situation":"You introduce your brother.","options":["брат","сестра","мама","папа"],"correctAnswer":"брат"}'::jsonb, '{"correctAnswer":"брат"}'::jsonb, 'Use брат for brother. A full sentence is Это мой брат.', 15, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -1202,66 +1202,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:basic-foods:food-bread', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'basic-foods'), 'food-bread', 'multipleChoice', 'What does this word mean?', '{"display":"хлеб","options":["bread","tea","street","friend"],"correctAnswer":"bread"}'::jsonb, '{"correctAnswer":"bread"}'::jsonb, 'хлеб means bread.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:basic-foods:food-fill-soup', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'basic-foods'), 'food-fill-soup', 'fillBlank', 'Complete the Russian sentence.', '{"beforeBlank":"Я хочу","afterBlank":".","options":["суп","улица","мама","метро"],"correctAnswer":"суп"}'::jsonb, '{"correctAnswer":"суп"}'::jsonb, 'Я хочу суп means I want soup.', 15, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:basic-foods:food-order-i-want-bread', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'basic-foods'), 'food-order-i-want-bread', 'sentenceOrder', 'Build the Russian sentence.', '{"translation":"I want bread.","words":["хочу","хлеб.","Я"],"correctOrder":["Я","хочу","хлеб."]}'::jsonb, '{"correctOrder":["Я","хочу","хлеб."]}'::jsonb, 'Я хочу means I want. Я хочу хлеб means I want bread.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:basic-foods:food-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'basic-foods'), 'food-match', 'matching', 'Match the food words.', '{"pairs":[{"russian":"суп","english":"soup"},{"russian":"яблоко","english":"apple"},{"russian":"хлеб","english":"bread"},{"russian":"молоко","english":"milk"}],"englishOptions":["apple","bread","soup","milk"]}'::jsonb, '{"pairs":[{"russian":"суп","english":"soup"},{"russian":"яблоко","english":"apple"},{"russian":"хлеб","english":"bread"},{"russian":"молоко","english":"milk"}]}'::jsonb, 'These are common beginner food nouns.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:basic-foods:food-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'basic-foods'), 'food-scenario', 'scenarioChoice', 'Choose the food.', '{"situation":"You want an apple.","options":["яблоко","хлеб","суп","молоко"],"correctAnswer":"яблоко"}'::jsonb, '{"correctAnswer":"яблоко"}'::jsonb, 'яблоко means apple.', 15, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -1280,66 +1280,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:drinks:drinks-water', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'drinks'), 'drinks-water', 'multipleChoice', 'Choose the meaning.', '{"display":"вода","options":["water","milk","bread","home"],"correctAnswer":"water"}'::jsonb, '{"correctAnswer":"water"}'::jsonb, 'вода means water.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:drinks:drinks-fill-tea', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'drinks'), 'drinks-fill-tea', 'fillBlank', 'Complete the phrase tea, please.', '{"beforeBlank":"","afterBlank":", пожалуйста.","options":["чай","хлеб","дом","друг"],"correctAnswer":"чай"}'::jsonb, '{"correctAnswer":"чай"}'::jsonb, 'чай, пожалуйста means tea, please.', 15, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:drinks:drinks-order-coffee-please', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'drinks'), 'drinks-order-coffee-please', 'sentenceOrder', 'Build the Russian phrase.', '{"translation":"Coffee, please.","words":["пожалуйста","кофе"],"correctOrder":["кофе","пожалуйста"]}'::jsonb, '{"correctOrder":["кофе","пожалуйста"]}'::jsonb, 'кофе, пожалуйста is a simple way to ask for coffee.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:drinks:drinks-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'drinks'), 'drinks-match', 'matching', 'Match the drink words.', '{"pairs":[{"russian":"чай","english":"tea"},{"russian":"кофе","english":"coffee"},{"russian":"вода","english":"water"},{"russian":"молоко","english":"milk"}],"englishOptions":["milk","water","coffee","tea"]}'::jsonb, '{"pairs":[{"russian":"чай","english":"tea"},{"russian":"кофе","english":"coffee"},{"russian":"вода","english":"water"},{"russian":"молоко","english":"milk"}]}'::jsonb, 'These are useful drinks for cafes and homes.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:drinks:drinks-scenario-tea', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'drinks'), 'drinks-scenario-tea', 'scenarioChoice', 'Pick the best phrase.', '{"situation":"Someone offers you a drink and you want tea.","options":["Спасибо, я хочу чай.","Где чай?","Это мой чай.","Я ищу чай."],"correctAnswer":"Спасибо, я хочу чай."}'::jsonb, '{"correctAnswer":"Спасибо, я хочу чай."}'::jsonb, 'Спасибо, я хочу чай means Thank you, I want tea.', 15, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -1358,66 +1358,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:ordering-politely:ordering-ya-hochu', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'ordering-politely'), 'ordering-ya-hochu', 'multipleChoice', 'Choose the meaning.', '{"display":"Я хочу","options":["I want","I know","Where is","This is"],"correctAnswer":"I want"}'::jsonb, '{"correctAnswer":"I want"}'::jsonb, 'Я хочу means I want.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:ordering-politely:ordering-fill-please', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'ordering-politely'), 'ordering-fill-please', 'fillBlank', 'Complete the polite request.', '{"beforeBlank":"Можно воду,","afterBlank":"?","options":["пожалуйста","вода","хлеб","семья"],"correctAnswer":"пожалуйста"}'::jsonb, '{"correctAnswer":"пожалуйста"}'::jsonb, 'Можно воду, пожалуйста? means May I have water, please?', 15, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:ordering-politely:ordering-order-bill', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'ordering-politely'), 'ordering-order-bill', 'sentenceOrder', 'Build the Russian phrase.', '{"translation":"I have bread.","words":["есть","хлеб.","меня","У"],"correctOrder":["У","меня","есть","хлеб."]}'::jsonb, '{"correctOrder":["У","меня","есть","хлеб."]}'::jsonb, 'У меня есть хлеб means I have bread.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:ordering-politely:ordering-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'ordering-politely'), 'ordering-match', 'matching', 'Match each cafe phrase.', '{"pairs":[{"russian":"Я хочу","english":"I want"},{"russian":"У меня есть","english":"I have"},{"russian":"пожалуйста","english":"please"},{"russian":"Можно воду?","english":"May I have water?"}],"englishOptions":["I have","please","May I have water?","I want"]}'::jsonb, '{"pairs":[{"russian":"Я хочу","english":"I want"},{"russian":"У меня есть","english":"I have"},{"russian":"пожалуйста","english":"please"},{"russian":"Можно воду?","english":"May I have water?"}]}'::jsonb, 'Я хочу means I want. У меня есть means I have.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:ordering-politely:ordering-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'ordering-politely'), 'ordering-scenario', 'scenarioChoice', 'Pick the polite phrase.', '{"situation":"You are in a cafe and want water.","options":["Можно воду, пожалуйста?","Где метро?","Это семья.","Я студент."],"correctAnswer":"Можно воду, пожалуйста?"}'::jsonb, '{"correctAnswer":"Можно воду, пожалуйста?"}'::jsonb, 'Можно воду, пожалуйста? is a polite cafe request.', 20, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -1436,66 +1436,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:common-places:places-home', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'common-places'), 'places-home', 'multipleChoice', 'Choose the meaning.', '{"display":"дом","options":["home","juice","student","left"],"correctAnswer":"home"}'::jsonb, '{"correctAnswer":"home"}'::jsonb, 'дом means home or house.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:common-places:places-fill-store', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'common-places'), 'places-fill-store', 'fillBlank', 'Complete the Russian question.', '{"beforeBlank":"Где","afterBlank":"?","options":["магазин","вода","брат","хлеб"],"correctAnswer":"магазин"}'::jsonb, '{"correctAnswer":"магазин"}'::jsonb, 'Где магазин? means Where is the store?', 15, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:common-places:places-order-pharmacy', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'common-places'), 'places-order-pharmacy', 'sentenceOrder', 'Build the Russian question.', '{"translation":"Where is the pharmacy?","words":["аптека?","Где"],"correctOrder":["Где","аптека?"]}'::jsonb, '{"correctOrder":["Где","аптека?"]}'::jsonb, 'Где аптека? means Where is the pharmacy?', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:common-places:places-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'common-places'), 'places-match', 'matching', 'Match the place words.', '{"pairs":[{"russian":"школа","english":"school"},{"russian":"университет","english":"university"},{"russian":"магазин","english":"store"},{"russian":"аптека","english":"pharmacy"}],"englishOptions":["pharmacy","university","store","school"]}'::jsonb, '{"pairs":[{"russian":"школа","english":"school"},{"russian":"университет","english":"university"},{"russian":"магазин","english":"store"},{"russian":"аптека","english":"pharmacy"}]}'::jsonb, 'These places appear often in basic directions.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:common-places:places-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'common-places'), 'places-scenario', 'scenarioChoice', 'Choose the place.', '{"situation":"You need medicine. Which place word fits?","options":["аптека","дом","школа","кафе"],"correctAnswer":"аптека"}'::jsonb, '{"correctAnswer":"аптека"}'::jsonb, 'аптека means pharmacy.', 20, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -1514,66 +1514,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:asking-where:where-gde', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'asking-where'), 'where-gde', 'multipleChoice', 'What does this word mean?', '{"display":"Где?","options":["Where?","Who?","What?","How?"],"correctAnswer":"Where?"}'::jsonb, '{"correctAnswer":"Where?"}'::jsonb, 'Где? means Where?', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:asking-where:where-fill-cafe', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'asking-where'), 'where-fill-cafe', 'fillBlank', 'Complete the question.', '{"beforeBlank":"Где","afterBlank":"?","options":["аптека","вода","хлеб","мама"],"correctAnswer":"аптека"}'::jsonb, '{"correctAnswer":"аптека"}'::jsonb, 'Где аптека? means Where is the pharmacy?', 15, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:asking-where:where-order-store', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'asking-where'), 'where-order-store', 'sentenceOrder', 'Build the Russian question.', '{"translation":"Where is the store?","words":["магазин?","Где"],"correctOrder":["Где","магазин?"]}'::jsonb, '{"correctOrder":["Где","магазин?"]}'::jsonb, 'Где магазин? asks where the store is.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:asking-where:where-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'asking-where'), 'where-match', 'matching', 'Match the location words.', '{"pairs":[{"russian":"Где?","english":"Where?"},{"russian":"здесь","english":"here"},{"russian":"там","english":"there"},{"russian":"Где аптека?","english":"Where is the pharmacy?"}],"englishOptions":["there","Where is the pharmacy?","here","Where?"]}'::jsonb, '{"pairs":[{"russian":"Где?","english":"Where?"},{"russian":"здесь","english":"here"},{"russian":"там","english":"there"},{"russian":"Где аптека?","english":"Where is the pharmacy?"}]}'::jsonb, 'These are short, useful location phrases.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:asking-where:where-scenario-here', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'asking-where'), 'where-scenario-here', 'scenarioChoice', 'Pick the best word.', '{"situation":"You want to say the cafe is here.","options":["здесь","там","направо","моя"],"correctAnswer":"здесь"}'::jsonb, '{"correctAnswer":"здесь"}'::jsonb, 'здесь means here.', 15, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
@@ -1592,66 +1592,66 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:directions-left-right:directions-left', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'directions-left-right'), 'directions-left', 'multipleChoice', 'Choose the meaning.', '{"display":"налево","options":["to the left","to the right","straight ahead","I am looking for"],"correctAnswer":"to the left"}'::jsonb, '{"correctAnswer":"to the left"}'::jsonb, 'налево means to the left.', 10, 1, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:directions-left-right:directions-fill-straight', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'directions-left-right'), 'directions-fill-straight', 'fillBlank', 'Complete the direction Go straight.', '{"beforeBlank":"Идите","afterBlank":".","options":["прямо","налево","направо","вода"],"correctAnswer":"прямо"}'::jsonb, '{"correctAnswer":"прямо"}'::jsonb, 'Идите прямо means Go straight.', 15, 2, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:directions-left-right:directions-order-looking-cafe', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'directions-left-right'), 'directions-order-looking-cafe', 'sentenceOrder', 'Build the Russian sentence.', '{"translation":"I am looking for a cafe.","words":["ищу","кафе.","Я"],"correctOrder":["Я","ищу","кафе."]}'::jsonb, '{"correctOrder":["Я","ищу","кафе."]}'::jsonb, 'Я ищу кафе means I am looking for a cafe.', 20, 3, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:directions-left-right:directions-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'directions-left-right'), 'directions-match', 'matching', 'Match the direction words.', '{"pairs":[{"russian":"налево","english":"to the left"},{"russian":"направо","english":"to the right"},{"russian":"прямо","english":"straight ahead"},{"russian":"Я ищу","english":"I am looking for"}],"englishOptions":["straight ahead","to the right","I am looking for","to the left"]}'::jsonb, '{"pairs":[{"russian":"налево","english":"to the left"},{"russian":"направо","english":"to the right"},{"russian":"прямо","english":"straight ahead"},{"russian":"Я ищу","english":"I am looking for"}]}'::jsonb, 'These words are enough for very simple directions.', 20, 4, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
 VALUES ('exercise:directions-left-right:directions-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-2' AND "Lesson"."slug" = 'directions-left-right'), 'directions-scenario', 'scenarioChoice', 'Choose the direction.', '{"situation":"Someone points right and says which word?","options":["направо","налево","прямо","Я ищу"],"correctAnswer":"направо"}'::jsonb, '{"correctAnswer":"направо"}'::jsonb, 'направо means to the right.', 20, 5, 'PUBLISHED', now(), now())
-ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+ON CONFLICT ("lessonId", "order") DO UPDATE SET
+  "slug" = EXCLUDED."slug",
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
   "content" = EXCLUDED."content",
   "answerKey" = EXCLUDED."answerKey",
   "explanation" = EXCLUDED."explanation",
   "points" = EXCLUDED."points",
-  "order" = EXCLUDED."order",
   "status" = EXCLUDED."status",
   "updatedAt" = now();
 

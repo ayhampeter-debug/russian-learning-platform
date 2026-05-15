@@ -177,8 +177,8 @@ function seedWorld(world: World) {
           order: exerciseIndex + 1,
           status: contentStatus,
         },
-        ["lessonId", "slug"],
-        ["type", "prompt", "content", "answerKey", "explanation", "points", "order", "status"],
+        ["lessonId", "order"],
+        ["slug", "type", "prompt", "content", "answerKey", "explanation", "points", "status"],
       );
     }
   }
