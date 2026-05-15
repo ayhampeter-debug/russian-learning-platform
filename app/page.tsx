@@ -3,20 +3,13 @@
 import { Navigation } from "@/components/Navigation";
 import { useExplanationLanguage } from "@/components/LanguageSelector";
 import { worldOne, worlds } from "@/lib/learning-data";
-import {
-  getUiText,
-  localizeLessonDescription,
-  localizeLessonTitle,
-  localizeWorldDescription,
-  uiTextProps,
-  type UiText,
-} from "@/lib/ui-translations";
+import { getUiText, uiTextProps, type UiText } from "@/lib/ui-translations";
 import type { ExplanationLanguage } from "@/lib/language-preference";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-type Tone = "cyan" | "yellow" | "red" | "green" | "violet";
+type Tone = "teal" | "cyan" | "lime" | "navy";
 
 const worldTwo = worlds.find((world) => world.number === 2);
 
@@ -24,17 +17,8 @@ export default function Home() {
   const { language } = useExplanationLanguage();
   const text = getUiText(language);
   const { isSignedIn } = useUser();
-  const userId = isSignedIn ? "signed-in" : null;
-  const startHref = userId ? "/dashboard" : "/signup";
-  const explanationLanguage =
-    language === "ar"
-      ? text.common.explanationLanguageValueArabic
-      : text.common.explanationLanguageValueEnglish;
-  const heroStats = [
-    { label: text.home.firstCourseLive, value: text.lesson.russian },
-    { label: text.home.availableWorlds, value: worldTwo ? "2" : "1" },
-    { label: text.home.starterXpPath, value: `${worldOne.xp}` },
-  ];
+  const startHref = isSignedIn ? "/dashboard" : "/signup";
+
   const features: Array<{
     title: string;
     text: string;
@@ -42,30 +26,25 @@ export default function Home() {
     tone: Tone;
   }> = [
     {
-      title: text.home.questLessons,
+      title: text.home.shortLessons,
       text: text.home.questLessonsText,
-      badge: "Q",
-      tone: "cyan",
+      badge: "01",
+      tone: "teal",
     },
     {
       title: text.home.xpTracking,
       text: text.home.xpTrackingText,
       badge: "XP",
-      tone: "yellow",
+      tone: "lime",
     },
     {
       title: text.home.bossChallenges,
       text: text.home.bossChallengesText,
-      badge: "B",
-      tone: "red",
-    },
-    {
-      title: text.home.savedProgress,
-      text: text.home.savedProgressText,
-      badge: "OK",
-      tone: "green",
+      badge: "03",
+      tone: "cyan",
     },
   ];
+
   const howItWorks = [
     {
       step: "1",
@@ -82,83 +61,63 @@ export default function Home() {
       title: text.home.levelUp,
       text: text.home.levelUpText,
     },
-    {
-      step: "4",
-      title: text.home.defeatBossChallenges,
-      text: text.home.defeatBossChallengesText,
-    },
   ];
+
   const courseHighlights = [
     text.home.beginnerFriendly,
     text.home.guidedMode,
     text.home.worldsAvailable,
-    text.home.moreLanguagesLater,
-  ];
-  const productHighlights = [
-    text.home.dailyPractice,
-    text.home.shortLessons,
-    text.home.progressSavedAccount,
-    text.home.guestModeAvailable,
+    text.home.firstCourseLive,
   ];
 
   return (
-    <main className="min-h-screen overflow-hidden bg-slate-950 text-white">
+    <main className="min-h-screen overflow-hidden bg-[var(--app-bg)] text-[var(--app-text)] [font-family:var(--font-geist-sans),Inter,ui-sans-serif,system-ui,sans-serif]">
       <Navigation />
 
-      <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 pb-14 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14 lg:pb-20">
+      <section className="mx-auto grid max-w-7xl items-center gap-10 px-4 pb-16 pt-4 sm:px-6 lg:min-h-[calc(100vh-7.5rem)] lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pb-24 lg:pt-6">
         <div className="min-w-0">
-          <p className="inline-flex max-w-full rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-bold text-cyan-200" {...uiTextProps(language)}>
+          <p
+            className="inline-flex max-w-full rounded-full border border-[var(--app-border)] bg-[var(--app-primary-soft)] px-4 py-2 text-sm font-semibold text-[var(--app-primary-strong)] shadow-sm"
+            {...uiTextProps(language)}
+          >
             {text.home.eyebrow}
           </p>
 
-          <h1 className="mt-6 max-w-4xl text-4xl font-black leading-tight tracking-tight sm:text-5xl lg:text-6xl" {...uiTextProps(language)}>
+          <h1
+            className="mt-7 max-w-4xl text-5xl font-black leading-[1.04] tracking-tight text-[var(--app-text)] sm:text-6xl lg:text-7xl"
+            {...uiTextProps(language)}
+          >
             {text.home.title}
           </h1>
 
-          <div className="mt-6 max-w-2xl space-y-3 text-base leading-8 text-slate-300 sm:text-lg" {...uiTextProps(language)}>
-            <p>{text.home.tagline}</p>
-            <p>{text.home.guided}</p>
-            <p className="font-semibold text-cyan-200">
-              {text.home.startToday}
-            </p>
-            <p className="text-sm font-semibold text-slate-400">
-              {text.home.currentCourse}: {text.lesson.russian} · {text.home.explanationLanguage}: {explanationLanguage}
-            </p>
-          </div>
+          <p
+            className="mt-6 max-w-2xl text-lg leading-8 text-[var(--app-text-muted)] sm:text-xl sm:leading-9"
+            {...uiTextProps(language)}
+          >
+            {text.home.tagline}
+          </p>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link
               href={startHref}
-              className="w-full rounded-full bg-cyan-400 px-7 py-3 text-center font-bold text-slate-950 shadow-lg shadow-cyan-950/30 transition hover:bg-cyan-300 sm:w-auto"
+              className="w-full rounded-full bg-[var(--primary)] px-7 py-3.5 text-center text-base font-bold text-[var(--primary-foreground)] shadow-lg shadow-cyan-950/20 transition hover:bg-cyan-300 sm:w-auto"
             >
-              {userId ? text.home.continueLearning : text.home.createFreeAccount}
+              {text.home.startLearning}
             </Link>
             <Link
               href="/courses"
-              className="w-full rounded-full border border-white/20 bg-white/10 px-7 py-3 text-center font-bold text-white transition hover:bg-white/15 sm:w-auto"
+              className="w-full rounded-full border border-[var(--app-border)] bg-[var(--app-surface)] px-7 py-3.5 text-center text-base font-bold text-[var(--app-text)] transition hover:border-cyan-400/50 hover:bg-[var(--app-surface-strong)] sm:w-auto"
             >
               {text.home.exploreCourses}
             </Link>
-          </div>
-
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            {heroStats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-lg border border-white/10 bg-white/10 px-4 py-3"
-              >
-                <p className="text-2xl font-black text-white">{stat.value}</p>
-                <p className="mt-1 text-sm text-slate-400">{stat.label}</p>
-              </div>
-            ))}
           </div>
         </div>
 
         <ProductPreview text={text} language={language} />
       </section>
 
-      <section className="border-y border-cyan-400/10 bg-slate-900/60">
-        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-20">
+      <section className="border-y border-[var(--app-border-muted)] bg-[var(--app-surface-muted)]">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
           <SectionHeading
             eyebrow={text.home.whyYazkUp}
             title={text.home.gameLoopTitle}
@@ -166,15 +125,15 @@ export default function Home() {
             language={language}
           />
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
             {features.map((feature) => (
-              <FeatureCard key={feature.title} {...feature} />
+              <FeatureCard key={feature.title} {...feature} language={language} />
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-20">
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
         <SectionHeading
           eyebrow={text.home.howItWorks}
           title={text.home.howTitle}
@@ -182,71 +141,50 @@ export default function Home() {
           language={language}
         />
 
-        <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
           {howItWorks.map((item) => (
-            <StepCard key={item.step} {...item} />
+            <StepCard key={item.step} {...item} language={language} />
           ))}
         </div>
       </section>
 
-      <section className="bg-slate-900/60">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:py-20">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-widest text-cyan-300">
+      <section className="bg-[var(--app-surface-muted)]">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:py-24">
+          <div {...uiTextProps(language)}>
+            <p className="text-sm font-semibold text-[var(--app-primary-strong)]">
               {text.home.currentCourse}
             </p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-black leading-tight tracking-tight text-[var(--app-text)] sm:text-5xl">
               {text.home.russianLive}
             </h2>
-            <p className="mt-4 leading-7 text-slate-400">
+            <p className="mt-5 max-w-xl text-lg leading-8 text-[var(--app-text-muted)]">
               {text.home.courseText}
             </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             {courseHighlights.map((highlight) => (
-              <HighlightCard key={highlight} text={highlight} tone="cyan" />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:py-20">
-        <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-widest text-cyan-300">
-              {text.home.productHighlights}
-            </p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-              {text.home.honestTools}
-            </h2>
-            <p className="mt-4 leading-7 text-slate-400">
-              {text.home.honestToolsText}
-            </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {productHighlights.map((highlight, index) => (
               <HighlightCard
                 key={highlight}
                 text={highlight}
-                tone={index % 2 === 0 ? "green" : "yellow"}
+                tone="teal"
+                language={language}
               />
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 pb-14 sm:px-6 lg:pb-20">
-        <div className="rounded-lg border border-cyan-400/20 bg-cyan-400/10 p-5 sm:p-8 lg:flex lg:items-center lg:justify-between lg:gap-10">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-widest text-cyan-200">
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
+        <div className="rounded-[1.75rem] border border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-2xl shadow-cyan-950/10 sm:p-10 lg:flex lg:items-center lg:justify-between lg:gap-10">
+          <div {...uiTextProps(language)}>
+            <p className="text-sm font-semibold text-[var(--app-primary-strong)]">
               {text.home.ready}
             </p>
-            <h2 className="mt-3 text-2xl font-black tracking-tight sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-black leading-tight tracking-tight text-[var(--app-text)] sm:text-5xl">
               {text.home.beginWorldOne}
             </h2>
-            <p className="mt-4 max-w-2xl leading-7 text-slate-300">
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--app-text-muted)]">
               {text.home.startLiveCourse}
             </p>
           </div>
@@ -254,13 +192,13 @@ export default function Home() {
           <div className="mt-6 flex flex-col gap-3 sm:flex-row lg:mt-0">
             <Link
               href={startHref}
-              className="w-full rounded-full bg-cyan-400 px-7 py-3 text-center font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
+              className="w-full rounded-full bg-[var(--primary)] px-7 py-3.5 text-center font-bold text-[var(--primary-foreground)] transition hover:bg-cyan-300 sm:w-auto"
             >
-              {userId ? text.home.continueLearning : text.home.createFreeAccount}
+              {text.home.startLearning}
             </Link>
             <Link
               href="/courses"
-              className="w-full rounded-full border border-white/20 px-7 py-3 text-center font-bold text-white transition hover:bg-white/10 sm:w-auto"
+              className="w-full rounded-full border border-[var(--app-border)] px-7 py-3.5 text-center font-bold text-[var(--app-text)] transition hover:bg-[var(--app-surface-strong)] sm:w-auto"
             >
               {text.home.exploreCourses}
             </Link>
@@ -279,52 +217,85 @@ function ProductPreview({
   language: ExplanationLanguage;
 }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-white/10 p-4 shadow-2xl shadow-cyan-950/30 backdrop-blur sm:p-6">
-      <div className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-cyan-300" {...uiTextProps(language)}>{text.home.liveCourse}</p>
-          <h2 className="mt-1 text-2xl font-black" {...uiTextProps(language)}>{text.home.russianFirstContact}</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-400" {...uiTextProps(language)}>
-            {text.home.beginnerGuided}
-          </p>
-        </div>
-        <span className="w-fit rounded-full bg-yellow-400 px-4 py-2 text-sm font-black text-slate-950">
-          {worldOne.xp} XP
-        </span>
-      </div>
+    <div className="relative mx-auto w-full max-w-lg rounded-[2rem] border border-[var(--app-border)] bg-[var(--app-surface)] p-5 shadow-2xl shadow-cyan-950/15 sm:p-6">
+      <div
+        className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-[var(--app-secondary-soft)] blur-2xl"
+        aria-hidden="true"
+      />
 
-      <div className="mt-5">
-        <div className="mb-2 flex justify-between gap-3 text-sm text-slate-400">
-          <span {...uiTextProps(language)}>{text.home.worldProgressPreview}</span>
-          <span>{worldOne.progressPercent}%</span>
+      <div className="relative">
+        <div className="flex items-start justify-between gap-4 border-b border-[var(--app-border-muted)] pb-5">
+          <div {...uiTextProps(language)}>
+            <p className="text-sm font-semibold text-[var(--app-primary-strong)]">
+              {text.home.liveCourse}
+            </p>
+            <h2 className="mt-2 text-2xl font-black tracking-tight text-[var(--app-text)]">
+              {text.home.russianFirstContact}
+            </h2>
+          </div>
+          <span className="rounded-full bg-[var(--app-xp-soft)] px-3 py-1.5 text-sm font-black text-[var(--app-xp)]">
+            {worldOne.xp} XP
+          </span>
         </div>
-        <div className="h-3 overflow-hidden rounded-full bg-slate-800">
-          <div
-            className="h-full rounded-full bg-cyan-400"
-            style={{ width: `${worldOne.progressPercent}%` }}
-          />
-        </div>
-      </div>
 
-      <div className="mt-5 grid gap-3">
-        {worldOne.lessons.slice(0, 3).map((lesson) => (
-          <LessonPreview
-            key={lesson.id}
-            number={lesson.number}
-            title={localizeLessonTitle(lesson.title, language)}
-            description={localizeLessonDescription(lesson.description, language)}
-            locked={lesson.locked}
+        <div className="mt-6">
+          <div className="mb-3 flex justify-between gap-3 text-sm font-semibold text-[var(--app-text-muted)]">
+            <span {...uiTextProps(language)}>{text.home.worldProgressPreview}</span>
+            <span>{worldOne.progressPercent}%</span>
+          </div>
+          <div className="h-2.5 overflow-hidden rounded-full bg-[var(--app-surface-muted)]">
+            <div
+              className="h-full rounded-full bg-[var(--primary)]"
+              style={{ width: `${worldOne.progressPercent}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          <PreviewPill
+            label={text.home.currentCourse}
+            value={text.lesson.russian}
             language={language}
           />
-        ))}
-      </div>
+          <PreviewPill
+            label={text.home.availableWorlds}
+            value={worldTwo ? text.home.worldOneTwo : text.home.worldOneOnly}
+            language={language}
+          />
+        </div>
 
-      <div className="mt-5 rounded-lg border border-violet-400/25 bg-violet-400/10 p-4">
-        <p className="text-sm font-semibold text-violet-200" {...uiTextProps(language)}>{text.home.bossChallenge}</p>
-        <p className="mt-1 text-lg font-bold" {...uiTextProps(language)}>
-          {localizeWorldDescription(worldOne.bossDescription, language)}
-        </p>
+        <div
+          className="mt-5 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-muted)] p-4"
+          {...uiTextProps(language)}
+        >
+          <p className="text-sm font-semibold text-[var(--app-text-muted)]">
+            {text.home.nextQuest}
+          </p>
+          <p className="mt-1 text-lg font-black text-[var(--app-text)]">
+            {text.home.completeShortLessons}
+          </p>
+        </div>
       </div>
+    </div>
+  );
+}
+
+function PreviewPill({
+  label,
+  value,
+  language,
+}: {
+  label: string;
+  value: string;
+  language: ExplanationLanguage;
+}) {
+  return (
+    <div
+      className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface-muted)] p-4"
+      {...uiTextProps(language)}
+    >
+      <p className="text-xs font-semibold text-[var(--app-text-faint)]">{label}</p>
+      <p className="mt-1 text-base font-black text-[var(--app-text)]">{value}</p>
     </div>
   );
 }
@@ -342,13 +313,15 @@ function SectionHeading({
 }) {
   return (
     <div className="max-w-3xl" {...uiTextProps(language)}>
-      <p className="text-sm font-bold uppercase tracking-widest text-cyan-300">
+      <p className="text-sm font-semibold text-[var(--app-primary-strong)]">
         {eyebrow}
       </p>
-      <h2 className="mt-3 text-2xl font-black tracking-tight sm:text-4xl">
+      <h2 className="mt-3 text-3xl font-black leading-tight tracking-tight text-[var(--app-text)] sm:text-5xl">
         {title}
       </h2>
-      <p className="mt-4 leading-7 text-slate-400">{text}</p>
+      <p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--app-text-muted)]">
+        {text}
+      </p>
     </div>
   );
 }
@@ -358,17 +331,26 @@ function FeatureCard({
   text,
   badge,
   tone,
+  language,
 }: {
   title: string;
   text: string;
   badge: string;
   tone: Tone;
+  language: ExplanationLanguage;
 }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-white/10 p-5">
+    <div
+      className="rounded-3xl border border-[var(--app-border)] bg-[var(--app-surface)] p-6 shadow-sm"
+      {...uiTextProps(language)}
+    >
       <Badge tone={tone}>{badge}</Badge>
-      <h3 className="mt-5 text-lg font-bold">{title}</h3>
-      <p className="mt-3 text-sm leading-6 text-slate-400">{text}</p>
+      <h3 className="mt-6 text-xl font-black tracking-tight text-[var(--app-text)]">
+        {title}
+      </h3>
+      <p className="mt-3 text-base leading-7 text-[var(--app-text-muted)]">
+        {text}
+      </p>
     </div>
   );
 }
@@ -377,77 +359,60 @@ function StepCard({
   step,
   title,
   text,
+  language,
 }: {
   step: string;
   title: string;
   text: string;
+  language: ExplanationLanguage;
 }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-white/10 p-5">
-      <Badge tone="cyan">{step}</Badge>
-      <h3 className="mt-5 text-xl font-bold">{title}</h3>
-      <p className="mt-3 leading-7 text-slate-300">{text}</p>
+    <div
+      className="rounded-3xl border border-[var(--app-border)] bg-[var(--app-surface)] p-6"
+      {...uiTextProps(language)}
+    >
+      <Badge tone="navy">{step}</Badge>
+      <h3 className="mt-6 text-xl font-black tracking-tight text-[var(--app-text)]">
+        {title}
+      </h3>
+      <p className="mt-3 leading-7 text-[var(--app-text-muted)]">{text}</p>
     </div>
   );
 }
 
-function HighlightCard({ text, tone }: { text: string; tone: Tone }) {
+function HighlightCard({
+  text,
+  tone,
+  language,
+}: {
+  text: string;
+  tone: Tone;
+  language: ExplanationLanguage;
+}) {
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/10 p-4">
-      <Badge tone={tone}>OK</Badge>
-      <p className="font-semibold text-white">{text}</p>
+    <div
+      className="flex items-center gap-4 rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-5"
+      {...uiTextProps(language)}
+    >
+      <Badge tone={tone}>✓</Badge>
+      <p className="text-base font-bold leading-6 text-[var(--app-text)]">{text}</p>
     </div>
   );
 }
 
 function Badge({ children, tone }: { children: ReactNode; tone: Tone }) {
   const toneClass = {
-    cyan: "border-cyan-400/30 bg-cyan-400/10 text-cyan-200",
-    yellow: "border-yellow-400/30 bg-yellow-400/10 text-yellow-200",
-    red: "border-red-400/30 bg-red-400/10 text-red-200",
-    green: "border-green-400/30 bg-green-400/10 text-green-200",
-    violet: "border-violet-400/30 bg-violet-400/10 text-violet-200",
+    teal: "border-[rgb(20_184_166_/_0.3)] bg-[var(--app-primary-soft)] text-[var(--app-primary-strong)]",
+    cyan: "border-[rgb(87_212_232_/_0.3)] bg-[var(--app-secondary-soft)] text-[var(--app-primary-strong)]",
+    lime: "border-[rgb(183_229_49_/_0.4)] bg-[var(--app-xp-soft)] text-[var(--app-xp)]",
+    navy: "border-[var(--app-border)] bg-[var(--app-surface-muted)] text-[var(--app-text)]",
   }[tone];
 
   return (
     <span
-      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border text-sm font-black ${toneClass}`}
+      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border text-sm font-black ${toneClass}`}
     >
       {children}
     </span>
-  );
-}
-
-function LessonPreview({
-  number,
-  title,
-  description,
-  locked = false,
-  language,
-}: {
-  number: string;
-  title: string;
-  description: string;
-  locked?: boolean;
-  language: ExplanationLanguage;
-}) {
-  return (
-    <div
-      className={`flex items-start gap-3 rounded-lg border p-4 ${
-        locked
-          ? "border-white/5 bg-slate-900/50 text-slate-400"
-          : "border-white/10 bg-slate-900/80"
-      }`}
-    >
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-cyan-400 font-black text-slate-950">
-        {locked ? "L" : number}
-      </span>
-      <div className="min-w-0">
-        <h3 className="font-bold" {...uiTextProps(language)}>{title}</h3>
-        <p className="mt-1 text-sm leading-6 text-slate-400" {...uiTextProps(language)}>
-          {description}
-        </p>
-      </div>
-    </div>
   );
 }
