@@ -797,6 +797,8 @@ const arabicContentDescriptions: Record<string, string> = {
     "استخدم من فضلك، وشكراً، والمعذرة، واعتذارات بسيطة.",
   "Say you do not understand and ask someone to repeat or slow down.":
     "قل إنك لا تفهم واطلب من شخص أن يعيد الكلام أو يبطئ.",
+  "Ask for help, say you do not understand, and ask someone to repeat.":
+    "اطلب المساعدة، وقل إنك لا تفهم، واطلب من شخص أن يعيد الكلام.",
   "Use what, who, where, and how in practical beginner questions.":
     "استخدم ماذا، ومن، وأين، وكيف في أسئلة عملية للمبتدئين.",
   "Count small amounts for tickets, tables, and items.":

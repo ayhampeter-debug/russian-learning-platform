@@ -399,7 +399,7 @@ ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "updatedAt" = now();
 
 INSERT INTO "Lesson" ("id", "worldId", "stageId", "slug", "number", "title", "description", "xpReward", "status", "vocabulary", "metadata", "createdAt", "updatedAt")
-VALUES ('lesson:world-1:ask-someones-name', (SELECT "id" FROM "World" WHERE "slug" = 'world-1'), (SELECT "Stage"."id" FROM "Stage" INNER JOIN "World" ON "World"."id" = "Stage"."worldId" WHERE "World"."slug" = 'world-1' AND "Stage"."slug" = 'who-are-you'), 'ask-someones-name', 5, 'Ask Someone''s Name', 'Ask for a name in casual and polite first meetings.', 75, 'PUBLISHED', '[{"russian":"Как тебя зовут?","english":"What is your name?","note":"Informal"},{"russian":"Как вас зовут?","english":"What is your name?","note":"Polite"},{"russian":"тебя","english":"you","note":"Informal object form"},{"russian":"вас","english":"you","note":"Polite object form"},{"russian":"А вас?","english":"And you?","note":"Polite"}]'::jsonb, '{"learningStatus":"Locked","xp":75,"locked":true}'::jsonb, now(), now())
+VALUES ('lesson:world-1:ask-someones-name', (SELECT "id" FROM "World" WHERE "slug" = 'world-1'), (SELECT "Stage"."id" FROM "Stage" INNER JOIN "World" ON "World"."id" = "Stage"."worldId" WHERE "World"."slug" = 'world-1' AND "Stage"."slug" = 'who-are-you'), 'ask-someones-name', 5, 'Ask Someone''s Name', 'Ask for a name in casual and polite first meetings.', 75, 'PUBLISHED', '[{"russian":"Как тебя зовут?","english":"What is your name?","note":"Informal: use with friends or children"},{"russian":"Как вас зовут?","english":"What is your name?","note":"Formal or plural: use with adults, strangers, or groups"},{"russian":"тебя","english":"you","note":"Informal object form of ты"},{"russian":"вас","english":"you","note":"Formal or plural object form of вы"},{"russian":"А вас?","english":"And you?","note":"Polite"}]'::jsonb, '{"learningStatus":"Locked","xp":75,"locked":true}'::jsonb, now(), now())
 ON CONFLICT ("worldId", "slug") DO UPDATE SET
   "stageId" = EXCLUDED."stageId",
   "number" = EXCLUDED."number",
@@ -451,7 +451,7 @@ ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
-VALUES ('exercise:ask-someones-name:ask-name-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'ask-someones-name'), 'ask-name-match', 'matching', 'Match the name questions.', '{"pairs":[{"russian":"Как тебя зовут?","english":"What is your name? (informal)"},{"russian":"Как вас зовут?","english":"What is your name? (polite)"},{"russian":"А ты?","english":"And you? (informal)"},{"russian":"А вас?","english":"And you? (polite)"}],"englishOptions":["And you? (polite)","What is your name? (informal)","And you? (informal)","What is your name? (polite)"]}'::jsonb, '{"pairs":[{"russian":"Как тебя зовут?","english":"What is your name? (informal)"},{"russian":"Как вас зовут?","english":"What is your name? (polite)"},{"russian":"А ты?","english":"And you? (informal)"},{"russian":"А вас?","english":"And you? (polite)"}]}'::jsonb, 'Use тебя or ты with peers, and вас with strangers or adults.', 15, 4, 'PUBLISHED', now(), now())
+VALUES ('exercise:ask-someones-name:ask-name-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'ask-someones-name'), 'ask-name-match', 'matching', 'Match the name questions.', '{"pairs":[{"russian":"Как тебя зовут?","english":"What is your name? (informal)"},{"russian":"Как вас зовут?","english":"What is your name? (polite)"},{"russian":"А ты?","english":"And you? (informal)"},{"russian":"А вас?","english":"And you? (polite)"}],"englishOptions":["And you? (polite)","What is your name? (informal)","And you? (informal)","What is your name? (polite)"]}'::jsonb, '{"pairs":[{"russian":"Как тебя зовут?","english":"What is your name? (informal)"},{"russian":"Как вас зовут?","english":"What is your name? (polite)"},{"russian":"А ты?","english":"And you? (informal)"},{"russian":"А вас?","english":"And you? (polite)"}]}'::jsonb, 'Use ты or тебя with friends. Use вы or вас with adults, strangers, or groups.', 15, 4, 'PUBLISHED', now(), now())
 ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
@@ -555,7 +555,7 @@ ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "updatedAt" = now();
 
 INSERT INTO "Lesson" ("id", "worldId", "stageId", "slug", "number", "title", "description", "xpReward", "status", "vocabulary", "metadata", "createdAt", "updatedAt")
-VALUES ('lesson:world-1:i-dont-understand', (SELECT "id" FROM "World" WHERE "slug" = 'world-1'), (SELECT "Stage"."id" FROM "Stage" INNER JOIN "World" ON "World"."id" = "Stage"."worldId" WHERE "World"."slug" = 'world-1' AND "Stage"."slug" = 'survival-phrases'), 'i-dont-understand', 7, 'When You Need Help', 'Say you do not understand and ask someone to repeat or slow down.', 75, 'PUBLISHED', '[{"russian":"Я не понимаю","english":"I do not understand"},{"russian":"Повторите, пожалуйста","english":"Repeat, please","note":"Polite"},{"russian":"Медленнее, пожалуйста","english":"More slowly, please"},{"russian":"Что это значит?","english":"What does this mean?"},{"russian":"Можно по-английски?","english":"Can you say it in English?"}]'::jsonb, '{"learningStatus":"Locked","xp":75,"locked":true}'::jsonb, now(), now())
+VALUES ('lesson:world-1:i-dont-understand', (SELECT "id" FROM "World" WHERE "slug" = 'world-1'), (SELECT "Stage"."id" FROM "Stage" INNER JOIN "World" ON "World"."id" = "Stage"."worldId" WHERE "World"."slug" = 'world-1' AND "Stage"."slug" = 'survival-phrases'), 'i-dont-understand', 7, 'When You Need Help', 'Ask for help, say you do not understand, and ask someone to repeat.', 75, 'PUBLISHED', '[{"russian":"Я не понимаю","english":"I do not understand"},{"russian":"Помогите, пожалуйста","english":"Help me, please","note":"Polite"},{"russian":"Повторите, пожалуйста","english":"Repeat, please","note":"Polite"},{"russian":"Медленнее, пожалуйста","english":"More slowly, please"},{"russian":"Что это значит?","english":"What does this mean?"}]'::jsonb, '{"learningStatus":"Locked","xp":75,"locked":true}'::jsonb, now(), now())
 ON CONFLICT ("worldId", "slug") DO UPDATE SET
   "stageId" = EXCLUDED."stageId",
   "number" = EXCLUDED."number",
@@ -581,7 +581,7 @@ ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
-VALUES ('exercise:i-dont-understand:understand-fill-repeat', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'i-dont-understand'), 'understand-fill-repeat', 'fillBlank', 'Complete the phrase Repeat, please.', '{"beforeBlank":"Повторите,","afterBlank":".","options":["пожалуйста","спасибо","привет","нет"],"correctAnswer":"пожалуйста"}'::jsonb, '{"correctAnswer":"пожалуйста"}'::jsonb, 'Повторите, пожалуйста means Repeat, please.', 10, 2, 'PUBLISHED', now(), now())
+VALUES ('exercise:i-dont-understand:understand-fill-repeat', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'i-dont-understand'), 'understand-fill-repeat', 'fillBlank', 'Complete the phrase Help me, please.', '{"beforeBlank":"Помогите,","afterBlank":".","options":["пожалуйста","спасибо","привет","нет"],"correctAnswer":"пожалуйста"}'::jsonb, '{"correctAnswer":"пожалуйста"}'::jsonb, 'Помогите, пожалуйста means Help me, please.', 10, 2, 'PUBLISHED', now(), now())
 ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
@@ -607,7 +607,7 @@ ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
-VALUES ('exercise:i-dont-understand:understand-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'i-dont-understand'), 'understand-match', 'matching', 'Match each help phrase.', '{"pairs":[{"russian":"Я не понимаю","english":"I do not understand"},{"russian":"Повторите, пожалуйста","english":"Repeat, please"},{"russian":"Медленнее, пожалуйста","english":"More slowly, please"},{"russian":"Что это значит?","english":"What does this mean?"}],"englishOptions":["What does this mean?","Repeat, please","I do not understand","More slowly, please"]}'::jsonb, '{"pairs":[{"russian":"Я не понимаю","english":"I do not understand"},{"russian":"Повторите, пожалуйста","english":"Repeat, please"},{"russian":"Медленнее, пожалуйста","english":"More slowly, please"},{"russian":"Что это значит?","english":"What does this mean?"}]}'::jsonb, 'These phrases help you keep a conversation going when you are lost.', 15, 4, 'PUBLISHED', now(), now())
+VALUES ('exercise:i-dont-understand:understand-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'i-dont-understand'), 'understand-match', 'matching', 'Match each help phrase.', '{"pairs":[{"russian":"Я не понимаю","english":"I do not understand"},{"russian":"Помогите, пожалуйста","english":"Help me, please"},{"russian":"Повторите, пожалуйста","english":"Repeat, please"},{"russian":"Что это значит?","english":"What does this mean?"}],"englishOptions":["What does this mean?","Help me, please","Repeat, please","I do not understand"]}'::jsonb, '{"pairs":[{"russian":"Я не понимаю","english":"I do not understand"},{"russian":"Помогите, пожалуйста","english":"Help me, please"},{"russian":"Повторите, пожалуйста","english":"Repeat, please"},{"russian":"Что это значит?","english":"What does this mean?"}]}'::jsonb, 'These phrases help you ask for help or keep a conversation going.', 15, 4, 'PUBLISHED', now(), now())
 ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
@@ -620,7 +620,7 @@ ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
-VALUES ('exercise:i-dont-understand:understand-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'i-dont-understand'), 'understand-scenario', 'scenarioChoice', 'Choose the useful phrase.', '{"situation":"Someone speaks too fast and you miss everything.","options":["Медленнее, пожалуйста","Да","Меня зовут Alex","Доброе утро"],"correctAnswer":"Медленнее, пожалуйста"}'::jsonb, '{"correctAnswer":"Медленнее, пожалуйста"}'::jsonb, 'Медленнее, пожалуйста asks the speaker to slow down.', 20, 5, 'PUBLISHED', now(), now())
+VALUES ('exercise:i-dont-understand:understand-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'i-dont-understand'), 'understand-scenario', 'scenarioChoice', 'Choose the useful phrase.', '{"situation":"You are lost and need someone to help you.","options":["Помогите, пожалуйста","Да","Меня зовут Alex","Доброе утро"],"correctAnswer":"Помогите, пожалуйста"}'::jsonb, '{"correctAnswer":"Помогите, пожалуйста"}'::jsonb, 'Помогите, пожалуйста is a polite way to ask for help.', 20, 5, 'PUBLISHED', now(), now())
 ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
@@ -633,7 +633,7 @@ ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "updatedAt" = now();
 
 INSERT INTO "Lesson" ("id", "worldId", "stageId", "slug", "number", "title", "description", "xpReward", "status", "vocabulary", "metadata", "createdAt", "updatedAt")
-VALUES ('lesson:world-1:basic-question-words', (SELECT "id" FROM "World" WHERE "slug" = 'world-1'), (SELECT "Stage"."id" FROM "Stage" INNER JOIN "World" ON "World"."id" = "Stage"."worldId" WHERE "World"."slug" = 'world-1' AND "Stage"."slug" = 'question-basics'), 'basic-question-words', 8, 'Ask Basic Questions', 'Use what, who, where, and how in practical beginner questions.', 80, 'PUBLISHED', '[{"russian":"Что?","english":"What?"},{"russian":"Кто?","english":"Who?"},{"russian":"Где?","english":"Where?"},{"russian":"Как?","english":"How?"},{"russian":"Где метро?","english":"Where is the metro?"}]'::jsonb, '{"learningStatus":"Locked","xp":80,"locked":true}'::jsonb, now(), now())
+VALUES ('lesson:world-1:basic-question-words', (SELECT "id" FROM "World" WHERE "slug" = 'world-1'), (SELECT "Stage"."id" FROM "Stage" INNER JOIN "World" ON "World"."id" = "Stage"."worldId" WHERE "World"."slug" = 'world-1' AND "Stage"."slug" = 'question-basics'), 'basic-question-words', 8, 'Ask Basic Questions', 'Use what, who, where, and how in practical beginner questions.', 80, 'PUBLISHED', '[{"russian":"Что это?","english":"What is this?"},{"russian":"Кто это?","english":"Who is this?"},{"russian":"Где?","english":"Where?"},{"russian":"Как?","english":"How?"},{"russian":"Где метро?","english":"Where is the metro?"}]'::jsonb, '{"learningStatus":"Locked","xp":80,"locked":true}'::jsonb, now(), now())
 ON CONFLICT ("worldId", "slug") DO UPDATE SET
   "stageId" = EXCLUDED."stageId",
   "number" = EXCLUDED."number",
@@ -646,7 +646,7 @@ ON CONFLICT ("worldId", "slug") DO UPDATE SET
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
-VALUES ('exercise:basic-question-words:question-chto', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-chto', 'multipleChoice', 'What does this question word mean?', '{"display":"Что?","options":["What?","Who?","Where?","How?"],"correctAnswer":"What?"}'::jsonb, '{"correctAnswer":"What?"}'::jsonb, 'Что? means What?', 10, 1, 'PUBLISHED', now(), now())
+VALUES ('exercise:basic-question-words:question-chto', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-chto', 'multipleChoice', 'What does this question word mean?', '{"display":"Что это?","options":["What is this?","Who is this?","Where is it?","How is it?"],"correctAnswer":"What is this?"}'::jsonb, '{"correctAnswer":"What is this?"}'::jsonb, 'Что это? means What is this?', 10, 1, 'PUBLISHED', now(), now())
 ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
@@ -672,7 +672,7 @@ ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
-VALUES ('exercise:basic-question-words:question-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-match', 'matching', 'Match the question words.', '{"pairs":[{"russian":"Что?","english":"What?"},{"russian":"Кто?","english":"Who?"},{"russian":"Где?","english":"Where?"},{"russian":"Как?","english":"How?"}],"englishOptions":["Where?","How?","What?","Who?"]}'::jsonb, '{"pairs":[{"russian":"Что?","english":"What?"},{"russian":"Кто?","english":"Who?"},{"russian":"Где?","english":"Where?"},{"russian":"Как?","english":"How?"}]}'::jsonb, 'These four words start many basic Russian questions.', 20, 3, 'PUBLISHED', now(), now())
+VALUES ('exercise:basic-question-words:question-match', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-match', 'matching', 'Match the question words.', '{"pairs":[{"russian":"Что это?","english":"What is this?"},{"russian":"Кто это?","english":"Who is this?"},{"russian":"Где?","english":"Where?"},{"russian":"Как?","english":"How?"}],"englishOptions":["Where?","How?","What is this?","Who is this?"]}'::jsonb, '{"pairs":[{"russian":"Что это?","english":"What is this?"},{"russian":"Кто это?","english":"Who is this?"},{"russian":"Где?","english":"Where?"},{"russian":"Как?","english":"How?"}]}'::jsonb, 'These short questions are useful when you need basic information.', 20, 3, 'PUBLISHED', now(), now())
 ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",
@@ -698,7 +698,20 @@ ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "updatedAt" = now();
 
 INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
-VALUES ('exercise:basic-question-words:question-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-scenario', 'scenarioChoice', 'Pick the best question word.', '{"situation":"You want to ask where the cafe is.","options":["Где?","Кто?","Что?","Да"],"correctAnswer":"Где?"}'::jsonb, '{"correctAnswer":"Где?"}'::jsonb, 'Use Где? when asking where something is.', 20, 5, 'PUBLISHED', now(), now())
+VALUES ('exercise:basic-question-words:question-scenario', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-scenario', 'scenarioChoice', 'Pick the best question word.', '{"situation":"You point to an object and want to ask what it is.","options":["Что это?","Кто это?","Где?","Да"],"correctAnswer":"Что это?"}'::jsonb, '{"correctAnswer":"Что это?"}'::jsonb, 'Use Что это? when asking What is this?', 20, 5, 'PUBLISHED', now(), now())
+ON CONFLICT ("lessonId", "slug") DO UPDATE SET
+  "type" = EXCLUDED."type",
+  "prompt" = EXCLUDED."prompt",
+  "content" = EXCLUDED."content",
+  "answerKey" = EXCLUDED."answerKey",
+  "explanation" = EXCLUDED."explanation",
+  "points" = EXCLUDED."points",
+  "order" = EXCLUDED."order",
+  "status" = EXCLUDED."status",
+  "updatedAt" = now();
+
+INSERT INTO "Exercise" ("id", "lessonId", "slug", "type", "prompt", "content", "answerKey", "explanation", "points", "order", "status", "createdAt", "updatedAt")
+VALUES ('exercise:basic-question-words:question-scenario-where', (SELECT "Lesson"."id" FROM "Lesson" INNER JOIN "World" ON "World"."id" = "Lesson"."worldId" WHERE "World"."slug" = 'world-1' AND "Lesson"."slug" = 'basic-question-words'), 'question-scenario-where', 'scenarioChoice', 'Pick the best question word.', '{"situation":"You want to ask where the cafe is.","options":["Где?","Кто это?","Что это?","Да"],"correctAnswer":"Где?"}'::jsonb, '{"correctAnswer":"Где?"}'::jsonb, 'Use Где? when asking where something is.', 10, 6, 'PUBLISHED', now(), now())
 ON CONFLICT ("lessonId", "slug") DO UPDATE SET
   "type" = EXCLUDED."type",
   "prompt" = EXCLUDED."prompt",

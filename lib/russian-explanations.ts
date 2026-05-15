@@ -87,6 +87,7 @@ const meaningArabic: Record<string, string> = {
   "Goodbye": "وداعا",
   "Goodbye.": "وداعا.",
   "Hello": "مرحبا",
+  "Help me, please": "ساعدني من فضلك",
   "Hi": "مرحبا",
   "Hi / Bye": "مرحبا / إلى اللقاء",
   "Hi / Hello": "مرحبا",
@@ -116,6 +117,7 @@ const meaningArabic: Record<string, string> = {
   "The bill, please.": "الفاتورة من فضلك.",
   "This is family.": "هذه عائلة.",
   "What does this mean?": "ماذا يعني هذا؟",
+  "What is this?": "ما هذا؟",
   "What is your name?": "ما اسمك؟",
   "What is your name? (informal)": "ما اسمك؟ (غير رسمي)",
   "What is your name? (polite)": "ما اسم حضرتك؟",
@@ -125,6 +127,7 @@ const meaningArabic: Record<string, string> = {
   "Where is the metro?": "أين المترو؟",
   "Where?": "أين؟",
   "Who?": "من؟",
+  "Who is this?": "من هذا؟",
   "Yes": "نعم",
   apple: "تفاحة",
   big: "كبير",
@@ -184,7 +187,12 @@ const meaningArabic: Record<string, string> = {
 const noteArabic: Record<string, string> = {
   "female friend": "صديقة",
   "Informal": "غير رسمي",
+  "Formal or plural object form of вы": "صيغة المفعول الرسمية أو صيغة الجمع من вы",
+  "Formal or plural: use with adults, strangers, or groups":
+    "رسمي أو للجمع: يُستخدم مع البالغين أو الغرباء أو المجموعات",
   "Informal object form": "صيغة المفعول غير الرسمية",
+  "Informal object form of ты": "صيغة المفعول غير الرسمية من ты",
+  "Informal: use with friends or children": "غير رسمي: يُستخدم مع الأصدقاء أو الأطفال",
   "Informal to one person": "غير رسمي لشخص واحد",
   "male friend": "صديق",
   "Polite": "رسمي",
@@ -210,6 +218,7 @@ const learningTextArabic: Record<string, string> = {
   "Choose the place.": "اختر المكان.",
   "Choose the useful phrase.": "اختر العبارة المفيدة.",
   "Complete the daytime greeting.": "أكمل تحية النهار.",
+  "Complete the phrase Help me, please.": "أكمل عبارة ساعدني من فضلك.",
   "Complete the location.": "أكمل المكان.",
   "Complete the morning greeting.": "أكمل تحية الصباح.",
   "Complete the polite question.": "أكمل السؤال الرسمي.",
@@ -230,6 +239,7 @@ const learningTextArabic: Record<string, string> = {
   "Match the polite words.": "طابق الكلمات المهذبة.",
   "Match the short answers.": "طابق الإجابات القصيرة.",
   "Pick the best phrase for the situation.": "اختر أفضل عبارة للموقف.",
+  "Pick the best question word.": "اختر أداة السؤال الأنسب.",
   "Pick the best word.": "اختر أفضل كلمة.",
   "Pick the natural greeting.": "اختر التحية الطبيعية.",
   "Pick the polite phrase.": "اختر العبارة المهذبة.",
@@ -240,6 +250,11 @@ const learningTextArabic: Record<string, string> = {
   "Moscow station encounter": "موقف في محطة موسكو",
   "A stranger asks if you understand the announcement. You do not. What do you say?":
     "يسألك شخص غريب هل تفهم الإعلان. أنت لا تفهم. ماذا تقول؟",
+  "A barista gives you coffee. What do you say?": "يعطيك عامل المقهى قهوة. ماذا تقول؟",
+  "A new classmate says hello. You want to tell them your name.":
+    "يقول لك زميل جديد مرحبا. تريد أن تخبره باسمك.",
+  "A train leaves from platform eight. Which word means eight?":
+    "يغادر قطار من الرصيف رقم ثمانية. أي كلمة تعني ثمانية؟",
   "The arena goes quiet. Pick the survival phrase.": "تهدأ الساحة. اختر عبارة النجاة.",
   "The final shield comes up. One clean answer can end the fight.":
     "ظهر الدرع الأخير. إجابة صحيحة واحدة يمكن أن تنهي القتال.",
@@ -251,6 +266,88 @@ const learningTextArabic: Record<string, string> = {
   "What is the correct answer to Как тебя зовут?":
     "ما الإجابة الصحيحة على Как тебя зовут؟",
   "Type the English word for Да.": "اكتب الكلمة الإنجليزية المقابلة لـ Да.",
+  "Someone asks if you are ready. You want to say yes.":
+    "يسألك شخص هل أنت جاهز. تريد أن تقول نعم.",
+  "Someone speaks too fast and you miss everything.":
+    "يتحدث شخص بسرعة كبيرة ولا تفهم شيئا.",
+  "The opposite of Да is": "عكس Да هو",
+  "The Russian word for 10 is": "الكلمة الروسية للعدد 10 هي",
+  "Use ты or тебя with friends. Use вы or вас with adults, strangers, or groups.":
+    "استخدم ты أو тебя مع الأصدقاء. واستخدم вы أو вас مع البالغين أو الغرباء أو المجموعات.",
+  "You enter a small shop and greet the worker politely.":
+    "تدخل متجرا صغيرا وتحيّي العامل بأدب.",
+  "You meet an adult neighbor and want to ask their name.":
+    "تقابل جارا بالغا وتريد أن تسأل عن اسمه.",
+  "You need five tickets. Which word means five?":
+    "تحتاج إلى خمس تذاكر. أي كلمة تعني خمسة؟",
+  "You point to an object and want to ask what it is.":
+    "تشير إلى شيء وتريد أن تسأل ما هو.",
+  "You see your friend after class.": "ترى صديقك بعد الدرس.",
+  "You want to ask where the cafe is.": "تريد أن تسأل أين المقهى.",
+  "You are lost and need someone to help you.": "أنت تائه وتحتاج إلى مساعدة من شخص.",
+  "Good day.": "نهارك سعيد.",
+  "Привет means Hi or Hello. Use it with people you know.":
+    "Привет تعني مرحبا. تُستخدم مع الأشخاص الذين تعرفهم.",
+  "Доброе утро means Good morning.": "Доброе утро تعني صباح الخير.",
+  "These cover casual and polite ways to start or end a conversation.":
+    "هذه عبارات غير رسمية ورسمية لبدء المحادثة أو إنهائها.",
+  "Здравствуйте is the safe polite greeting for strangers.":
+    "Здравствуйте تحية مهذبة وآمنة مع الغرباء.",
+  "До свидания is the standard polite goodbye.": "До свидания هي عبارة الوداع المهذبة المعتادة.",
+  "Здравствуйте is polite and works with adults, strangers, or groups.":
+    "Здравствуйте رسمية وتناسب البالغين والغرباء والمجموعات.",
+  "Добрый день means Good afternoon or Good day.": "Добрый день تعني تحية النهار.",
+  "Russian greetings change depending on formality and audience.":
+    "تتغير التحيات الروسية حسب درجة الرسمية ومن تخاطب.",
+  "Привет is natural with a friend.": "Привет طبيعية مع صديق.",
+  "Добрый вечер is the normal evening greeting.": "Добрый вечер هي تحية المساء المعتادة.",
+  "Да means Yes.": "Да تعني نعم.",
+  "Нет means No.": "Нет تعني لا.",
+  "These short answers are useful in everyday first conversations.":
+    "هذه الإجابات القصيرة مفيدة في أول محادثات يومية.",
+  "Да is the direct Russian answer for Yes.": "Да هي الإجابة الروسية المباشرة بمعنى نعم.",
+  "Не знаю is a short, common way to say I do not know.":
+    "Не знаю عبارة قصيرة وشائعة بمعنى لا أعرف.",
+  "Меня зовут Alex is the standard way to say My name is Alex.":
+    "Меня зовут Alex هي الطريقة المعتادة لقول اسمي أليكس.",
+  "Я из Америки means I am from America.": "Я из Америки تعني أنا من أمريكا.",
+  "Меня зовут Alex is the natural introduction pattern.":
+    "Меня зовут Alex هي صيغة طبيعية للتعريف بالاسم.",
+  "These phrases make a short first introduction.":
+    "هذه العبارات تكوّن تعارفا قصيرا.",
+  "Меня зовут Alex gives your name clearly.": "Меня зовут Alex تعرّف باسمك بوضوح.",
+  "Как тебя зовут? asks What is your name? informally.":
+    "Как тебя зовут؟ تسأل: ما اسمك؟ بصيغة غير رسمية.",
+  "Как вас зовут? is the polite version of What is your name?":
+    "Как вас зовут؟ هي الصيغة الرسمية لسؤال ما اسمك؟",
+  "Как тебя зовут? is the common informal name question.":
+    "Как тебя зовут؟ سؤال شائع غير رسمي عن الاسم.",
+  "Как вас зовут? is the polite choice for an adult or stranger.":
+    "Как вас зовут؟ هي الاختيار المهذب مع شخص بالغ أو غريب.",
+  "Спасибо means Thank you.": "Спасибо تعني شكرا.",
+  "Пожалуйста makes a request polite.": "Пожалуйста تجعل الطلب مهذبا.",
+  "These words keep short Russian interactions polite.":
+    "هذه الكلمات تجعل التفاعلات الروسية القصيرة مهذبة.",
+  "Извините, пожалуйста is useful when getting someone's attention.":
+    "Извините, пожалуйста مفيدة لجذب انتباه شخص بأدب.",
+  "Спасибо is the right polite response after receiving something.":
+    "Спасибо هي الرد المهذب المناسب بعد استلام شيء.",
+  "Я не понимаю means I do not understand.": "Я не понимаю تعني لا أفهم.",
+  "Помогите, пожалуйста means Help me, please.": "Помогите, пожалуйста تعني ساعدني من فضلك.",
+  "Я не понимаю is the core survival phrase here.":
+    "Я не понимаю هي عبارة النجاة الأساسية هنا.",
+  "These phrases help you ask for help or keep a conversation going.":
+    "هذه العبارات تساعدك على طلب المساعدة أو إبقاء المحادثة مستمرة.",
+  "Помогите, пожалуйста is a polite way to ask for help.":
+    "Помогите, пожалуйста طريقة مهذبة لطلب المساعدة.",
+  "Что это? means What is this?": "Что это؟ تعني ما هذا؟",
+  "Где метро? means Where is the metro?": "Где метро؟ تعني أين المترو؟",
+  "These short questions are useful when you need basic information.":
+    "هذه الأسئلة القصيرة مفيدة عندما تحتاج إلى معلومات أساسية.",
+  "Где метро? is a short, useful location question.":
+    "Где метро؟ سؤال قصير ومفيد عن المكان.",
+  "Use Что это? when asking What is this?": "استخدم Что это؟ عندما تسأل: ما هذا؟",
+  "Use Где? when asking where something is.": "استخدم Где؟ عندما تسأل أين يوجد شيء.",
 };
 
 export function tUi(key: UiKey, language: ExplanationLanguage) {

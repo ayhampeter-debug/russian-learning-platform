@@ -77,7 +77,7 @@ type BossQuestion =
 
 const importedBossQuestions = challengeQuestions.map((question, index) =>
   toBossQuestion(question, index),
-).map(repairImportedBossQuestion);
+);
 
 const bossQuestions: BossQuestion[] = [
   importedBossQuestions[0],
@@ -89,9 +89,9 @@ const bossQuestions: BossQuestion[] = [
     prompt: "Break the armor by building the Russian sentence.",
     display: "My name is Alex.",
     translation: "My name is Alex.",
-    words: ["�����", "�����", "����"],
-    correctOrder: ["����", "�����", "�����"],
-    explanation: "���� ����� ����� is the natural Russian sentence for My name is Alex.",
+    words: ["зовут", "Меня", "Alex"],
+    correctOrder: ["Меня", "зовут", "Alex"],
+    explanation: "Меня зовут Alex is the natural Russian sentence for My name is Alex.",
     points: 170,
     damage: 170,
     bossLine: "The sentinel scrambles the words. Put them back in order.",
@@ -105,9 +105,9 @@ const bossQuestions: BossQuestion[] = [
     display: "Moscow station encounter",
     situation:
       "A stranger asks if you understand the announcement. You do not. What do you say?",
-    options: ["� �� �������", "����", "��", "�������"],
-    correctAnswer: "� �� �������",
-    explanation: "� �� ������� means I do not understand, which fits this situation.",
+    options: ["Я не понимаю", "Пока", "Да", "Спасибо"],
+    correctAnswer: "Я не понимаю",
+    explanation: "Я не понимаю means I do not understand, which fits this situation.",
     points: 190,
     damage: 190,
     bossLine: "The arena goes quiet. Pick the survival phrase.",
@@ -563,7 +563,7 @@ export default function ChallengePage() {
             </p>
             <div className="mt-5 rounded-2xl border border-red-300/20 bg-slate-950/80 p-4 text-center sm:rounded-3xl sm:p-6">
               <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full border-4 border-red-300 bg-red-400/10 text-6xl font-black text-red-200 shadow-2xl shadow-red-950/50">
-                �
+                !
               </div>
               <h2 className="mt-5 text-2xl font-black">{text.challenge.gateSentinel}</h2>
               <p className="mt-3 text-sm leading-6 text-slate-400">
@@ -689,66 +689,6 @@ function toBossQuestion(question: ChoiceQuestion | TextQuestion, index: number):
     damage: question.points,
     bossLine,
   };
-}
-
-function repairImportedBossQuestion(question: BossQuestion): BossQuestion {
-  if (question.id === "gatekeeper-privet" && question.type === "choice") {
-    return {
-      ...question,
-      prompt: "The Gatekeeper says: ������. What does it mean?",
-      display: "������",
-      explanation: "������ is the common informal way to say Hello.",
-    };
-  }
-
-  if (question.id === "type-spasibo" && question.type === "text") {
-    return {
-      ...question,
-      prompt: "Type the English meaning of �������.",
-      display: "�������",
-      explanation: "������� means Thank you or Thanks.",
-    };
-  }
-
-  if (question.id === "polite-greeting" && question.type === "choice") {
-    return {
-      ...question,
-      options: ["����", "������������", "���", "���"],
-      correctAnswer: "������������",
-      explanation: "������������ is the polite/formal greeting.",
-    };
-  }
-
-  if (question.id === "your-name-answer" && question.type === "choice") {
-    return {
-      ...question,
-      prompt: "What is the correct answer to ��� ���� �����?",
-      display: "��� ���� �����?",
-      options: ["���� ����� Alex", "� �� �������", "�� ��������", "���?"],
-      correctAnswer: "���� ����� Alex",
-      explanation: "��� ���� �����? asks What is your name?",
-    };
-  }
-
-  if (question.id === "type-da" && question.type === "text") {
-    return {
-      ...question,
-      prompt: "Type the English word for ��.",
-      display: "��",
-      explanation: "�� means Yes.",
-    };
-  }
-
-  if (question.id === "survival-phrase-understand" && question.type === "choice") {
-    return {
-      ...question,
-      options: ["� �� �������", "����������", "�������", "������"],
-      correctAnswer: "� �� �������",
-      explanation: "� �� ������� means I do not understand.",
-    };
-  }
-
-  return question;
 }
 
 function gradeTextAnswer(question: BossTextQuestion, answer: string) {
