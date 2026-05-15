@@ -26,6 +26,10 @@ export default function Home() {
   const { isSignedIn } = useUser();
   const userId = isSignedIn ? "signed-in" : null;
   const startHref = userId ? "/dashboard" : "/signup";
+  const explanationLanguage =
+    language === "ar"
+      ? text.common.explanationLanguageValueArabic
+      : text.common.explanationLanguageValueEnglish;
   const heroStats = [
     { label: text.home.firstCourseLive, value: text.lesson.russian },
     { label: text.home.availableWorlds, value: worldTwo ? "2" : "1" },
@@ -78,6 +82,11 @@ export default function Home() {
       title: text.home.levelUp,
       text: text.home.levelUpText,
     },
+    {
+      step: "4",
+      title: text.home.defeatBossChallenges,
+      text: text.home.defeatBossChallengesText,
+    },
   ];
   const courseHighlights = [
     text.home.beginnerFriendly,
@@ -112,6 +121,9 @@ export default function Home() {
             <p className="font-semibold text-cyan-200">
               {text.home.startToday}
             </p>
+            <p className="text-sm font-semibold text-slate-400">
+              {text.home.currentCourse}: {text.lesson.russian} · {text.home.explanationLanguage}: {explanationLanguage}
+            </p>
           </div>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -122,10 +134,10 @@ export default function Home() {
               {userId ? text.home.continueLearning : text.home.createFreeAccount}
             </Link>
             <Link
-              href="/worlds"
+              href="/courses"
               className="w-full rounded-full border border-white/20 bg-white/10 px-7 py-3 text-center font-bold text-white transition hover:bg-white/15 sm:w-auto"
             >
-              {text.home.exploreWorlds}
+              {text.home.exploreCourses}
             </Link>
           </div>
 
@@ -170,7 +182,7 @@ export default function Home() {
           language={language}
         />
 
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
+        <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {howItWorks.map((item) => (
             <StepCard key={item.step} {...item} />
           ))}
@@ -247,10 +259,10 @@ export default function Home() {
               {userId ? text.home.continueLearning : text.home.createFreeAccount}
             </Link>
             <Link
-              href="/worlds"
+              href="/courses"
               className="w-full rounded-full border border-white/20 px-7 py-3 text-center font-bold text-white transition hover:bg-white/10 sm:w-auto"
             >
-              {text.home.exploreWorlds}
+              {text.home.exploreCourses}
             </Link>
           </div>
         </div>

@@ -29,6 +29,10 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
   const { language } = useExplanationLanguage();
   const text = getUiText(language);
   const progress = useProgress();
+  const explanationLanguage =
+    language === "ar"
+      ? text.common.explanationLanguageValueArabic
+      : text.common.explanationLanguageValueEnglish;
 
   return (
     <main className="min-h-screen bg-slate-950 text-white">
@@ -39,6 +43,9 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
           <h1 className="mt-2 text-3xl font-bold sm:text-4xl" {...uiTextProps(language)}>{text.worlds.worldsStages}</h1>
           <p className="mt-3 max-w-2xl text-slate-400" {...uiTextProps(language)}>
             {text.worlds.intro}
+          </p>
+          <p className="mt-3 inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-100" {...uiTextProps(language)}>
+            {text.worlds.currentCourseRussian} · {text.worlds.explanationLanguage}: {explanationLanguage}
           </p>
         </div>
 

@@ -31,6 +31,10 @@ export default function DashboardPage() {
   const { isLoaded, isSignedIn } = useUser();
   const progress = useProgress();
   const summary = getProgressSummary(progress);
+  const explanationLanguage =
+    language === "ar"
+      ? text.common.explanationLanguageValueArabic
+      : text.common.explanationLanguageValueEnglish;
   const bossActionUnlocked = summary.bossUnlocked || summary.bossCompleted;
   const currentWorld = summary.currentWorld;
   const worldOneSummary = summary.worldOneSummary ?? getWorldProgressSummary(worldOne, progress);
@@ -54,6 +58,9 @@ export default function DashboardPage() {
               {isLoaded && !isSignedIn
                 ? text.dashboard.guestSaved
                 : text.dashboard.continueShort}
+            </p>
+            <p className="mt-2 text-sm font-semibold text-cyan-200" {...uiTextProps(language)}>
+              {text.dashboard.productHubIntro} {explanationLanguage}
             </p>
             {noProgress ? (
               <p className="mt-3 max-w-2xl rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-3 text-sm text-cyan-100">
@@ -121,6 +128,48 @@ export default function DashboardPage() {
             }
             tone="primary"
           />
+        </div>
+
+        <div className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <section className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-4 sm:rounded-3xl sm:p-6">
+            <p className="text-sm font-bold uppercase tracking-widest text-cyan-300" {...uiTextProps(language)}>
+              {text.dashboard.currentCourseRussian}
+            </p>
+            <h2 className="mt-3 text-2xl font-black" {...uiTextProps(language)}>
+              {text.dashboard.courseCardTitle}
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-slate-300" {...uiTextProps(language)}>
+              {text.dashboard.courseCardText}
+            </p>
+            <Link
+              href={summary.continueHref}
+              className="mt-5 inline-flex w-full justify-center rounded-full bg-cyan-400 px-5 py-3 font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
+            >
+              {text.dashboard.continueLearning}
+            </Link>
+          </section>
+
+          <section className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
+            <p className="text-sm font-bold uppercase tracking-widest text-cyan-300" {...uiTextProps(language)}>
+              {text.dashboard.quickLinks}
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              <QuickLink href="/courses" label={text.dashboard.courses} />
+              <QuickLink href="/worlds" label={text.dashboard.worlds} />
+              <QuickLink href="/profile" label={text.dashboard.profile} />
+              <QuickLink href="/settings" label={text.dashboard.settings} />
+            </div>
+            {isLoaded && !isSignedIn ? (
+              <div className="mt-5 rounded-2xl border border-yellow-400/25 bg-yellow-400/10 p-4">
+                <p className="font-bold text-yellow-200" {...uiTextProps(language)}>
+                  {text.dashboard.guestModeTitle}
+                </p>
+                <p className="mt-2 text-sm leading-6 text-slate-300" {...uiTextProps(language)}>
+                  {text.dashboard.guestModeText}
+                </p>
+              </div>
+            ) : null}
+          </section>
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-3">
@@ -257,6 +306,17 @@ function ProgressLine({ label, value }: { label: string; value: string }) {
       <span className="text-slate-400">{label}</span>
       <span className="font-bold text-white">{value}</span>
     </div>
+  );
+}
+
+function QuickLink({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-center text-sm font-black text-white transition hover:border-cyan-400/40 hover:bg-cyan-400/10"
+    >
+      {label}
+    </Link>
   );
 }
 

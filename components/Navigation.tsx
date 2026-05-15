@@ -16,11 +16,12 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { href: "/", labelKey: "home" },
+  { href: "/courses", labelKey: "courses" },
   { href: "/dashboard", labelKey: "dashboard" },
   { href: "/worlds", labelKey: "worlds" },
-  { href: "/lesson", labelKey: "lesson" },
   { href: "/challenge", labelKey: "challenge" },
   { href: "/profile", labelKey: "profile" },
+  { href: "/settings", labelKey: "settings" },
 ];
 
 export function Navigation() {

@@ -153,6 +153,10 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
   const { isLoaded, user: clerkUser } = useUser();
   const progress = useProgress();
   const summary = getProgressSummary(progress);
+  const explanationLanguage =
+    language === "ar"
+      ? text.common.explanationLanguageValueArabic
+      : text.common.explanationLanguageValueEnglish;
   const worldOneSummary = summary.worldOneSummary ?? getWorldProgressSummary(worldOne, progress);
   const worldTwoSummary = summary.worldTwoSummary;
   const worldOneXp = worldOneSummary.completedLessons.reduce(
@@ -237,12 +241,20 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
             ) : null}
           </div>
 
-          <Link
-            href="/dashboard"
-            className="inline-flex w-full justify-center rounded-full bg-cyan-400 px-6 py-3 font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-fit"
-          >
-            {text.profile.backToDashboard}
-          </Link>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/settings"
+              className="inline-flex w-full justify-center rounded-full bg-cyan-400 px-6 py-3 font-bold text-slate-950 transition hover:bg-cyan-300 sm:w-fit"
+            >
+              {text.profile.settingsLink}
+            </Link>
+            <Link
+              href="/dashboard"
+              className="inline-flex w-full justify-center rounded-full border border-white/10 bg-white/10 px-6 py-3 font-bold text-white transition hover:border-white/30 hover:bg-white/15 sm:w-fit"
+            >
+              {text.profile.backToDashboard}
+            </Link>
+          </div>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -337,6 +349,15 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
             </div>
 
             <div className="mt-8 rounded-3xl border border-white/10 bg-slate-900/80 p-5">
+              <p className="text-sm font-semibold text-cyan-200" {...uiTextProps(language)}>
+                {text.profile.currentCourse}
+              </p>
+              <p className="mt-2 text-sm text-slate-400" {...uiTextProps(language)}>
+                {text.profile.explanationLanguage}: {explanationLanguage}
+              </p>
+            </div>
+
+            <div className="mt-5 rounded-3xl border border-white/10 bg-slate-900/80 p-5">
               <LanguageSelector variant="panel" />
             </div>
 
@@ -365,6 +386,11 @@ export function ProfileClient({ achievements, syncError, user }: ProfileClientPr
             </div>
 
             <div className="grid gap-4">
+              {unlockedAchievementCount === 0 ? (
+                <p className="rounded-2xl border border-white/10 bg-slate-900/70 p-4 text-sm text-slate-400" {...uiTextProps(language)}>
+                  {text.profile.noAchievementsYet}
+                </p>
+              ) : null}
               {displayAchievements.map((achievement) => (
                 <AchievementCard
                   key={achievement.id}
