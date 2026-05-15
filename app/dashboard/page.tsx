@@ -22,6 +22,7 @@ import {
   resetProgress,
   useProgress,
 } from "@/lib/progress-storage";
+import { useDailyStreak } from "@/lib/streak-storage";
 import { useMistakeCount } from "@/lib/mistake-storage";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
@@ -31,6 +32,7 @@ export default function DashboardPage() {
   const text = getUiText(language);
   const { isLoaded, isSignedIn } = useUser();
   const progress = useProgress();
+  const dailyStreak = useDailyStreak();
   const mistakeCount = useMistakeCount();
   const summary = getProgressSummary(progress);
   const explanationLanguage =
@@ -121,16 +123,68 @@ export default function DashboardPage() {
           />
           <StatCard
             title={text.dashboard.streak}
-            value={progress.currentStreak > 0 ? `${progress.currentStreak} ${text.dashboard.days}` : text.dashboard.soon}
+            value={formatDayCount(dailyStreak.currentStreak, text.dashboard.day, text.dashboard.days)}
             icon="ST"
-            label={
-              progress.currentStreak > 0
-                ? text.dashboard.daysPracticed
-                : text.dashboard.dailyStreakComingSoon
-            }
+            label={text.dashboard.daysPracticed}
             tone="primary"
           />
         </div>
+
+        <section className="mt-8 overflow-hidden rounded-2xl border border-lime-300/25 bg-slate-900/90 shadow-2xl shadow-lime-950/20 sm:rounded-3xl">
+          <div className="grid gap-0 lg:grid-cols-[1fr_auto]">
+            <div className="p-5 sm:p-6">
+              <p className="text-sm font-black uppercase tracking-[0.2em] text-lime-300" {...uiTextProps(language)}>
+                {text.dashboard.dailyGoal}
+              </p>
+              <div className="mt-4 grid gap-4 md:grid-cols-3">
+                <div className="rounded-2xl border border-lime-300/20 bg-lime-300/10 p-4">
+                  <p className="text-sm text-lime-100" {...uiTextProps(language)}>
+                    {text.dashboard.currentStreak}
+                  </p>
+                  <p className="mt-2 text-3xl font-black text-lime-200">
+                    {formatDayCount(dailyStreak.currentStreak, text.dashboard.day, text.dashboard.days)}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-4">
+                  <p className="text-sm text-cyan-100" {...uiTextProps(language)}>
+                    {text.dashboard.completeOneLessonToday}
+                  </p>
+                  <p className="mt-2 text-xl font-black text-cyan-100" {...uiTextProps(language)}>
+                    {dailyStreak.todayGoalCompleted
+                      ? text.dashboard.completedToday
+                      : text.dashboard.notCompletedToday}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-sm text-slate-300" {...uiTextProps(language)}>
+                    {dailyStreak.todayGoalCompleted
+                      ? text.dashboard.youCompletedTodaysGoal
+                      : text.dashboard.keepGoing}
+                  </p>
+                  <p className="mt-2 text-sm text-slate-400" {...uiTextProps(language)}>
+                    {dailyStreak.todayGoalCompleted
+                      ? text.dashboard.goalCompleted
+                      : text.dashboard.practiceToday}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="border-t border-white/10 bg-cyan-400/10 p-5 sm:p-6 lg:flex lg:w-72 lg:flex-col lg:justify-center lg:border-l lg:border-t-0">
+              {dailyStreak.todayGoalCompleted ? (
+                <p className="text-lg font-black text-lime-200" {...uiTextProps(language)}>
+                  {text.dashboard.youCompletedTodaysGoal}
+                </p>
+              ) : (
+                <Link
+                  href={summary.continueHref}
+                  className="inline-flex w-full justify-center rounded-full bg-cyan-400 px-5 py-3 font-black text-slate-950 transition hover:bg-cyan-300"
+                >
+                  {text.dashboard.continueLearning}
+                </Link>
+              )}
+            </div>
+          </div>
+        </section>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
           <section className="rounded-2xl border border-cyan-400/20 bg-cyan-400/10 p-4 sm:rounded-3xl sm:p-6">
@@ -377,6 +431,10 @@ function StatCard({
       <p className="mt-5 break-words text-2xl font-bold sm:text-3xl">{value}</p>
     </div>
   );
+}
+
+function formatDayCount(count: number, dayLabel: string, daysLabel: string) {
+  return `${count} ${count === 1 ? dayLabel : daysLabel}`;
 }
 
 function LessonMiniCard({

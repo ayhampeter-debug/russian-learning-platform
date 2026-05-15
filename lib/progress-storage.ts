@@ -4,6 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import type { ProgressApiResponse, SavedProgress } from "@/lib/progress-types";
 import { useEffect, useSyncExternalStore } from "react";
 import { userProgress, worldOne, worlds, type Lesson, type StageStatus, type World } from "@/lib/learning-data";
+import { recordLessonPractice, resetDailyStreak } from "@/lib/streak-storage";
 
 export type { SavedProgress } from "@/lib/progress-types";
 
@@ -221,6 +222,7 @@ export function resetProgress() {
     cachedStorageValue = null;
     cachedProgress = fallbackProgress;
     hasCachedProgress = false;
+    resetDailyStreak();
     window.dispatchEvent(new Event(progressChangeEventName));
   } catch {
     // Keep reset non-blocking if localStorage is unavailable.
@@ -257,11 +259,13 @@ export function useProgress() {
 
 export function completeLesson(lessonId: string, xpEarned: number) {
   const currentProgress = loadProgress();
+  const streak = recordLessonPractice();
   const nextProgress = normalizeProgress({
     ...currentProgress,
     completedLessonIds: [...currentProgress.completedLessonIds, lessonId],
     totalXp: currentProgress.totalXp + xpEarned,
     hearts: Math.max(currentProgress.hearts, 1),
+    currentStreak: streak.currentStreak,
   });
 
   saveProgress(nextProgress);
