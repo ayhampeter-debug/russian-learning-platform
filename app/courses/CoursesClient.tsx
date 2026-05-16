@@ -3,6 +3,7 @@
 import { Navigation } from "@/components/Navigation";
 import { useExplanationLanguage } from "@/components/LanguageSelector";
 import { worlds } from "@/lib/learning-data";
+import { useCurrentCourse } from "@/lib/onboarding-preferences";
 import {
   getUiText,
   localizeActionLabel,
@@ -27,6 +28,7 @@ export function CoursesClient() {
   const text = getUiText(language);
   const progress = useProgress();
   const summary = getProgressSummary(progress);
+  const { course } = useCurrentCourse();
   const { isSignedIn } = useUser();
   const primaryHref = isSignedIn ? summary.continueHref : "/signup";
   const explanationLanguage =
@@ -66,7 +68,7 @@ export function CoursesClient() {
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
               <div {...uiTextProps(language)}>
                 <span className="inline-flex rounded-full bg-cyan-400 px-3 py-1 text-xs font-black text-slate-950">
-                  {text.courses.available}
+                  {course === "russian" ? text.common.current : text.courses.available}
                 </span>
                 <h2 className="mt-5 text-2xl font-black sm:text-4xl">
                   {text.courses.russianTitle}

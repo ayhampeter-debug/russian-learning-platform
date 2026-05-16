@@ -54,6 +54,21 @@ export const uiText = {
       closeMenu: "Close navigation menu",
       learnRussianWith: "Explain in",
     },
+    onboarding: {
+      chooseLanguage: "Choose your language",
+      languageDescription:
+        "This controls the app interface and lesson explanations.",
+      whatLearn: "What do you want to learn?",
+      selectCourse: "Select your course",
+      russian: "Russian",
+      available: "Available",
+      comingSoon: "Coming soon",
+      startYazkUp: "Start YazkUp",
+      youCanChangeLater: "You can change this later in Settings.",
+      setupComplete: "Setup complete",
+      continue: "Continue",
+      back: "Back",
+    },
     home: {
       eyebrow: "Russian course now live",
       title: "Level up your language skills.",
@@ -277,7 +292,7 @@ export const uiText = {
       currentCourse: "Current course: Russian",
       moreCourses: "More courses coming soon",
       betaNote: "No multi-course database support is enabled yet.",
-      savedLocally: "Language and theme preferences persist in this browser.",
+      savedLocally: "Language, course, and theme preferences persist in this browser.",
     },
     feedback: {
       title: "Feedback",
@@ -602,6 +617,21 @@ export const uiText = {
       closeMenu: "إغلاق قائمة التنقل",
       learnRussianWith: "الشرح",
     },
+    onboarding: {
+      chooseLanguage: "اختر لغتك",
+      languageDescription:
+        "هذا الخيار يحدد لغة واجهة الموقع وشرح الدروس.",
+      whatLearn: "ماذا تريد أن تتعلم؟",
+      selectCourse: "اختر مساقك",
+      russian: "الروسية",
+      available: "متاح",
+      comingSoon: "قريبا",
+      startYazkUp: "ابدأ YazkUp",
+      youCanChangeLater: "يمكنك تغيير هذا لاحقا من الإعدادات.",
+      setupComplete: "اكتمل الإعداد",
+      continue: "متابعة",
+      back: "رجوع",
+    },
     home: {
       eyebrow: "كورس الروسية متاح الآن",
       title: "طوّر مهاراتك اللغوية خطوة بخطوة.",
@@ -823,7 +853,7 @@ export const uiText = {
       currentCourse: "المساق الحالي: الروسية",
       moreCourses: "مساقات أخرى قادمة قريبا",
       betaNote: "لم يتم تفعيل دعم قاعدة بيانات متعددة المساقات بعد.",
-      savedLocally: "تستمر تفضيلات اللغة والمظهر في هذا المتصفح.",
+      savedLocally: "تظل تفضيلات اللغة والمساق والمظهر محفوظة في هذا المتصفح.",
     },
     feedback: {
       title: "الملاحظات",

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
+import { OnboardingSetup } from "@/components/OnboardingSetup";
 import { ThemeProvider, themeStorageKey } from "@/components/ThemeProvider";
 import { UserSync } from "@/components/UserSync";
 import "./globals.css";
@@ -87,6 +88,7 @@ export default function RootLayout({
           <ThemeProvider>
             <UserSync />
             {children}
+            <OnboardingSetup />
           </ThemeProvider>
         </body>
       </html>

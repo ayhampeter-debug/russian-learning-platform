@@ -3,16 +3,24 @@
 import { LanguageSelector, useExplanationLanguage } from "@/components/LanguageSelector";
 import { Navigation } from "@/components/Navigation";
 import { useTheme, type ThemeMode } from "@/components/ThemeProvider";
+import { useCurrentCourse } from "@/lib/onboarding-preferences";
 import { getUiText, uiTextProps } from "@/lib/ui-translations";
 import { SignOutButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 
 const themeModes: ThemeMode[] = ["light", "dark", "system"];
+const comingSoonCourseKeys = [
+  "englishTitle",
+  "germanTitle",
+  "spanishTitle",
+  "frenchTitle",
+] as const;
 
 export function SettingsClient() {
   const { language } = useExplanationLanguage();
   const text = getUiText(language);
   const { theme, resolvedTheme, setTheme } = useTheme();
+  const { course, setCurrentCourse } = useCurrentCourse();
   const { isLoaded, isSignedIn } = useUser();
 
   return (
@@ -117,9 +125,44 @@ export function SettingsClient() {
               text={text.settings.savedLocally}
               language={language}
             />
-            <div className="mt-5 grid gap-3">
-              <PreferenceLine label={text.settings.currentCourse} />
-              <PreferenceLine label={text.settings.moreCourses} />
+            <div className="mt-5 grid gap-3" {...uiTextProps(language)}>
+              <button
+                type="button"
+                aria-pressed={course === "russian"}
+                onClick={() => setCurrentCourse("russian")}
+                className="rounded-2xl border border-cyan-400/30 bg-slate-900/70 px-4 py-4 text-left transition hover:border-cyan-400/50 hover:bg-cyan-400/10"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="font-black text-slate-100">
+                    {text.courses.russianTitle}
+                  </span>
+                  <span className="rounded-full bg-cyan-400 px-3 py-1 text-xs font-black text-slate-950">
+                    {text.courses.available}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-slate-400">
+                  {text.settings.currentCourse}
+                </p>
+              </button>
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                {comingSoonCourseKeys.map((courseKey) => (
+                  <div
+                    key={courseKey}
+                    className="rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 opacity-75"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="font-semibold text-slate-200">
+                        {text.courses[courseKey]}
+                      </span>
+                      <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-bold text-slate-400">
+                        {text.courses.comingSoon}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
               <PreferenceLine label={text.settings.betaNote} />
               <Link
                 href="/feedback"
