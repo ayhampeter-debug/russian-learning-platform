@@ -121,6 +121,12 @@ export function SettingsClient() {
               <PreferenceLine label={text.settings.currentCourse} />
               <PreferenceLine label={text.settings.moreCourses} />
               <PreferenceLine label={text.settings.betaNote} />
+              <Link
+                href="/feedback"
+                className="rounded-2xl border border-cyan-400/30 bg-slate-900/70 px-4 py-3 text-center font-bold text-cyan-100 transition hover:border-cyan-400/50 hover:bg-cyan-400/10"
+              >
+                {text.settings.sendFeedback}
+              </Link>
             </div>
           </section>
         </div>

@@ -28,6 +28,7 @@ const mobileNavItems: NavItem[] = [
   ...navItems.slice(0, 4),
   { href: "/practice", labelKey: "practice" },
   ...navItems.slice(4),
+  { href: "/feedback", labelKey: "feedback" },
 ];
 
 export function Navigation() {
