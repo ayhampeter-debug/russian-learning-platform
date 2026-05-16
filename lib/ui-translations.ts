@@ -534,6 +534,31 @@ export const uiText = {
       order: "Order",
       match: "Match",
       scenario: "Scenario",
+      bodyParts: "Body Parts",
+      headFace: "Head & Face",
+      body: "Body",
+      tapBodyPart: "Tap a body part",
+      tapCorrectPart: "Tap the correct part",
+      learnTheParts: "Learn the parts",
+      matchTheWords: "Match the words",
+      finalChallenge: "Final challenge",
+      playPronunciation: "Play pronunciation",
+      correctPart: "Correct part",
+      tryAnotherPart: "Try another part",
+      youFoundIt: "You found it",
+      listenAndRepeat: "Listen and repeat",
+      armHandNote: "рука can mean both arm and hand depending on context.",
+      legFootNote: "нога can mean both leg and foot depending on context.",
+      tapPromptPrefix: "Tap",
+      chooseTranslation: "Choose the translation",
+      chooseRussianWord: "Choose the Russian word",
+      learnModeHint: "Tap the map to explore each Russian word.",
+      selectedPair: "Selected pair",
+      matchedPairs: "Matched pairs",
+      score: "Score",
+      startQuiz: "Start quiz",
+      nextMode: "Next mode",
+      finishChallenge: "Finish challenge",
     },
     practice: {
       title: "Practice",
@@ -1091,6 +1116,31 @@ export const uiText = {
       order: "ترتيب",
       match: "مطابقة",
       scenario: "موقف",
+      bodyParts: "أجزاء الجسم",
+      headFace: "الرأس والوجه",
+      body: "الجسم",
+      tapBodyPart: "اضغط على جزء من الجسم",
+      tapCorrectPart: "اضغط على الجزء الصحيح",
+      learnTheParts: "تعلّم الأجزاء",
+      matchTheWords: "طابق الكلمات",
+      finalChallenge: "التحدي الأخير",
+      playPronunciation: "تشغيل اللفظ",
+      correctPart: "الجزء الصحيح",
+      tryAnotherPart: "جرّب جزءا آخر",
+      youFoundIt: "وجدته",
+      listenAndRepeat: "استمع وكرّر",
+      armHandNote: "كلمة рука قد تعني اليد أو الذراع بحسب السياق.",
+      legFootNote: "كلمة нога قد تعني الرجل أو القدم بحسب السياق.",
+      tapPromptPrefix: "اضغط على",
+      chooseTranslation: "اختر الترجمة",
+      chooseRussianWord: "اختر الكلمة الروسية",
+      learnModeHint: "اضغط على الخريطة لاستكشاف كل كلمة روسية.",
+      selectedPair: "الزوج المحدد",
+      matchedPairs: "الأزواج المطابقة",
+      score: "النتيجة",
+      startQuiz: "ابدأ الاختبار",
+      nextMode: "النشاط التالي",
+      finishChallenge: "إنهاء التحدي",
     },
     practice: {
       title: "التدريب",
@@ -1180,6 +1230,7 @@ const arabicContentTitles: Record<string, string> = {
   "Common Places": "أماكن شائعة",
   "Asking Where": "السؤال عن المكان",
   "Left, Right, Straight": "يسار، يمين، إلى الأمام",
+  "Body Parts": "أجزاء الجسم",
   "Complete Introduce Yourself": "أكمل عرّف عن نفسك",
   "Defeat the World 1 Boss": "اهزم زعيم العالم 1",
   "Review your worlds": "راجع عوالمك",
@@ -1192,10 +1243,14 @@ const arabicContentDescriptions: Record<string, string> = {
     "أكمل أول محادثة روسية بسيطة.",
   "Review practical World 1 phrases to keep your streak alive.":
     "راجع عبارات عملية من العالم 1 للحفاظ على سلسلتك.",
+  "Review family, body parts, food, drinks, places, and directions.":
+    "راجع العائلة وأجزاء الجسم والطعام والمشروبات والأماكن والاتجاهات.",
   "Beginner words and phrases for people, family, food, drinks, places, and directions.":
     "كلمات وعبارات للمبتدئين عن الأشخاص والعائلة والطعام والمشروبات والأماكن والاتجاهات.",
   "A1 words and short phrases for family, food, places, and simple directions.":
     "كلمات وعبارات قصيرة بمستوى A1 عن العائلة والطعام والأماكن والاتجاهات البسيطة.",
+  "A1 words and short phrases for family, body parts, food, places, and simple directions.":
+    "كلمات وعبارات قصيرة بمستوى A1 عن العائلة وأجزاء الجسم والطعام والأماكن والاتجاهات البسيطة.",
   "Show you can handle simple everyday Russian situations.":
     "أظهر أنك تستطيع التعامل مع مواقف روسية يومية بسيطة.",
   "Lessons 1-2: casual greetings and formal vs informal greetings.":
@@ -1212,14 +1267,20 @@ const arabicContentDescriptions: Record<string, string> = {
     "الدروس 1–3: الأشخاص وأفراد العائلة والأوصاف البسيطة.",
   "Lessons 1-3: family, friends, and saying who someone is.":
     "الدروس 1–3: العائلة والأصدقاء والتعريف بشخص ما.",
+  "Lessons 1-4: family, friends, body parts, and saying who someone is.":
+    "الدروس 1–4: العائلة والأصدقاء وأجزاء الجسم والتعريف بشخص ما.",
   "Lessons 4-6: order simple food and talk about drinks.":
     "الدروس 4–6: اطلب طعاماً بسيطاً وتحدث عن المشروبات.",
   "Lessons 4-6: everyday food, drinks, and polite cafe phrases.":
     "الدروس 4–6: طعام ومشروبات يومية وعبارات مهذبة في المقهى.",
+  "Lessons 5-7: everyday food, drinks, and polite cafe phrases.":
+    "الدروس 5–7: طعام ومشروبات يومية وعبارات مهذبة في المقهى.",
   "Lessons 7-9: common places and basic direction phrases.":
     "الدروس 7–9: أماكن شائعة وعبارات اتجاهات أساسية.",
   "Lessons 7-9: common places, where questions, and simple directions.":
     "الدروس 7–9: أماكن شائعة وأسئلة أين واتجاهات بسيطة.",
+  "Lessons 8-10: common places, where questions, and simple directions.":
+    "الدروس 8–10: أماكن شائعة وأسئلة أين واتجاهات بسيطة.",
   "Use simple greetings for friends, strangers, and mornings.":
     "استخدم تحيات بسيطة مع الأصدقاء والغرباء وفي الصباح.",
   "Choose greetings that fit friends, adults, strangers, and groups.":
@@ -1254,6 +1315,8 @@ const arabicContentDescriptions: Record<string, string> = {
     "استخدم كلمات أساسية مثل كبير، صغير، جيد، وجديد.",
   "Use simple this is phrases with family and friends.":
     "استخدم عبارات بسيطة مثل هذا/هذه مع العائلة والأصدقاء.",
+  "Learn the main body parts in Russian with a visual body map.":
+    "تعلّم أهم أجزاء الجسم بالروسية من خلال خريطة تفاعلية للجسم.",
   "Recognize simple food words for everyday meals.":
     "تعرّف إلى كلمات طعام بسيطة للوجبات اليومية.",
   "Recognize everyday foods and say what you want.":

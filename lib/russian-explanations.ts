@@ -218,6 +218,21 @@ const meaningArabic: Record<string, string> = {
   two: "اثنان",
   water: "ماء",
   you: "أنت",
+  head: "الرأس",
+  hair: "الشعر",
+  eye: "العين",
+  nose: "الأنف",
+  mouth: "الفم",
+  ear: "الأذن",
+  neck: "الرقبة",
+  shoulder: "الكتف",
+  "arm/hand": "اليد / الذراع",
+  "stomach/belly": "البطن",
+  back: "الظهر",
+  "leg/foot": "الرجل / القدم",
+  "рука can mean both arm and hand depending on context.": "كلمة рука قد تعني اليد أو الذراع بحسب السياق.",
+  "нога can mean both leg and foot depending on context.": "كلمة нога قد تعني الرجل أو القدم بحسب السياق.",
+  "These are core Russian body part words.": "هذه كلمات أساسية لأجزاء الجسم بالروسية.",
 };
 
 const noteArabic: Record<string, string> = {
@@ -234,6 +249,8 @@ const noteArabic: Record<string, string> = {
   "Polite": "رسمي",
   "Polite object form": "صيغة المفعول الرسمية",
   "Polite or plural": "رسمي أو للجمع",
+  "рука can mean both arm and hand depending on context.": "كلمة рука قد تعني اليد أو الذراع بحسب السياق.",
+  "нога can mean both leg and foot depending on context.": "كلمة нога قد تعني الرجل أو القدم بحسب السياق.",
 };
 
 const learningTextArabic: Record<string, string> = {

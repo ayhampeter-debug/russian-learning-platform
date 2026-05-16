@@ -22,6 +22,7 @@ export const fallbackStreak: DailyStreakState = {
 
 let cachedStorageValue: string | null = null;
 let cachedStreak: DailyStreakState = fallbackStreak;
+let cachedTodayKey: string | null = null;
 let hasCachedStreak = false;
 
 function canUseLocalStorage() {
@@ -101,15 +102,15 @@ function normalizeStreak(streak: Partial<DailyStreakState>, todayKey = getTodayK
   };
 }
 
-function parseStoredStreak(storedStreak: string | null): DailyStreakState {
+function parseStoredStreak(storedStreak: string | null, todayKey = getTodayKey()): DailyStreakState {
   try {
     if (!storedStreak) {
-      return fallbackStreak;
+      return normalizeStreak(fallbackStreak, todayKey);
     }
 
-    return normalizeStreak(JSON.parse(storedStreak) as Partial<DailyStreakState>);
+    return normalizeStreak(JSON.parse(storedStreak) as Partial<DailyStreakState>, todayKey);
   } catch {
-    return fallbackStreak;
+    return normalizeStreak(fallbackStreak, todayKey);
   }
 }
 
@@ -120,13 +121,15 @@ function getStreakSnapshot(): DailyStreakState {
 
   try {
     const storedStreak = window.localStorage.getItem(streakStorageKey);
+    const todayKey = getTodayKey();
 
-    if (hasCachedStreak && storedStreak === cachedStorageValue) {
-      return normalizeStreak(cachedStreak);
+    if (hasCachedStreak && storedStreak === cachedStorageValue && todayKey === cachedTodayKey) {
+      return cachedStreak;
     }
 
     cachedStorageValue = storedStreak;
-    cachedStreak = parseStoredStreak(storedStreak);
+    cachedStreak = parseStoredStreak(storedStreak, todayKey);
+    cachedTodayKey = todayKey;
     hasCachedStreak = true;
 
     return cachedStreak;
@@ -147,6 +150,7 @@ function saveStreak(streak: DailyStreakState) {
     window.localStorage.setItem(streakStorageKey, serializedStreak);
     cachedStorageValue = serializedStreak;
     cachedStreak = normalizedStreak;
+    cachedTodayKey = getTodayKey();
     hasCachedStreak = true;
     window.dispatchEvent(new Event(streakChangeEventName));
   } catch {
@@ -209,6 +213,7 @@ export function resetDailyStreak() {
     window.localStorage.removeItem(streakStorageKey);
     cachedStorageValue = null;
     cachedStreak = fallbackStreak;
+    cachedTodayKey = null;
     hasCachedStreak = false;
     window.dispatchEvent(new Event(streakChangeEventName));
   } catch {

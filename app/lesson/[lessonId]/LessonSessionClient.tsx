@@ -48,6 +48,7 @@ import {
 import { addMistake } from "@/lib/mistake-storage";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { BodyPartsGame } from "./BodyPartsGame";
 
 const startingHearts = 5;
 
@@ -262,6 +263,10 @@ export function LessonSessionClient({ lesson }: { lesson: Lesson }) {
 
   if (lessonState.locked) {
     return <LockedLesson lesson={lesson} language={language} />;
+  }
+
+  if (lesson.id === "body-parts") {
+    return <BodyPartsGame lesson={lesson} />;
   }
 
   if (!hasStarted && !isFinished) {

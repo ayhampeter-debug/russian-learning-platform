@@ -66,10 +66,14 @@ export function PronounceButton({
   text,
   className = "",
   disabled = false,
+  ariaLabel,
+  title = "Pronounce Russian",
 }: {
   text: string;
   className?: string;
   disabled?: boolean;
+  ariaLabel?: string;
+  title?: string;
 }) {
   const spokenText = normalizeRussianText(text);
 
@@ -106,8 +110,8 @@ export function PronounceButton({
       type="button"
       onClick={pronounce}
       disabled={disabled}
-      aria-label={`Pronounce ${spokenText}`}
-      title="Pronounce Russian"
+      aria-label={ariaLabel ?? `Pronounce ${spokenText}`}
+      title={title}
       className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-300/10 text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-300/20 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     >
       <svg
