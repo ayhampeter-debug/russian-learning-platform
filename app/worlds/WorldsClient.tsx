@@ -44,12 +44,12 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
           <p className="mt-3 max-w-2xl text-slate-400" {...uiTextProps(language)}>
             {text.worlds.intro}
           </p>
-          <p className="mt-3 inline-flex rounded-full border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-100" {...uiTextProps(language)}>
+          <p className="mt-3 inline-flex max-w-full flex-wrap rounded-2xl border border-cyan-400/20 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-100 sm:rounded-full" {...uiTextProps(language)}>
             {text.worlds.currentCourseRussian} · {text.worlds.explanationLanguage}: {explanationLanguage}
           </p>
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           {worlds.map((world) => {
             const summary = getWorldProgressSummary(world, progress);
             const worldUnlocked = isWorldUnlocked(world, progress);
@@ -334,7 +334,7 @@ function LessonStateRow({
   return (
     <div className={`rounded-2xl border px-3 py-2 ${stateClass}`}>
       <div className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-        <span className="min-w-0 truncate text-sm font-semibold" {...uiTextProps(language)}>{title}</span>
+        <span className="min-w-0 break-words text-sm font-semibold sm:truncate" {...uiTextProps(language)}>{title}</span>
         <span className="shrink-0 text-xs font-bold">{label}</span>
       </div>
     </div>

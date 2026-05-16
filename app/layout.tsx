@@ -17,12 +17,13 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "YazkUp — Gamified Language Learning",
+    default: "YazkUp | Learn Russian with XP, worlds, and daily quests",
     template: "%s | YazkUp",
   },
   description:
-    "Learn languages through quests, XP, worlds, and daily progress. Start with Russian using English or Arabic explanations.",
+    "YazkUp is a beta language learning app for Russian lessons, XP progress, worlds, mistake review, and daily goals with English or Arabic explanations.",
   applicationName: "YazkUp",
+  metadataBase: new URL("https://yazkup.com"),
   icons: {
     icon: [
       {
@@ -33,17 +34,17 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: "YazkUp — Gamified Language Learning",
+    title: "YazkUp | Learn Russian with XP, worlds, and daily quests",
     description:
-      "Learn languages through quests, XP, worlds, and daily progress. Start with Russian using English or Arabic explanations.",
+      "Practice Russian through short quests, XP progress, worlds, mistake review, and daily goals with English or Arabic explanations.",
     siteName: "YazkUp",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "YazkUp — Gamified Language Learning",
+    title: "YazkUp | Learn Russian with XP, worlds, and daily quests",
     description:
-      "Learn languages through quests, XP, worlds, and daily progress. Start with Russian using English or Arabic explanations.",
+      "Practice Russian through short quests, XP progress, worlds, mistake review, and daily goals with English or Arabic explanations.",
   },
 };
 

@@ -85,7 +85,7 @@ export function FeedbackClient() {
       setType("bug_report");
     } catch {
       setSubmitState("error");
-      setErrorMessage(feedbackText.somethingWentWrong);
+      setErrorMessage(feedbackText.tryAgainLater);
     }
   }
 
@@ -207,7 +207,9 @@ export function FeedbackClient() {
             disabled={submitState === "submitting"}
             className="mt-7 w-full rounded-full bg-cyan-400 px-6 py-3 font-black text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
           >
-            {feedbackText.submitFeedback}
+            {submitState === "submitting"
+              ? feedbackText.submittingFeedback
+              : feedbackText.submitFeedback}
           </button>
         </form>
       </section>

@@ -16,6 +16,9 @@ export default function Loading() {
             <p className="max-w-xl leading-7 text-slate-400">
               If live progress is slow, YazkUp keeps the local practice path available.
             </p>
+            <p className="max-w-xl leading-7 text-slate-400" dir="rtl" lang="ar">
+              جار تجهيز رحلتك التالية. إذا كان الاتصال بطيئا، يبقى التدريب المحلي متاحا.
+            </p>
             <div className="h-3 overflow-hidden rounded-full bg-slate-800">
               <div className="h-full w-1/2 animate-pulse rounded-full bg-cyan-400" />
             </div>

@@ -164,13 +164,15 @@ export function FeedbackAdminClient({
 
         <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/10 shadow-2xl shadow-cyan-950/20 sm:rounded-3xl">
           {loadState === "loading" ? (
-            <div className="p-6 text-slate-300">Loading feedback...</div>
+            <div className="p-6 text-slate-300" role="status" aria-live="polite">
+              Loading beta feedback...
+            </div>
           ) : null}
 
           {loadState === "error" ? (
             <div className="p-6 text-slate-300">
-              Feedback could not be loaded. Confirm the admin account is signed
-              in and try again.
+              Feedback is not available right now. Confirm the admin account is
+              signed in, then try again.
             </div>
           ) : null}
 
