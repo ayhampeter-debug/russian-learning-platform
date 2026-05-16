@@ -15,8 +15,8 @@ import type { UiText } from "@/lib/ui-translations";
 import type { ExplanationLanguage } from "@/lib/language-preference";
 import {
   getLessonDisplayState,
+  getLessonProgressState,
   getProgressStatusLabel,
-  getUnlockedWorldLessonIds,
   getWorldProgressSummary,
   getWorldStageProgressState,
   isWorldUnlocked,
@@ -53,20 +53,19 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
           {worlds.map((world) => {
             const summary = getWorldProgressSummary(world, progress);
             const worldUnlocked = isWorldUnlocked(world, progress);
-            const unlockedLessonIds = getUnlockedWorldLessonIds(world, progress.completedLessonIds);
-            const firstAvailableLesson = world.lessons.find((lesson) =>
-              unlockedLessonIds.includes(lesson.id),
+            const availableLessons = world.lessons.filter(
+              (lesson) => !getLessonProgressState(lesson, progress).locked,
             );
-            const nextLesson = world.lessons.find(
-              (lesson) =>
-                unlockedLessonIds.includes(lesson.id) &&
-                !progress.completedLessonIds.includes(lesson.id),
+            const firstAvailableLesson = availableLessons[0];
+            const nextLesson = availableLessons.find(
+              (lesson) => !progress.completedLessonIds.includes(lesson.id),
             );
+            const worldAvailable = worldUnlocked || Boolean(nextLesson || firstAvailableLesson);
             const worldHref =
-              worldUnlocked && (nextLesson || firstAvailableLesson)
+              worldAvailable && (nextLesson || firstAvailableLesson)
                 ? `/lesson/${(nextLesson ?? firstAvailableLesson)?.id}`
                 : undefined;
-            const ctaLabel = !worldUnlocked
+            const ctaLabel = !worldAvailable
               ? text.worlds.locked
               : summary.completed
                 ? text.worlds.review
@@ -78,7 +77,7 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
               <div
                 key={world.id}
                 className={`rounded-2xl border p-4 sm:rounded-3xl sm:p-6 ${
-                  worldUnlocked
+                  worldAvailable
                     ? "border-white/10 bg-white/10"
                     : "border-white/5 bg-slate-900/60"
                 }`}
@@ -92,7 +91,7 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
                     <p className="mt-2 max-w-3xl text-slate-400" {...uiTextProps(language)}>
                       {localizeWorldDescription(world.description, language)}
                     </p>
-                    {!worldUnlocked ? (
+                    {!worldAvailable ? (
                       <p className="mt-3 text-sm font-semibold text-yellow-200">
                         {text.worlds.lockedUntilBoss}
                       </p>
@@ -127,13 +126,16 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
 
                 <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                   {world.stages.map((stage) => {
+                    const stageLessons = world.lessons.filter((lesson) => lesson.stageId === stage.id);
                     const stageState = getWorldStageProgressState(world, stage.id, progress);
                     const lessonId = getNextWorldStageLessonId(world, stage.id, progress);
-                    const stageLessons = world.lessons.filter((lesson) => lesson.stageId === stage.id);
+                    const hasAvailableLesson = stageLessons.some(
+                      (lesson) => !getLessonProgressState(lesson, progress).locked,
+                    );
                     const completedLessonCount = stageLessons.filter((lesson) =>
                       progress.completedLessonIds.includes(lesson.id),
                     ).length;
-                    const locked = !worldUnlocked || stageState.locked;
+                    const locked = (!worldUnlocked && !hasAvailableLesson) || stageState.locked;
 
                     return (
                       <StageCard
@@ -153,7 +155,7 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
                         lessons={stageLessons.map((lesson) => ({
                           id: lesson.id,
                           title: localizeLessonTitle(lesson.title, language),
-                          state: !worldUnlocked ? "Locked" : getLessonDisplayState(lesson, progress),
+                          state: getLessonDisplayState(lesson, progress),
                         }))}
                         text={text}
                         language={language}
@@ -172,13 +174,13 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
 
 function getNextWorldStageLessonId(world: World, stageId: string, progress: SavedProgress) {
   const stageLessons = world.lessons.filter((lesson) => lesson.stageId === stageId);
-  const unlockedLessonIds = new Set(getUnlockedWorldLessonIds(world, progress.completedLessonIds));
 
   return (
     stageLessons.find(
       (lesson) =>
-        unlockedLessonIds.has(lesson.id) && !progress.completedLessonIds.includes(lesson.id),
-    )?.id ?? stageLessons.find((lesson) => unlockedLessonIds.has(lesson.id))?.id
+        !getLessonProgressState(lesson, progress).locked &&
+        !progress.completedLessonIds.includes(lesson.id),
+    )?.id ?? stageLessons.find((lesson) => !getLessonProgressState(lesson, progress).locked)?.id
   );
 }
 
