@@ -157,8 +157,8 @@ function seedWorld(world: World) {
           locked: lessonData.locked ?? false,
         }),
       },
-      ["worldId", "slug"],
-      ["stageId", "number", "title", "description", "xpReward", "status", "vocabulary", "metadata"],
+      ["stageId", "number"],
+      ["worldId", "slug", "stageId", "number", "title", "description", "xpReward", "status", "vocabulary", "metadata"],
     );
 
     for (const [exerciseIndex, exercise] of lessonData.exercises.entries()) {

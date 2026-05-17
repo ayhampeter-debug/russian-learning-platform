@@ -11,6 +11,7 @@ export type { SavedProgress } from "@/lib/progress-types";
 const progressStorageKey = "russian-learning-platform-progress";
 const progressChangeEventName = "russian-learning-platform-progress-change";
 const progressRequestTimeoutMs = 4_000;
+const temporarilyAvailableLessonIds = new Set(["body-parts"]);
 
 export type LessonProgressState = {
   status: StageStatus | "In progress";
@@ -387,6 +388,10 @@ export function getProgressStatusLabel(status: StageStatus | "In progress"): Unl
   return "Available";
 }
 
+export function isLessonTemporarilyAvailable(lessonId: string) {
+  return temporarilyAvailableLessonIds.has(lessonId);
+}
+
 export function getUnlockedLessonIds(completedLessonIds: string[]) {
   return getUnlockedWorldLessonIds(worldOne, completedLessonIds);
 }
@@ -396,7 +401,7 @@ export function getUnlockedWorldLessonIds(world: World, completedLessonIds: stri
   const unlockedLessonIds = new Set<string>();
 
   world.lessons.forEach((lesson, index) => {
-    if (index === 0 || completedLessons.has(lesson.id)) {
+    if (index === 0 || completedLessons.has(lesson.id) || isLessonTemporarilyAvailable(lesson.id)) {
       unlockedLessonIds.add(lesson.id);
       return;
     }
@@ -463,9 +468,11 @@ export function getLessonProgressState(
 ): LessonProgressState {
   const lessonWorld = getWorldForLesson(lesson);
   const completed = progress.completedLessonIds.includes(lesson.id);
+  const temporarilyAvailable = isLessonTemporarilyAvailable(lesson.id);
   const unlocked =
-    Boolean(lessonWorld && isWorldUnlocked(lessonWorld, progress)) &&
-    getUnlockedWorldLessonIds(lessonWorld ?? worldOne, progress.completedLessonIds).includes(lesson.id);
+    temporarilyAvailable ||
+    (Boolean(lessonWorld && isWorldUnlocked(lessonWorld, progress)) &&
+      getUnlockedWorldLessonIds(lessonWorld ?? worldOne, progress.completedLessonIds).includes(lesson.id));
 
   if (completed) {
     return {
