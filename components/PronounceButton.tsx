@@ -76,6 +76,9 @@ export function PronounceButton({
   title?: string;
 }) {
   const spokenText = normalizeRussianText(text);
+  const speechUnavailable =
+    typeof window !== "undefined" &&
+    (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window));
 
   function pronounce() {
     if (
@@ -109,9 +112,9 @@ export function PronounceButton({
     <button
       type="button"
       onClick={pronounce}
-      disabled={disabled}
+      disabled={disabled || speechUnavailable}
       aria-label={ariaLabel ?? `Pronounce ${spokenText}`}
-      title={title}
+      title={speechUnavailable ? "Speech synthesis is not available in this browser" : title}
       className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-cyan-300/30 bg-cyan-300/10 text-cyan-100 transition hover:border-cyan-200 hover:bg-cyan-300/20 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     >
       <svg

@@ -230,8 +230,10 @@ const meaningArabic: Record<string, string> = {
   "stomach/belly": "البطن",
   back: "الظهر",
   "leg/foot": "الرجل / القدم",
-  "рука can mean both arm and hand depending on context.": "كلمة рука قد تعني اليد أو الذراع بحسب السياق.",
-  "нога can mean both leg and foot depending on context.": "كلمة нога قد تعني الرجل أو القدم بحسب السياق.",
+  "рука can mean both arm and hand depending on context.": "كلمة рука قد تعني اليد أو الذراع حسب السياق.",
+  "рука can mean arm or hand depending on context.": "كلمة рука قد تعني اليد أو الذراع حسب السياق.",
+  "нога can mean both leg and foot depending on context.": "كلمة нога قد تعني الرجل أو القدم حسب السياق.",
+  "нога can mean leg or foot depending on context.": "كلمة нога قد تعني الرجل أو القدم حسب السياق.",
   "These are core Russian body part words.": "هذه كلمات أساسية لأجزاء الجسم بالروسية.",
 };
 
@@ -249,8 +251,10 @@ const noteArabic: Record<string, string> = {
   "Polite": "رسمي",
   "Polite object form": "صيغة المفعول الرسمية",
   "Polite or plural": "رسمي أو للجمع",
-  "рука can mean both arm and hand depending on context.": "كلمة рука قد تعني اليد أو الذراع بحسب السياق.",
-  "нога can mean both leg and foot depending on context.": "كلمة нога قد تعني الرجل أو القدم بحسب السياق.",
+  "рука can mean both arm and hand depending on context.": "كلمة рука قد تعني اليد أو الذراع حسب السياق.",
+  "рука can mean arm or hand depending on context.": "كلمة рука قد تعني اليد أو الذراع حسب السياق.",
+  "нога can mean both leg and foot depending on context.": "كلمة нога قد تعني الرجل أو القدم حسب السياق.",
+  "нога can mean leg or foot depending on context.": "كلمة нога قد تعني الرجل أو القدم حسب السياق.",
 };
 
 const learningTextArabic: Record<string, string> = {
