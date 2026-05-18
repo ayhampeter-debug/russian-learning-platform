@@ -1,8 +1,8 @@
 "use client";
 
 import { Navigation } from "@/components/Navigation";
-import { useExplanationLanguage } from "@/components/LanguageSelector";
 import { PronounceButton } from "@/components/PronounceButton";
+import { useExplanationLanguage } from "@/components/LanguageSelector";
 import type { ExplanationLanguage } from "@/lib/language-preference";
 import type { Lesson } from "@/lib/learning-data";
 import { addMistake } from "@/lib/mistake-storage";
@@ -23,8 +23,10 @@ import {
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-type BodySection = "head" | "body" | "back";
-type LessonPhase = "learn" | "tap" | "match" | "listen" | "final" | "complete";
+type BodySection = "face" | "body" | "back";
+type LessonStage = "face" | "body" | "back" | "tap" | "listen" | "match" | "final" | "complete";
+type ChoiceQuestion = { id: string; type: "meaning" | "russian" | "listen"; partId: string; options: string[] };
+type FinalQuestion = { id: string; type: "tap"; partId: string } | ChoiceQuestion;
 
 type BodyPart = {
   id: string;
@@ -44,18 +46,13 @@ type AnswerState = {
   isCorrect: boolean;
 };
 
-type FinalQuestion =
-  | { id: string; type: "tap"; partId: string }
-  | { id: string; type: "translation" | "listen"; partId: string; options: string[] }
-  | { id: string; type: "russian"; partId: string; options: string[] };
-
 const bodyParts: BodyPart[] = [
-  { id: "head", section: "head", russian: "голова", english: "head", arabic: "الرأس", marker: 1, x: 50, y: 31, highlight: "left-[28%] top-[14%] h-[42%] w-[44%] rounded-[45%]" },
-  { id: "hair", section: "head", russian: "волосы", english: "hair", arabic: "الشعر", marker: 2, x: 50, y: 16, highlight: "left-[30%] top-[9%] h-[20%] w-[42%] rounded-t-full" },
-  { id: "eye", section: "head", russian: "глаз", english: "eye", arabic: "العين", marker: 3, x: 42, y: 37, highlight: "left-[34%] top-[33%] h-[10%] w-[15%] rounded-full" },
-  { id: "nose", section: "head", russian: "нос", english: "nose", arabic: "الأنف", marker: 4, x: 50, y: 46, highlight: "left-[45%] top-[39%] h-[16%] w-[12%] rounded-full" },
-  { id: "mouth", section: "head", russian: "рот", english: "mouth", arabic: "الفم", marker: 5, x: 50, y: 57, highlight: "left-[39%] top-[53%] h-[10%] w-[23%] rounded-full" },
-  { id: "ear", section: "head", russian: "ухо", english: "ear", arabic: "الأذن", marker: 6, x: 74, y: 40, highlight: "left-[70%] top-[31%] h-[20%] w-[12%] rounded-full" },
+  { id: "head", section: "face", russian: "голова", english: "head", arabic: "الرأس", marker: 1, x: 50, y: 31, highlight: "left-[28%] top-[14%] h-[42%] w-[44%] rounded-[45%]" },
+  { id: "hair", section: "face", russian: "волосы", english: "hair", arabic: "الشعر", marker: 2, x: 50, y: 16, highlight: "left-[30%] top-[9%] h-[20%] w-[42%] rounded-t-full" },
+  { id: "eye", section: "face", russian: "глаз", english: "eye", arabic: "العين", marker: 3, x: 42, y: 37, highlight: "left-[34%] top-[33%] h-[10%] w-[15%] rounded-full" },
+  { id: "nose", section: "face", russian: "нос", english: "nose", arabic: "الأنف", marker: 4, x: 50, y: 46, highlight: "left-[45%] top-[39%] h-[16%] w-[12%] rounded-full" },
+  { id: "mouth", section: "face", russian: "рот", english: "mouth", arabic: "الفم", marker: 5, x: 50, y: 57, highlight: "left-[39%] top-[53%] h-[10%] w-[23%] rounded-full" },
+  { id: "ear", section: "face", russian: "ухо", english: "ear", arabic: "الأذن", marker: 6, x: 74, y: 40, highlight: "left-[70%] top-[31%] h-[20%] w-[12%] rounded-full" },
   { id: "neck", section: "body", russian: "шея", english: "neck", arabic: "الرقبة", marker: 7, x: 50, y: 14, highlight: "left-[41%] top-[7%] h-[16%] w-[18%] rounded-lg" },
   { id: "shoulder", section: "body", russian: "плечо", english: "shoulder", arabic: "الكتف", marker: 8, x: 31, y: 29, highlight: "left-[24%] top-[22%] h-[17%] w-[24%] rounded-full" },
   {
@@ -63,61 +60,69 @@ const bodyParts: BodyPart[] = [
     section: "body",
     russian: "рука",
     english: "arm/hand",
-    arabic: "اليد / الذراع",
+    arabic: "الذراع / اليد",
     marker: 9,
     x: 18,
     y: 51,
     highlight: "left-[8%] top-[31%] h-[42%] w-[18%] rounded-full -rotate-12",
     note: {
       en: "рука can mean arm or hand depending on context.",
-      ar: "كلمة рука قد تعني اليد أو الذراع حسب السياق.",
+      ar: "كلمة рука قد تعني الذراع أو اليد حسب السياق.",
     },
   },
   { id: "stomach", section: "body", russian: "живот", english: "stomach/belly", arabic: "البطن", marker: 10, x: 50, y: 51, highlight: "left-[37%] top-[39%] h-[25%] w-[27%] rounded-full" },
+  {
+    id: "leg",
+    section: "body",
+    russian: "нога",
+    english: "leg/foot",
+    arabic: "الساق / القدم",
+    marker: 11,
+    x: 43,
+    y: 80,
+    highlight: "left-[29%] top-[60%] h-[34%] w-[23%] rounded-full rotate-3",
+    note: {
+      en: "нога can mean leg or foot depending on context.",
+      ar: "كلمة нога قد تعني الساق أو القدم حسب السياق.",
+    },
+  },
   {
     id: "back",
     section: "back",
     russian: "спина",
     english: "back",
     arabic: "الظهر",
-    marker: 11,
+    marker: 12,
     x: 50,
     y: 44,
     highlight: "left-[29%] top-[32%] h-[38%] w-[43%] rounded-[40%]",
     note: {
-      en: "This part is shown in the back view because it is not visible from the front.",
-      ar: "هذا الجزء يظهر في منظر الظهر لأنه لا يظهر من الأمام.",
-    },
-  },
-  {
-    id: "leg",
-    section: "body",
-    russian: "нога",
-    english: "leg/foot",
-    arabic: "الرجل / القدم",
-    marker: 12,
-    x: 43,
-    y: 80,
-    highlight: "left-[29%] top-[60%] h-[34%] w-[23%] rounded-full rotate-3",
-    note: {
-      en: "нога can mean leg or foot depending on context.",
-      ar: "كلمة нога قد تعني الرجل أو القدم حسب السياق.",
+      en: "спина means back.",
+      ar: "كلمة спина تعني الظهر.",
     },
   },
 ];
 
-const tapQuestions = ["nose", "eye", "mouth", "shoulder", "stomach", "leg"];
-const listenQuestions = ["ear", "hair", "neck", "back"];
-const matchParts = ["head", "hair", "eye", "nose", "mouth", "ear", "neck", "shoulder", "arm", "stomach", "back", "leg"];
+const learningSections: Record<"face" | "body" | "back", string[]> = {
+  face: ["head", "hair", "eye", "nose", "mouth", "ear"],
+  body: ["neck", "shoulder", "arm", "stomach", "leg"],
+  back: ["back"],
+};
+
+const tapQuestions = ["nose", "eye", "mouth", "shoulder", "stomach", "leg", "back"];
+const listenQuestions = ["ear", "hair", "neck", "arm", "back"];
+const matchParts = ["head", "hair", "eye", "nose", "mouth", "ear", "neck", "shoulder", "arm", "stomach", "leg", "back"];
 const finalQuestions: FinalQuestion[] = [
   { id: "final-tap-ear", type: "tap", partId: "ear" },
-  { id: "final-translation-ruka", type: "translation", partId: "arm", options: ["arm/hand", "neck", "back", "hair"] },
-  { id: "final-russian-head", type: "russian", partId: "head", options: ["голова", "нога", "рот", "ухо"] },
+  { id: "final-meaning-ruka", type: "meaning", partId: "arm", options: ["arm/hand", "neck", "back", "hair"] },
+  { id: "final-meaning-head", type: "meaning", partId: "head", options: ["head", "leg/foot", "mouth", "ear"] },
   { id: "final-listen-mouth", type: "listen", partId: "mouth", options: ["mouth", "nose", "eye", "ear"] },
   { id: "final-tap-neck", type: "tap", partId: "neck" },
-  { id: "final-translation-spina", type: "translation", partId: "back", options: ["eye", "back", "shoulder", "mouth"] },
+  { id: "final-meaning-spina", type: "meaning", partId: "back", options: ["eye", "back", "shoulder", "mouth"] },
   { id: "final-listen-leg", type: "listen", partId: "leg", options: ["leg/foot", "arm/hand", "stomach/belly", "shoulder"] },
 ];
+
+const stageOrder: LessonStage[] = ["face", "body", "back", "tap", "listen", "match", "final"];
 
 const bodyPartVisuals: Record<string, Pick<BodyPart, "x" | "y" | "highlight">> = {
   head: { x: 25, y: 68, highlight: "left-[29%] top-[16%] h-[44%] w-[42%] rounded-[46%]" },
@@ -130,15 +135,16 @@ const bodyPartVisuals: Record<string, Pick<BodyPart, "x" | "y" | "highlight">> =
   shoulder: { x: 29, y: 28, highlight: "left-[22%] top-[22%] h-[17%] w-[27%] rounded-full" },
   arm: { x: 17, y: 53, highlight: "left-[7%] top-[32%] h-[42%] w-[18%] rounded-full -rotate-12" },
   stomach: { x: 50, y: 52, highlight: "left-[37%] top-[39%] h-[25%] w-[27%] rounded-full" },
-  back: { x: 50, y: 44, highlight: "left-[28%] top-[30%] h-[41%] w-[44%] rounded-[38%]" },
   leg: { x: 42, y: 80, highlight: "left-[29%] top-[60%] h-[34%] w-[23%] rounded-full rotate-3" },
+  back: { x: 50, y: 44, highlight: "left-[28%] top-[30%] h-[41%] w-[44%] rounded-[38%]" },
 };
 
 export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
   const { language } = useExplanationLanguage();
   const text = getUiText(language);
+  const copy = bodyCopy(language);
   const progressState = useProgress();
-  const [phase, setPhase] = useState<LessonPhase>("learn");
+  const [stage, setStage] = useState<LessonStage>("face");
   const [selectedPartId, setSelectedPartId] = useState("head");
   const [visitedPartIds, setVisitedPartIds] = useState<string[]>(["head"]);
   const [tapIndex, setTapIndex] = useState(0);
@@ -147,16 +153,19 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
   const [listenAnswer, setListenAnswer] = useState<AnswerState | null>(null);
   const [selectedRussianId, setSelectedRussianId] = useState("");
   const [matchedIds, setMatchedIds] = useState<string[]>([]);
-  const [matchFeedback, setMatchFeedback] = useState("");
+  const [matchFeedback, setMatchFeedback] = useState<AnswerState | null>(null);
   const [finalIndex, setFinalIndex] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
   const [finalAnswer, setFinalAnswer] = useState<AnswerState | null>(null);
   const [completionProgress, setCompletionProgress] = useState<SavedProgress | null>(null);
-  const [vocabularyOpen, setVocabularyOpen] = useState(false);
 
-  const selectedPart = getPart(selectedPartId);
   const activeProgress = completionProgress ?? progressState;
-  const lessonProgress = getPhaseProgress(phase, tapIndex, listenIndex, matchedIds.length, finalIndex);
+  const selectedPart = getPart(selectedPartId);
+  const currentTapPart = getPart(tapQuestions[tapIndex]);
+  const currentListenPart = getPart(listenQuestions[listenIndex]);
+  const currentFinal = finalQuestions[finalIndex];
+  const currentFinalPart = getPart(currentFinal.partId);
+  const lessonProgress = getStageProgress(stage, tapIndex, listenIndex, matchedIds.length, finalIndex);
   const nextAction = useMemo(
     () => ({
       href: getNextAvailablePath(activeProgress),
@@ -178,14 +187,16 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
     setVisitedPartIds((current) => (current.includes(part.id) ? current : [...current, part.id]));
   }
 
-  function changePhase(nextPhase: LessonPhase) {
-    if (nextPhase === "complete") return;
+  function changeStage(nextStage: LessonStage) {
+    if (nextStage === "complete") return;
 
-    setPhase(nextPhase);
+    const firstPart = getFirstPartForStage(nextStage);
+    if (firstPart) selectPart(firstPart);
+    setStage(nextStage);
     setTapAnswer(null);
     setListenAnswer(null);
     setFinalAnswer(null);
-    setMatchFeedback("");
+    setMatchFeedback(null);
   }
 
   function recordMistake(exerciseId: string, questionText: string, userAnswer: string, correctAnswer: string, explanation: string) {
@@ -203,46 +214,76 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
   function handleTapSelect(part: BodyPart) {
     if (tapAnswer) return;
 
-    const targetPart = getPart(tapQuestions[tapIndex]);
-    const isCorrect = part.id === targetPart.id;
+    const isCorrect = part.id === currentTapPart.id;
     setTapAnswer({ selectedId: part.id, isCorrect });
-    selectPart(targetPart);
+    selectPart(currentTapPart);
 
     if (!isCorrect) {
       recordMistake(
-        `body-parts-tap-${targetPart.id}`,
-        `${tapPrompt(text, language)} ${translation(targetPart)}`,
+        `body-parts-tap-${currentTapPart.id}`,
+        `${copy.tapCorrectPart}: ${currentTapPart.russian}`,
         translation(part),
-        translation(targetPart),
-        `${targetPart.russian} = ${translation(targetPart)}`,
+        translation(currentTapPart),
+        `${currentTapPart.russian} = ${translation(currentTapPart)}`,
       );
     }
   }
 
   function advanceTap() {
     if (tapIndex >= tapQuestions.length - 1) {
-      setPhase("match");
-      setTapAnswer(null);
+      changeStage("listen");
       return;
     }
 
+    const nextPart = getPart(tapQuestions[tapIndex + 1]);
     setTapIndex((current) => current + 1);
     setTapAnswer(null);
+    selectPart(nextPart);
+  }
+
+  function answerListen(part: BodyPart) {
+    if (listenAnswer) return;
+
+    const isCorrect = part.id === currentListenPart.id;
+    setListenAnswer({ selectedId: part.id, isCorrect });
+    selectPart(currentListenPart);
+
+    if (!isCorrect) {
+      recordMistake(
+        `body-parts-listen-${currentListenPart.id}`,
+        `${copy.listenAndChoose}: ${currentListenPart.russian}`,
+        translation(part),
+        translation(currentListenPart),
+        `${currentListenPart.russian} = ${translation(currentListenPart)}`,
+      );
+    }
+  }
+
+  function advanceListen() {
+    if (listenIndex >= listenQuestions.length - 1) {
+      changeStage("match");
+      return;
+    }
+
+    const nextPart = getPart(listenQuestions[listenIndex + 1]);
+    setListenIndex((current) => current + 1);
+    setListenAnswer(null);
+    selectPart(nextPart);
   }
 
   function handleMatchMeaning(part: BodyPart) {
     if (!selectedRussianId || matchedIds.includes(part.id)) return;
 
     const russianPart = getPart(selectedRussianId);
+    const isCorrect = russianPart.id === part.id;
+    setMatchFeedback({ selectedId: russianPart.id, isCorrect });
 
-    if (russianPart.id === part.id) {
-      setMatchedIds((current) => [...current, part.id]);
-      setMatchFeedback(`${bodyCopy(language).greatJob}: ${part.russian} = ${translation(part)}`);
+    if (isCorrect) {
+      setMatchedIds((current) => (current.includes(part.id) ? current : [...current, part.id]));
     } else {
-      setMatchFeedback(`${bodyCopy(language).tryAgain}: ${russianPart.russian} = ${translation(russianPart)}`);
       recordMistake(
         `body-parts-match-${russianPart.id}`,
-        text.lesson.matchTheWords,
+        copy.matchTheWords,
         `${russianPart.russian} -> ${translation(part)}`,
         `${russianPart.russian} -> ${translation(russianPart)}`,
         `${russianPart.russian} = ${translation(russianPart)}`,
@@ -252,52 +293,16 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
     setSelectedRussianId("");
   }
 
-  function answerListen(part: BodyPart) {
-    if (listenAnswer) return;
-
-    const targetPart = getPart(listenQuestions[listenIndex]);
-    const isCorrect = part.id === targetPart.id;
-    setListenAnswer({ selectedId: part.id, isCorrect });
-    selectPart(targetPart);
-
-    if (!isCorrect) {
-      recordMistake(
-        `body-parts-listen-${targetPart.id}`,
-        bodyCopy(language).chooseCorrectBodyPart,
-        translation(part),
-        translation(targetPart),
-        `${targetPart.russian} = ${translation(targetPart)}`,
-      );
-    }
-  }
-
-  function advanceListen() {
-    if (listenIndex >= listenQuestions.length - 1) {
-      setPhase("final");
-      setListenAnswer(null);
-      return;
-    }
-
-    setListenIndex((current) => current + 1);
-    setListenAnswer(null);
-  }
-
   function handleFinalTap(part: BodyPart) {
-    if (finalAnswer) return;
-
-    const question = finalQuestions[finalIndex];
-    if (question.type !== "tap") return;
-
-    answerFinal(part.id === question.partId, part.id);
+    if (finalAnswer || currentFinal.type !== "tap") return;
+    answerFinal(part.id === currentFinal.partId, part.id);
   }
 
   function answerFinal(isCorrect: boolean, userAnswer: string) {
     if (finalAnswer) return;
 
-    const question = finalQuestions[finalIndex];
-    const targetPart = getPart(question.partId);
     setFinalAnswer({ selectedId: userAnswer, isCorrect });
-    selectPart(targetPart);
+    selectPart(currentFinalPart);
 
     if (isCorrect) {
       setFinalScore((score) => score + 1);
@@ -305,11 +310,11 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
     }
 
     recordMistake(
-      question.id,
-      getFinalPrompt(question, targetPart, language),
-      question.type === "tap" ? translation(getPart(userAnswer)) : userAnswer,
-      getFinalCorrectAnswer(question, targetPart, language),
-      `${targetPart.russian} = ${translation(targetPart)}`,
+      currentFinal.id,
+      getFinalPrompt(currentFinal, currentFinalPart, language),
+      currentFinal.type === "tap" ? translation(getPart(userAnswer)) : userAnswer,
+      getFinalCorrectAnswer(currentFinal, currentFinalPart, translation),
+      `${currentFinalPart.russian} = ${translation(currentFinalPart)}`,
     );
   }
 
@@ -317,26 +322,31 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
     if (finalIndex >= finalQuestions.length - 1) {
       const nextProgress = completeLesson(lesson.id, lesson.xpReward);
       setCompletionProgress(nextProgress);
-      setPhase("complete");
+      setStage("complete");
       return;
     }
 
+    const nextQuestion = finalQuestions[finalIndex + 1];
     setFinalIndex((current) => current + 1);
     setFinalAnswer(null);
+    selectPart(getPart(nextQuestion.partId));
   }
 
-  if (phase === "complete") {
+  if (stage === "complete") {
     return (
       <main className="min-h-screen bg-slate-950 text-white">
         <Navigation />
         <section className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-5xl items-center px-4 pb-8 sm:px-6">
           <div className="w-full rounded-2xl border border-white/10 bg-white/10 p-5 text-center shadow-2xl shadow-cyan-950/30 sm:rounded-3xl sm:p-8">
             <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-300" {...uiTextProps(language)}>
-              {bodyCopy(language).lessonComplete}
+              {copy.lessonComplete}
             </p>
             <h1 className="mt-3 text-3xl font-black sm:text-5xl" {...uiTextProps(language)}>
               {localizeLessonTitle(lesson.title, language)}
             </h1>
+            <p className="mt-3 text-lg font-bold text-lime-100" {...uiTextProps(language)}>
+              {copy.greatJob}
+            </p>
             <div className="mx-auto mt-6 grid max-w-2xl gap-3 sm:grid-cols-3">
               <ResultPill label={text.lesson.xpEarned} value={`${lesson.xpReward} XP`} />
               <ResultPill label={text.lesson.score} value={`${finalScore}/${finalQuestions.length}`} />
@@ -359,27 +369,23 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
     );
   }
 
-  const copy = bodyCopy(language);
-  const currentTapPart = getPart(tapQuestions[tapIndex]);
-  const currentListenPart = getPart(listenQuestions[listenIndex]);
-  const currentFinal = finalQuestions[finalIndex];
-  const currentFinalPart = getPart(currentFinal.partId);
-
   return (
     <main className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
       <Navigation />
-      <div className="sticky top-0 z-20 border-b border-white/10 bg-slate-950/90 px-4 py-2 backdrop-blur sm:hidden">
-        <div className="flex items-center justify-between gap-3 text-xs font-black" {...uiTextProps(language)}>
-          <span>{getPhaseLabel(phase, language)}</span>
-          <span>{Math.round(lessonProgress)}%</span>
-        </div>
-        <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
-          <div className="h-full rounded-full bg-cyan-300 transition-all" style={{ width: `${lessonProgress}%` }} />
+      <div className="sticky top-0 z-20 border-b border-white/10 bg-slate-950/95 px-4 py-2 backdrop-blur">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex items-center justify-between gap-3 text-xs font-black" {...uiTextProps(language)}>
+            <span>{getStageLabel(stage, language)}</span>
+            <span>{Math.round(lessonProgress)}%</span>
+          </div>
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
+            <div className="h-full rounded-full bg-cyan-300 transition-all" style={{ width: `${lessonProgress}%` }} />
+          </div>
         </div>
       </div>
 
-      <section className="mx-auto max-w-[88rem] px-4 pb-8 sm:px-6">
-        <header className="mb-5 rounded-2xl border border-white/10 bg-white/[0.08] p-4 shadow-xl shadow-cyan-950/20 sm:rounded-3xl sm:p-6">
+      <section className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
+        <header className="py-5">
           <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-300" {...uiTextProps(language)}>
             {copy.bodyParts}
           </p>
@@ -392,151 +398,352 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
                 {localizeLessonDescription(lesson.description, language)}
               </p>
             </div>
-            <ModeTabs phase={phase} language={language} onSelect={changePhase} />
+            <StageStepper stage={stage} language={language} />
           </div>
         </header>
 
-        <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_21.5rem] 2xl:grid-cols-[minmax(0,1fr)_23rem]">
-          <section className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.08] p-4 shadow-xl shadow-cyan-950/20 sm:rounded-3xl sm:p-5">
-            <PanelTitle title={getPhaseLabel(phase, language)} detail={getPhaseDetail(phase, language, currentTapPart, currentListenPart, currentFinal, currentFinalPart, translation, visitedPartIds.length, matchedIds.length, finalIndex)} language={language} />
+        {stage === "face" || stage === "body" || stage === "back" ? (
+          <LearningStage
+            section={stage}
+            selectedPart={selectedPart}
+            visitedCount={learningSections[stage].filter((id) => visitedPartIds.includes(id)).length}
+            total={learningSections[stage].length}
+            language={language}
+            translate={translation}
+            note={note(selectedPart)}
+            onSelect={selectPart}
+            onContinue={() => changeStage(stage === "face" ? "body" : stage === "body" ? "back" : "tap")}
+          />
+        ) : null}
 
-            {phase === "final" ? (
-              <FinalQuestionCard
-                question={currentFinal}
-                targetPart={currentFinalPart}
-                index={finalIndex}
-                total={finalQuestions.length}
-                score={finalScore}
-                language={language}
-              />
-            ) : null}
+        {stage === "tap" ? (
+          <TapPractice
+            part={currentTapPart}
+            answer={tapAnswer}
+            language={language}
+            translate={translation}
+            onSelect={handleTapSelect}
+            onContinue={advanceTap}
+          />
+        ) : null}
 
-            {phase === "match" ? (
-              <MatchMode
-                language={language}
-                selectedRussianId={selectedRussianId}
-                matchedIds={matchedIds}
-                onSelectRussian={setSelectedRussianId}
-                onSelectMeaning={handleMatchMeaning}
-                translate={translation}
-              />
-            ) : phase === "listen" ? (
-              <ListenMode
-                targetPart={currentListenPart}
-                answer={listenAnswer}
-                onAnswer={answerListen}
-                translate={translation}
-                language={language}
-              />
-            ) : phase === "final" && currentFinal.type !== "tap" ? null : (
-              <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-[1fr_1fr_0.86fr]">
-                {(["head", "body", "back"] as const).map((section) => (
-                  <BodyMap
-                    key={section}
-                    section={section}
-                    title={getSectionTitle(section, language)}
-                    activePartId={selectedPartId}
-                    feedbackPartId={
-                      phase === "tap" && tapAnswer
-                        ? currentTapPart.id
-                        : phase === "final" && finalAnswer && currentFinal.type === "tap"
-                          ? currentFinalPart.id
-                          : undefined
-                    }
-                    wrongPartId={
-                      phase === "tap" && tapAnswer && !tapAnswer.isCorrect
-                        ? tapAnswer.selectedId
-                        : phase === "final" && finalAnswer && !finalAnswer.isCorrect && currentFinal.type === "tap"
-                          ? finalAnswer.selectedId
-                          : undefined
-                    }
-                    onSelect={phase === "tap" ? handleTapSelect : phase === "final" && currentFinal.type === "tap" ? handleFinalTap : selectPart}
-                    language={language}
-                    translate={translation}
-                  />
-                ))}
-              </div>
-            )}
+        {stage === "listen" ? (
+          <ListenPractice
+            part={currentListenPart}
+            answer={listenAnswer}
+            language={language}
+            translate={translation}
+            onAnswer={answerListen}
+            onContinue={advanceListen}
+          />
+        ) : null}
 
-            {phase === "final" && currentFinal.type !== "tap" ? (
-              <ChoiceChallenge
-                question={currentFinal}
-                targetPart={currentFinalPart}
-                finalAnswer={finalAnswer}
-                onAnswer={answerFinal}
-                language={language}
-                translate={translation}
-              />
-            ) : null}
+        {stage === "match" ? (
+          <MatchPractice
+            selectedRussianId={selectedRussianId}
+            matchedIds={matchedIds}
+            feedback={matchFeedback}
+            language={language}
+            translate={translation}
+            onSelectRussian={setSelectedRussianId}
+            onSelectMeaning={handleMatchMeaning}
+            onContinue={() => changeStage("final")}
+          />
+        ) : null}
 
-            <div className="mt-5">
-              {phase === "tap" && tapAnswer ? (
-                <Feedback correct={tapAnswer.isCorrect} part={currentTapPart} language={language} translate={translation} />
-              ) : null}
-              {phase === "match" && matchFeedback ? (
-                <p className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-4 text-sm font-bold text-cyan-100" {...uiTextProps(language)}>
-                  {matchFeedback}
-                </p>
-              ) : null}
-              {phase === "listen" && listenAnswer ? (
-                <Feedback correct={listenAnswer.isCorrect} part={currentListenPart} language={language} translate={translation} />
-              ) : null}
-              {phase === "final" && finalAnswer ? (
-                <Feedback correct={finalAnswer.isCorrect} part={currentFinalPart} language={language} translate={translation} />
-              ) : null}
-            </div>
-
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
-              {phase === "learn" ? (
-                <button type="button" onClick={() => changePhase("tap")} className="min-h-12 rounded-full bg-cyan-400 px-6 py-3 font-black text-slate-950 transition hover:bg-cyan-300">
-                  {visitedPartIds.length >= 6 ? copy.continueToPractice : text.lesson.startQuiz}
-                </button>
-              ) : null}
-              {phase === "tap" && tapAnswer ? (
-                <button type="button" onClick={advanceTap} className="min-h-12 rounded-full bg-cyan-400 px-6 py-3 font-black text-slate-950 transition hover:bg-cyan-300">
-                  {tapIndex >= tapQuestions.length - 1 ? text.lesson.nextMode : text.lesson.continue}
-                </button>
-              ) : null}
-              {phase === "match" && matchedIds.length === matchParts.length ? (
-                <button type="button" onClick={() => changePhase("listen")} className="min-h-12 rounded-full bg-cyan-400 px-6 py-3 font-black text-slate-950 transition hover:bg-cyan-300">
-                  {text.lesson.nextMode}
-                </button>
-              ) : null}
-              {phase === "listen" && listenAnswer ? (
-                <button type="button" onClick={advanceListen} className="min-h-12 rounded-full bg-cyan-400 px-6 py-3 font-black text-slate-950 transition hover:bg-cyan-300">
-                  {listenIndex >= listenQuestions.length - 1 ? text.lesson.nextMode : text.lesson.continue}
-                </button>
-              ) : null}
-              {phase === "final" && finalAnswer ? (
-                <button type="button" onClick={advanceFinal} className="min-h-12 rounded-full bg-cyan-400 px-6 py-3 font-black text-slate-950 transition hover:bg-cyan-300">
-                  {finalIndex >= finalQuestions.length - 1 ? copy.finishChallenge : text.lesson.continue}
-                </button>
-              ) : null}
-            </div>
-          </section>
-
-          <aside className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.08] p-4 shadow-xl shadow-cyan-950/20 sm:rounded-3xl sm:p-5 xl:sticky xl:top-4 xl:self-start">
-            <SelectedPartCard part={selectedPart} language={language} translate={translation} note={note(selectedPart)} />
-            <button
-              type="button"
-              onClick={() => setVocabularyOpen((isOpen) => !isOpen)}
-              className="mt-4 flex min-h-12 w-full items-center justify-between rounded-2xl border border-white/10 bg-slate-900/80 px-4 py-3 text-left font-black text-slate-100 lg:hidden"
-              {...uiTextProps(language)}
-            >
-              <span>{copy.bodyParts}</span>
-              <span aria-hidden="true" className="text-cyan-200">{vocabularyOpen ? "-" : "+"}</span>
-            </button>
-            <WordLegend selectedPartId={selectedPartId} language={language} translate={translation} onSelect={selectPart} isOpen={vocabularyOpen} />
-          </aside>
-        </div>
+        {stage === "final" ? (
+          <FinalPractice
+            question={currentFinal}
+            targetPart={currentFinalPart}
+            index={finalIndex}
+            total={finalQuestions.length}
+            score={finalScore}
+            answer={finalAnswer}
+            language={language}
+            translate={translation}
+            onTap={handleFinalTap}
+            onAnswer={answerFinal}
+            onContinue={advanceFinal}
+          />
+        ) : null}
       </section>
     </main>
   );
 }
 
+function LearningStage({
+  section,
+  selectedPart,
+  visitedCount,
+  total,
+  language,
+  translate,
+  note,
+  onSelect,
+  onContinue,
+}: {
+  section: BodySection;
+  selectedPart: BodyPart;
+  visitedCount: number;
+  total: number;
+  language: ExplanationLanguage;
+  translate: (part: BodyPart) => string;
+  note?: string;
+  onSelect: (part: BodyPart) => void;
+  onContinue: () => void;
+}) {
+  const copy = bodyCopy(language);
+  const continueLabel = section === "face" ? copy.continueToBody : section === "body" ? copy.continueToBack : copy.startPractice;
+
+  return (
+    <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.08] p-4 shadow-xl shadow-cyan-950/20 sm:rounded-3xl sm:p-5">
+        <PanelTitle title={getSectionTitle(section, language)} detail={`${copy.tapBodyPart} ${visitedCount}/${total}`} language={language} />
+        <BodyMap section={section} activePartId={selectedPart.id} onSelect={onSelect} language={language} translate={translate} />
+        <div className="mt-4 lg:hidden">
+          <SelectedPartCard part={selectedPart} language={language} translate={translate} note={note} />
+        </div>
+      </div>
+      <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+        <div className="hidden lg:block">
+          <SelectedPartCard part={selectedPart} language={language} translate={translate} note={note} />
+        </div>
+        <button type="button" onClick={onContinue} className="mt-4 min-h-12 w-full rounded-full bg-cyan-400 px-6 py-3 font-black text-slate-950 shadow-lg shadow-cyan-950/20 transition hover:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300 focus:ring-offset-2 focus:ring-offset-slate-950" {...uiTextProps(language)}>
+          {continueLabel}
+        </button>
+      </aside>
+    </section>
+  );
+}
+
+function TapPractice({
+  part,
+  answer,
+  language,
+  translate,
+  onSelect,
+  onContinue,
+}: {
+  part: BodyPart;
+  answer: AnswerState | null;
+  language: ExplanationLanguage;
+  translate: (part: BodyPart) => string;
+  onSelect: (part: BodyPart) => void;
+  onContinue: () => void;
+}) {
+  const copy = bodyCopy(language);
+
+  return (
+    <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.08] p-4 shadow-xl shadow-cyan-950/20 sm:rounded-3xl sm:p-5">
+        <RussianPrompt title={copy.tapCorrectPart} part={part} helper={copy.findRussianWordHelper} language={language} />
+        {answer ? <Feedback correct={answer.isCorrect} part={part} language={language} translate={translate} onContinue={onContinue} /> : null}
+        <div className="mt-4">
+          <BodyMap
+            section={part.section}
+            activePartId={part.id}
+            feedbackPartId={answer ? part.id : undefined}
+            wrongPartId={answer && !answer.isCorrect ? answer.selectedId : undefined}
+            onSelect={onSelect}
+            language={language}
+            translate={translate}
+          />
+        </div>
+      </div>
+      <aside className="hidden min-w-0 lg:block lg:sticky lg:top-24 lg:self-start">
+        <SelectedPartCard part={part} language={language} translate={translate} note={part.note?.[language]} />
+      </aside>
+    </section>
+  );
+}
+
+function ListenPractice({
+  part,
+  answer,
+  language,
+  translate,
+  onAnswer,
+  onContinue,
+}: {
+  part: BodyPart;
+  answer: AnswerState | null;
+  language: ExplanationLanguage;
+  translate: (part: BodyPart) => string;
+  onAnswer: (part: BodyPart) => void;
+  onContinue: () => void;
+}) {
+  const copy = bodyCopy(language);
+  const options = getListenOptions(part);
+
+  return (
+    <section className="mx-auto max-w-3xl rounded-2xl border border-white/10 bg-white/[0.08] p-4 shadow-xl shadow-cyan-950/20 sm:rounded-3xl sm:p-5">
+      <RussianPrompt title={copy.listenAndChoose} part={part} helper={copy.listenRussianWordHelper} language={language} centered />
+      {answer ? <div className="mt-4"><Feedback correct={answer.isCorrect} part={part} language={language} translate={translate} onContinue={onContinue} /></div> : null}
+      <ChoiceGrid options={options} answer={answer} targetPart={part} language={language} translate={translate} onAnswer={onAnswer} />
+    </section>
+  );
+}
+
+function MatchPractice({
+  selectedRussianId,
+  matchedIds,
+  feedback,
+  language,
+  translate,
+  onSelectRussian,
+  onSelectMeaning,
+  onContinue,
+}: {
+  selectedRussianId: string;
+  matchedIds: string[];
+  feedback: AnswerState | null;
+  language: ExplanationLanguage;
+  translate: (part: BodyPart) => string;
+  onSelectRussian: (id: string) => void;
+  onSelectMeaning: (part: BodyPart) => void;
+  onContinue: () => void;
+}) {
+  const text = getUiText(language);
+  const copy = bodyCopy(language);
+  const parts = matchParts.map(getPart);
+  const feedbackPart = feedback ? getPart(feedback.selectedId) : null;
+
+  return (
+    <section className="mx-auto max-w-5xl rounded-2xl border border-white/10 bg-white/[0.08] p-4 shadow-xl shadow-cyan-950/20 sm:rounded-3xl sm:p-5">
+      <QuestionHeader title={copy.matchTheWords} detail={`${text.lesson.matchedPairs}: ${matchedIds.length}/${parts.length}`} language={language} />
+      {feedback && feedbackPart ? (
+        <div className="mb-4">
+          <Feedback correct={feedback.isCorrect} part={feedbackPart} language={language} translate={translate} />
+        </div>
+      ) : null}
+      <div className="mb-4 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-3 text-sm font-bold text-cyan-50" {...uiTextProps(language)}>
+        {text.lesson.selectedPair}:{" "}
+        {selectedRussianId ? (
+          <span dir="ltr" lang="ru" className="text-base font-black text-white">
+            {getPart(selectedRussianId).russian}
+          </span>
+        ) : (
+          copy.matchTheWords
+        )}
+      </div>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="grid gap-2">
+          <p className="px-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400" {...uiTextProps(language)}>{text.lesson.russian}</p>
+          {parts.map((part) => (
+            <div key={part.id} className={`grid min-h-12 grid-cols-[1fr_auto] items-center gap-2 rounded-2xl border p-3 transition ${
+              matchedIds.includes(part.id)
+                ? "border-emerald-300/40 bg-emerald-300/15 text-emerald-50"
+                : selectedRussianId === part.id
+                  ? "border-cyan-200 bg-cyan-100 text-slate-950"
+                  : "border-white/10 bg-slate-900/80 text-white hover:border-cyan-300/40"
+            }`}>
+              <button type="button" onClick={() => onSelectRussian(part.id)} disabled={matchedIds.includes(part.id)} className="min-w-0 rounded-xl text-left text-xl font-black focus:outline-none focus:ring-2 focus:ring-cyan-300" dir="ltr" lang="ru">
+                {part.russian}
+              </button>
+              <PronounceButton text={part.russian} className="h-9 w-9" disabled={matchedIds.includes(part.id)} />
+            </div>
+          ))}
+        </div>
+        <div className="grid gap-2">
+          <p className="px-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400" {...uiTextProps(language)}>{text.lesson.chooseTranslation}</p>
+          {parts.map((part) => (
+            <button
+              type="button"
+              key={part.id}
+              onClick={() => onSelectMeaning(part)}
+              disabled={matchedIds.includes(part.id)}
+              className={`min-h-12 rounded-2xl border p-3 text-left font-bold transition focus:outline-none focus:ring-2 focus:ring-cyan-300 ${
+                matchedIds.includes(part.id)
+                  ? "border-emerald-300/40 bg-emerald-300/15 text-emerald-100"
+                  : "border-white/10 bg-slate-900/80 hover:border-lime-300/50"
+              }`}
+              {...uiTextProps(language)}
+            >
+              {translate(part)}
+            </button>
+          ))}
+        </div>
+      </div>
+      {matchedIds.length === parts.length ? (
+        <button type="button" onClick={onContinue} className="mt-5 min-h-12 w-full rounded-full bg-cyan-400 px-6 py-3 font-black text-slate-950 transition hover:bg-cyan-300" {...uiTextProps(language)}>
+          {copy.continue}
+        </button>
+      ) : null}
+    </section>
+  );
+}
+
+function FinalPractice({
+  question,
+  targetPart,
+  index,
+  total,
+  score,
+  answer,
+  language,
+  translate,
+  onTap,
+  onAnswer,
+  onContinue,
+}: {
+  question: FinalQuestion;
+  targetPart: BodyPart;
+  index: number;
+  total: number;
+  score: number;
+  answer: AnswerState | null;
+  language: ExplanationLanguage;
+  translate: (part: BodyPart) => string;
+  onTap: (part: BodyPart) => void;
+  onAnswer: (isCorrect: boolean, userAnswer: string) => void;
+  onContinue: () => void;
+}) {
+  const copy = bodyCopy(language);
+  const text = getUiText(language);
+
+  return (
+    <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <div className="min-w-0 rounded-2xl border border-white/10 bg-white/[0.08] p-4 shadow-xl shadow-cyan-950/20 sm:rounded-3xl sm:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <span className="rounded-full border border-lime-300/30 bg-lime-300/10 px-3 py-1 text-xs font-black text-lime-100" {...uiTextProps(language)}>
+            {copy.question} {index + 1}/{total}
+          </span>
+          <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-black text-slate-200" {...uiTextProps(language)}>
+            {text.lesson.score}: {score}/{total}
+          </span>
+        </div>
+        <RussianPrompt
+          title={getFinalPromptTitle(question, language)}
+          part={targetPart}
+          helper={getFinalPromptHelper(question, language)}
+          language={language}
+        />
+        {answer ? <Feedback correct={answer.isCorrect} part={targetPart} language={language} translate={translate} onContinue={onContinue} /> : null}
+        {question.type === "tap" ? (
+          <div className="mt-4">
+            <BodyMap
+              section={targetPart.section}
+              activePartId={targetPart.id}
+              feedbackPartId={answer ? targetPart.id : undefined}
+              wrongPartId={answer && !answer.isCorrect ? answer.selectedId : undefined}
+              onSelect={onTap}
+              language={language}
+              translate={translate}
+            />
+          </div>
+        ) : (
+          <ChoiceChallenge question={question} targetPart={targetPart} answer={answer} language={language} translate={translate} onAnswer={onAnswer} />
+        )}
+      </div>
+      <aside className="hidden min-w-0 lg:block lg:sticky lg:top-24 lg:self-start">
+        <SelectedPartCard part={targetPart} language={language} translate={translate} note={targetPart.note?.[language]} />
+      </aside>
+    </section>
+  );
+}
+
 function BodyMap({
   section,
-  title,
   activePartId,
   feedbackPartId,
   wrongPartId,
@@ -545,7 +752,6 @@ function BodyMap({
   translate,
 }: {
   section: BodySection;
-  title: string;
   activePartId: string;
   feedbackPartId?: string;
   wrongPartId?: string;
@@ -560,16 +766,14 @@ function BodyMap({
   return (
     <div className="min-w-0 rounded-2xl border border-white/10 bg-slate-950/70 p-3 sm:p-4">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-base font-black sm:text-lg" {...uiTextProps(language)}>{title}</h2>
+        <h2 className="text-base font-black sm:text-lg" {...uiTextProps(language)}>{getSectionTitle(section, language)}</h2>
         <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-2 py-1 text-[0.65rem] font-black uppercase tracking-wider text-cyan-100" {...uiTextProps(language)}>
-          {section === "body" ? getUiText(language).lesson.frontView : title}
+          {section === "body" ? getUiText(language).lesson.frontView : getSectionTitle(section, language)}
         </span>
       </div>
-      <div className="relative mt-3 aspect-[4/5] min-h-[21rem] overflow-hidden rounded-2xl border border-cyan-300/20 bg-[#F8FBFF] text-[#11203B] shadow-[inset_0_0_0_1px_rgba(17,32,59,0.05)] sm:min-h-[25rem] md:min-h-[22rem] xl:min-h-[25rem]">
+      <div className="relative mx-auto mt-3 aspect-[4/5] h-[min(72vh,450px)] max-h-[480px] min-h-[20rem] w-full max-w-[22.5rem] overflow-hidden rounded-2xl border border-cyan-300/20 bg-[#F8FBFF] text-[#11203B] shadow-[inset_0_0_0_1px_rgba(17,32,59,0.05)] sm:h-[min(68vh,500px)] sm:max-h-[500px] sm:max-w-[25rem] lg:h-[min(62vh,540px)] lg:max-h-[540px]">
         <BodySvg section={section} />
-        {highlightedPart ? (
-          <BodyRegionHighlight part={highlightedPart} tone={feedbackPartId ? "correct" : "active"} />
-        ) : null}
+        {highlightedPart ? <BodyRegionHighlight part={highlightedPart} tone={feedbackPartId ? "correct" : "active"} /> : null}
         {wrongPart ? <BodyRegionHighlight part={wrongPart} tone="wrong" /> : null}
         {parts.map((part) => {
           const visual = getBodyPartVisual(part);
@@ -595,7 +799,7 @@ function BodyMap({
               }`}
               style={{ left: `${visual.x}%`, top: `${visual.y}%` }}
             >
-              {isCorrect ? "✓" : isWrong ? "!" : part.marker}
+              {isCorrect ? "OK" : isWrong ? "!" : part.marker}
             </button>
           );
         })}
@@ -604,26 +808,10 @@ function BodyMap({
   );
 }
 
-function BodyRegionHighlight({ part, tone }: { part: BodyPart; tone: "active" | "correct" | "wrong" }) {
-  const visual = getBodyPartVisual(part);
-  const toneClass = {
-    active: "border-[#11203B]/80 bg-[#B7E531]/45 ring-[#57D4E8]/45",
-    correct: "border-emerald-800 bg-emerald-300/55 ring-emerald-300/45",
-    wrong: "border-red-800 bg-red-300/45 ring-red-300/45",
-  }[tone];
-
-  return (
-    <div
-      aria-hidden="true"
-      className={`pointer-events-none absolute z-10 border-[3px] shadow-[0_0_26px_rgba(87,212,232,0.22)] ring-8 ${visual.highlight} ${toneClass}`}
-    />
-  );
-}
-
 function BodySvg({ section }: { section: BodySection }) {
-  if (section === "head") {
+  if (section === "face") {
     return (
-      <svg aria-hidden="true" viewBox="0 0 240 300" className="absolute inset-0 h-full w-full">
+      <svg aria-hidden="true" viewBox="0 0 240 300" preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full">
         <defs>
           <linearGradient id="body-head-bg" x1="34" x2="206" y1="18" y2="274" gradientUnits="userSpaceOnUse">
             <stop stopColor="#E9FBFF" />
@@ -654,7 +842,7 @@ function BodySvg({ section }: { section: BodySection }) {
 
   if (section === "back") {
     return (
-      <svg aria-hidden="true" viewBox="0 0 240 300" className="absolute inset-0 h-full w-full">
+      <svg aria-hidden="true" viewBox="0 0 240 300" preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full">
         <defs>
           <linearGradient id="body-back-shirt" x1="48" x2="198" y1="134" y2="245" gradientUnits="userSpaceOnUse">
             <stop stopColor="#57D4E8" />
@@ -678,7 +866,7 @@ function BodySvg({ section }: { section: BodySection }) {
   }
 
   return (
-    <svg aria-hidden="true" viewBox="0 0 240 300" className="absolute inset-0 h-full w-full">
+    <svg aria-hidden="true" viewBox="0 0 240 300" preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full">
       <defs>
         <linearGradient id="body-front-shirt" x1="45" x2="199" y1="60" y2="180" gradientUnits="userSpaceOnUse">
           <stop stopColor="#57D4E8" />
@@ -715,21 +903,21 @@ function SelectedPartCard({
   const copy = bodyCopy(language);
 
   return (
-    <div className="rounded-2xl border border-cyan-300/25 bg-slate-900/90 p-4 shadow-xl shadow-cyan-950/20">
-      <p className="text-xs font-black uppercase tracking-[0.18em] text-lime-300" {...uiTextProps(language)}>
+    <div className="rounded-2xl border border-[var(--app-border)] bg-[var(--app-surface)] p-4 text-[var(--app-text)] shadow-xl shadow-cyan-950/30 ring-1 ring-white/10">
+      <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--app-primary-strong)]" {...uiTextProps(language)}>
         {copy.listenAndRepeat}
       </p>
       <div className="mt-4 flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="break-words text-2xl font-black leading-tight sm:text-3xl">{part.russian}</p>
-          <p className="mt-1 text-base font-bold text-cyan-100 sm:text-lg" {...uiTextProps(language)}>
+          <p className="break-words text-3xl font-black leading-tight text-[var(--app-text)] drop-shadow-sm sm:text-4xl" dir="ltr" lang="ru">{part.russian}</p>
+          <p className="mt-1 text-base font-bold text-[var(--app-text-soft)] sm:text-lg" {...uiTextProps(language)}>
             {translate(part)}
           </p>
         </div>
-        <PronounceButton text={part.russian} ariaLabel={copy.playPronunciation} title={copy.playPronunciation} className="h-14 w-14 border-cyan-200/60 bg-cyan-300/20 text-cyan-50" />
+        <PronounceButton text={part.russian} ariaLabel={copy.playPronunciation} title={copy.playPronunciation} className="h-14 w-14 border-[var(--primary)] bg-[var(--app-primary-soft)] text-[var(--app-text)] shadow-lg shadow-cyan-950/20 hover:bg-cyan-300/20" />
       </div>
       {note ? (
-        <p className="mt-4 rounded-xl bg-cyan-300/10 p-3 text-sm leading-6 text-cyan-50" {...uiTextProps(language)}>
+        <p className="mt-4 rounded-xl border border-[var(--app-border)] bg-[var(--app-secondary-soft)] p-3 text-sm leading-6 text-[var(--app-text-soft)]" {...uiTextProps(language)}>
           {note}
         </p>
       ) : null}
@@ -737,212 +925,46 @@ function SelectedPartCard({
   );
 }
 
-function WordLegend({
-  selectedPartId,
+function ChoiceGrid({
+  options,
+  answer,
+  targetPart,
   language,
   translate,
-  onSelect,
-  isOpen,
+  onAnswer,
 }: {
-  selectedPartId: string;
+  options: BodyPart[];
+  answer: AnswerState | null;
+  targetPart: BodyPart;
   language: ExplanationLanguage;
   translate: (part: BodyPart) => string;
-  onSelect: (part: BodyPart) => void;
-  isOpen: boolean;
+  onAnswer: (part: BodyPart) => void;
 }) {
   return (
-    <div className={`mt-4 max-h-none gap-2 sm:grid-cols-2 lg:grid lg:max-h-[32rem] lg:grid-cols-1 lg:overflow-y-auto lg:pr-1 ${isOpen ? "grid" : "hidden"}`}>
-      {bodyParts.map((part) => (
-        <div
-          key={part.id}
-          className={`grid grid-cols-[1fr_auto] items-center gap-2 rounded-2xl border px-3 py-2 transition ${
-            selectedPartId === part.id
-              ? "border-cyan-300 bg-cyan-300/15 shadow-lg shadow-cyan-950/20"
-              : "border-white/10 bg-slate-900/60 hover:border-cyan-300/30"
-          }`}
-        >
-          <button type="button" onClick={() => onSelect(part)} className="min-w-0 rounded-xl text-left focus:outline-none focus:ring-2 focus:ring-cyan-300" {...uiTextProps(language)}>
-            <span className="flex min-w-0 items-center gap-3">
-              <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-black ${
-                selectedPartId === part.id ? "bg-lime-300 text-slate-950" : "bg-cyan-300 text-slate-950"
-              }`}>
-                {part.marker}
-              </span>
-              <span className="min-w-0">
-                <span className="block break-words font-black">{part.russian}</span>
-                <span className="block break-words text-sm text-slate-300" {...uiTextProps(language)}>{translate(part)}</span>
-              </span>
-            </span>
-          </button>
-          <PronounceButton text={part.russian} className="h-10 w-10" />
-        </div>
-      ))}
-    </div>
-  );
-}
+    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      {options.map((part) => {
+        const isCorrect = part.id === targetPart.id;
+        const selected = answer?.selectedId === part.id;
 
-function MatchMode({
-  language,
-  selectedRussianId,
-  matchedIds,
-  onSelectRussian,
-  onSelectMeaning,
-  translate,
-}: {
-  language: ExplanationLanguage;
-  selectedRussianId: string;
-  matchedIds: string[];
-  onSelectRussian: (id: string) => void;
-  onSelectMeaning: (part: BodyPart) => void;
-  translate: (part: BodyPart) => string;
-}) {
-  const parts = matchParts.map(getPart);
-  const text = getUiText(language);
-  const selectedPart = selectedRussianId ? getPart(selectedRussianId) : null;
-
-  return (
-    <div className="mt-5">
-      <div className="mb-4 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-3 text-sm font-bold text-cyan-50" {...uiTextProps(language)}>
-        {text.lesson.selectedPair}: {selectedPart ? selectedPart.russian : text.lesson.matchTheWords}
-      </div>
-      <div className="grid gap-4 lg:grid-cols-2">
-      <div className="grid gap-2">
-        <p className="px-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400" {...uiTextProps(language)}>{text.lesson.russian}</p>
-        {parts.map((part) => (
-          <div
-            key={part.id}
-            className={`grid min-h-12 grid-cols-[1fr_auto] items-center gap-2 rounded-2xl border p-3 transition ${
-              matchedIds.includes(part.id)
-                ? "border-emerald-300/40 bg-emerald-300/15 text-emerald-100"
-                : selectedRussianId === part.id
-                  ? "border-cyan-300 bg-cyan-300/20"
-                  : "border-white/10 bg-slate-900/80 hover:border-cyan-300/40"
-            }`}
-          >
-            <button
-              type="button"
-              onClick={() => onSelectRussian(part.id)}
-              disabled={matchedIds.includes(part.id)}
-              className="min-w-0 rounded-xl text-left font-black focus:outline-none focus:ring-2 focus:ring-cyan-300"
-            >
-              {part.russian}
-            </button>
-            <PronounceButton text={part.russian} className="h-9 w-9" disabled={matchedIds.includes(part.id)} />
-          </div>
-        ))}
-      </div>
-      <div className="grid gap-2">
-        <p className="px-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400" {...uiTextProps(language)}>{text.lesson.chooseTranslation}</p>
-        {parts.map((part) => (
+        return (
           <button
             type="button"
             key={part.id}
-            onClick={() => onSelectMeaning(part)}
-            disabled={matchedIds.includes(part.id)}
-            className={`min-h-12 rounded-2xl border p-3 text-left font-bold transition focus:outline-none focus:ring-2 focus:ring-cyan-300 ${
-              matchedIds.includes(part.id)
-                ? "border-emerald-300/40 bg-emerald-300/15 text-emerald-100"
-                : "border-white/10 bg-slate-900/80 hover:border-lime-300/50"
+            disabled={Boolean(answer)}
+            onClick={() => onAnswer(part)}
+            className={`min-h-14 rounded-2xl border p-4 text-left font-black shadow-lg shadow-slate-950/10 transition focus:outline-none focus:ring-2 focus:ring-cyan-300 ${
+              answer && isCorrect
+                ? "border-emerald-300 bg-emerald-300/20 text-emerald-50"
+                : selected && !isCorrect
+                  ? "border-red-300 bg-red-300/20 text-red-50"
+                  : "border-white/10 bg-slate-900/80 hover:border-cyan-300/50 hover:bg-slate-900"
             }`}
             {...uiTextProps(language)}
           >
             {translate(part)}
           </button>
-        ))}
-      </div>
-      </div>
-    </div>
-  );
-}
-
-function ListenMode({
-  targetPart,
-  answer,
-  onAnswer,
-  translate,
-  language,
-}: {
-  targetPart: BodyPart;
-  answer: AnswerState | null;
-  onAnswer: (part: BodyPart) => void;
-  translate: (part: BodyPart) => string;
-  language: ExplanationLanguage;
-}) {
-  const options = getListenOptions(targetPart);
-  const copy = bodyCopy(language);
-
-  return (
-    <div className="mt-5">
-      <div className="rounded-2xl border border-cyan-300/25 bg-slate-900/85 p-5 text-center shadow-xl shadow-cyan-950/20">
-        <p className="text-sm font-bold text-slate-300" {...uiTextProps(language)}>{copy.chooseCorrectBodyPart}</p>
-        <div className="mt-4 flex justify-center">
-          <PronounceButton text={targetPart.russian} ariaLabel={copy.playPronunciation} title={copy.playPronunciation} className="h-16 w-16 border-cyan-200/60 bg-cyan-300/20 text-cyan-50 shadow-lg shadow-cyan-950/30" />
-        </div>
-      </div>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        {options.map((part) => {
-          const isCorrect = part.id === targetPart.id;
-          const selected = answer?.selectedId === part.id;
-
-          return (
-            <button
-              type="button"
-              key={part.id}
-              disabled={Boolean(answer)}
-              onClick={() => onAnswer(part)}
-              className={`min-h-14 rounded-2xl border p-4 text-left font-black shadow-lg shadow-slate-950/10 transition focus:outline-none focus:ring-2 focus:ring-cyan-300 ${
-                answer && isCorrect
-                  ? "border-emerald-300 bg-emerald-300/20 text-emerald-50"
-                  : selected && !isCorrect
-                    ? "border-red-300 bg-red-300/20 text-red-50"
-                    : "border-white/10 bg-slate-900/80 hover:border-cyan-300/50 hover:bg-slate-900"
-              }`}
-              {...uiTextProps(language)}
-            >
-              {translate(part)}
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function FinalQuestionCard({
-  question,
-  targetPart,
-  index,
-  total,
-  score,
-  language,
-}: {
-  question: FinalQuestion;
-  targetPart: BodyPart;
-  index: number;
-  total: number;
-  score: number;
-  language: ExplanationLanguage;
-}) {
-  const text = getUiText(language);
-
-  return (
-    <div className="mb-5 rounded-2xl border border-cyan-300/25 bg-slate-900/85 p-4 shadow-xl shadow-cyan-950/20">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="rounded-full border border-lime-300/30 bg-lime-300/10 px-3 py-1 text-xs font-black text-lime-100" {...uiTextProps(language)}>
-          {text.lesson.question} {index + 1}/{total}
-        </span>
-        <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-black text-slate-200" {...uiTextProps(language)}>
-          {text.lesson.score}: {score}/{total}
-        </span>
-      </div>
-      <p className="mt-4 text-lg font-black leading-7 text-white sm:text-xl" {...uiTextProps(language)}>
-        {getFinalPrompt(question, targetPart, language)}
-      </p>
-      {question.type === "listen" ? (
-        <div className="mt-4 flex justify-center">
-          <PronounceButton text={targetPart.russian} ariaLabel={bodyCopy(language).playPronunciation} title={bodyCopy(language).playPronunciation} className="h-16 w-16 border-cyan-200/60 bg-cyan-300/20 text-cyan-50 shadow-lg shadow-cyan-950/30" />
-        </div>
-      ) : null}
+        );
+      })}
     </div>
   );
 }
@@ -950,90 +972,67 @@ function FinalQuestionCard({
 function ChoiceChallenge({
   question,
   targetPart,
-  finalAnswer,
-  onAnswer,
+  answer,
   language,
   translate,
+  onAnswer,
 }: {
-  question: Extract<FinalQuestion, { type: "translation" | "russian" | "listen" }>;
+  question: ChoiceQuestion;
   targetPart: BodyPart;
-  finalAnswer: AnswerState | null;
-  onAnswer: (isCorrect: boolean, userAnswer: string) => void;
+  answer: AnswerState | null;
   language: ExplanationLanguage;
   translate: (part: BodyPart) => string;
+  onAnswer: (isCorrect: boolean, userAnswer: string) => void;
 }) {
-  const correctAnswer = question.type === "russian" ? targetPart.russian : targetPart.english;
-  const options =
-    question.type === "russian" || language === "en"
-      ? question.options
-      : question.options.map((option) => translate(bodyParts.find((part) => part.english === option) ?? targetPart));
-  const localizedCorrect = question.type === "russian" || language === "en" ? correctAnswer : translate(targetPart);
+  const correctAnswer = question.type === "russian" ? targetPart.russian : translate(targetPart);
+  const options = question.type === "russian" ? question.options : question.options.map((option) => translate(getPartByEnglish(option)));
 
   return (
-    <div className="mt-5">
-      <div className="grid gap-3 sm:grid-cols-2">
-        {options.map((option) => {
-          const isCorrect = option === localizedCorrect;
-          const selected = finalAnswer?.selectedId === option;
+    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+      {options.map((option) => {
+        const isCorrect = option === correctAnswer;
+        const selected = answer?.selectedId === option;
 
-          return (
-            <button
-              type="button"
-              key={option}
-              disabled={Boolean(finalAnswer)}
-              onClick={() => onAnswer(isCorrect, option)}
-              className={`min-h-14 rounded-2xl border p-4 text-left font-black shadow-lg shadow-slate-950/10 transition focus:outline-none focus:ring-2 focus:ring-cyan-300 ${
-                finalAnswer && isCorrect
-                  ? "border-emerald-300 bg-emerald-300/20 text-emerald-50"
-                  : selected && !isCorrect
-                    ? "border-red-300 bg-red-300/20 text-red-50"
-                    : "border-white/10 bg-slate-900/80 hover:border-cyan-300/50 hover:bg-slate-900"
-              }`}
-              {...(question.type === "russian" ? {} : uiTextProps(language))}
-            >
-              {option}
-            </button>
-          );
-        })}
-      </div>
+        return (
+          <button
+            type="button"
+            key={option}
+            disabled={Boolean(answer)}
+            onClick={() => onAnswer(isCorrect, option)}
+            className={`min-h-14 rounded-2xl border p-4 text-left font-black shadow-lg shadow-slate-950/10 transition focus:outline-none focus:ring-2 focus:ring-cyan-300 ${
+              answer && isCorrect
+                ? "border-emerald-300 bg-emerald-300/20 text-emerald-50"
+                : selected && !isCorrect
+                  ? "border-red-300 bg-red-300/20 text-red-50"
+                  : "border-white/10 bg-slate-900/80 hover:border-cyan-300/50 hover:bg-slate-900"
+            }`}
+            {...(question.type === "russian" ? {} : uiTextProps(language))}
+          >
+            {option}
+          </button>
+        );
+      })}
     </div>
   );
 }
 
-function ModeTabs({
-  phase,
-  language,
-  onSelect,
-}: {
-  phase: LessonPhase;
-  language: ExplanationLanguage;
-  onSelect: (phase: LessonPhase) => void;
-}) {
-  const modes: { id: LessonPhase; label: string }[] = [
-    { id: "learn", label: bodyCopy(language).learnTheParts },
-    { id: "tap", label: bodyCopy(language).tapCorrectPart },
-    { id: "match", label: bodyCopy(language).matchTheWords },
-    { id: "listen", label: bodyCopy(language).listenAndChoose },
-    { id: "final", label: bodyCopy(language).finalChallenge },
-  ];
+function StageStepper({ stage, language }: { stage: LessonStage; language: ExplanationLanguage }) {
+  const currentIndex = stageOrder.indexOf(stage);
 
   return (
-    <div className="flex max-w-full gap-2 overflow-x-auto pb-1">
-      {modes.map((mode) => (
-        <button
-          type="button"
-          key={mode.id}
-          onClick={() => onSelect(mode.id)}
-          aria-current={phase === mode.id ? "step" : undefined}
-          className={`shrink-0 rounded-full px-3 py-2 text-center text-xs font-black ${
-            phase === mode.id ? "bg-lime-300 text-slate-950" : "bg-slate-900/80 text-slate-300 transition hover:bg-white/10 hover:text-white"
-          }`}
-          {...uiTextProps(language)}
-        >
-          {mode.label}
-        </button>
+    <ol className="flex max-w-full gap-2 overflow-x-auto pb-1">
+      {stageOrder.map((step, index) => (
+        <li key={step} className={`shrink-0 rounded-full px-3 py-2 text-xs font-black ${
+          index === currentIndex
+            ? "bg-lime-300 text-slate-950"
+            : index < currentIndex
+              ? "bg-cyan-300/20 text-cyan-100"
+              : "bg-slate-900/80 text-slate-400"
+        }`} aria-current={index === currentIndex ? "step" : undefined} {...uiTextProps(language)}>
+          {getStageLabel(step, language)}
+        </li>
       ))}
-    </div>
+    </ol>
   );
 }
 
@@ -1046,31 +1045,103 @@ function PanelTitle({ title, detail, language }: { title: string; detail: string
   );
 }
 
+function QuestionHeader({ title, detail, language }: { title: string; detail: string; language: ExplanationLanguage }) {
+  return (
+    <div className="mb-4">
+      <h2 className="break-words text-2xl font-black" {...uiTextProps(language)}>{title}</h2>
+      <p className="mt-2 text-lg font-bold leading-7 text-cyan-100" {...uiTextProps(language)}>{detail}</p>
+    </div>
+  );
+}
+
+function RussianPrompt({
+  title,
+  part,
+  helper,
+  language,
+  centered = false,
+}: {
+  title: string;
+  part: BodyPart;
+  helper: string;
+  language: ExplanationLanguage;
+  centered?: boolean;
+}) {
+  const copy = bodyCopy(language);
+
+  return (
+    <div className={`mb-4 rounded-2xl border border-cyan-300/25 bg-cyan-50 p-4 text-slate-950 shadow-lg shadow-slate-950/10 ${centered ? "text-center" : ""}`}>
+      <h2 className={`break-words text-2xl font-black ${centered ? "justify-center" : ""}`} {...uiTextProps(language)}>
+        {title}:{" "}
+        <span dir="ltr" lang="ru" className="inline-block text-3xl text-slate-950 sm:text-4xl">
+          {part.russian}
+        </span>
+      </h2>
+      <div className={`mt-3 flex items-center gap-3 ${centered ? "justify-center" : ""}`}>
+        <PronounceButton
+          text={part.russian}
+          ariaLabel={copy.playPronunciation}
+          title={copy.playPronunciation}
+          className="h-12 w-12 border-slate-300 bg-white text-slate-950 hover:border-cyan-500 hover:bg-cyan-100"
+        />
+        <p className="text-sm font-bold leading-6 text-slate-700" {...uiTextProps(language)}>
+          {helper}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function Feedback({
   correct,
   part,
   language,
   translate,
+  onContinue,
 }: {
   correct: boolean;
   part: BodyPart;
   language: ExplanationLanguage;
   translate: (part: BodyPart) => string;
+  onContinue?: () => void;
 }) {
   const copy = bodyCopy(language);
 
   return (
     <div className={`rounded-2xl border p-4 ${correct ? "border-emerald-300/40 bg-emerald-300/15" : "border-red-300/40 bg-red-300/15"}`} role="status">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="font-black" {...uiTextProps(language)}>{correct ? copy.greatJob : copy.tryAgain}</p>
+        <div className="min-w-0">
+          <p className="font-black" {...uiTextProps(language)}>{correct ? copy.correct : copy.tryAgain}</p>
           <p className="mt-1 text-sm text-slate-200">
             {part.russian} = <span {...uiTextProps(language)}>{translate(part)}</span>
           </p>
         </div>
-        <PronounceButton text={part.russian} className="h-11 w-11" />
+        <div className="flex items-center gap-2">
+          <PronounceButton text={part.russian} className="h-11 w-11" />
+          {onContinue ? (
+            <button type="button" onClick={onContinue} className="min-h-11 rounded-full bg-cyan-400 px-5 font-black text-slate-950 transition hover:bg-cyan-300" {...uiTextProps(language)}>
+              {copy.continue}
+            </button>
+          ) : null}
+        </div>
       </div>
     </div>
+  );
+}
+
+function BodyRegionHighlight({ part, tone }: { part: BodyPart; tone: "active" | "correct" | "wrong" }) {
+  const visual = getBodyPartVisual(part);
+  const toneClass = {
+    active: "border-[#11203B]/80 bg-[#B7E531]/45 ring-[#57D4E8]/45",
+    correct: "border-emerald-800 bg-emerald-300/55 ring-emerald-300/45",
+    wrong: "border-red-800 bg-red-300/45 ring-red-300/45",
+  }[tone];
+
+  return (
+    <div
+      aria-hidden="true"
+      className={`pointer-events-none absolute z-10 border-[3px] shadow-[0_0_26px_rgba(87,212,232,0.22)] ring-8 ${visual.highlight} ${toneClass}`}
+    />
   );
 }
 
@@ -1093,8 +1164,27 @@ function getPart(id: string) {
   return part;
 }
 
+function getPartByEnglish(english: string) {
+  const part = bodyParts.find((candidate) => candidate.english === english);
+
+  if (!part) {
+    throw new Error(`Unknown body part meaning: ${english}`);
+  }
+
+  return part;
+}
+
 function getBodyPartVisual(part: BodyPart) {
   return bodyPartVisuals[part.id] ?? part;
+}
+
+function getFirstPartForStage(stage: LessonStage) {
+  if (stage === "face" || stage === "body" || stage === "back") return getPart(learningSections[stage][0]);
+  if (stage === "tap") return getPart(tapQuestions[0]);
+  if (stage === "listen") return getPart(listenQuestions[0]);
+  if (stage === "match") return getPart(matchParts[0]);
+  if (stage === "final") return getPart(finalQuestions[0].partId);
+  return null;
 }
 
 function getListenOptions(targetPart: BodyPart) {
@@ -1102,6 +1192,9 @@ function getListenOptions(targetPart: BodyPart) {
     ear: ["ear", "eye", "mouth", "nose"],
     hair: ["hair", "head", "neck", "back"],
     neck: ["neck", "shoulder", "stomach", "arm"],
+    arm: ["arm", "leg", "shoulder", "neck"],
+    mouth: ["mouth", "nose", "eye", "ear"],
+    leg: ["leg", "arm", "stomach", "shoulder"],
     back: ["back", "stomach", "shoulder", "head"],
   };
 
@@ -1111,120 +1204,175 @@ function getListenOptions(targetPart: BodyPart) {
 function getSectionTitle(section: BodySection, language: ExplanationLanguage) {
   const copy = bodyCopy(language);
 
-  if (section === "head") return copy.headFace;
-  if (section === "back") return copy.backView;
+  if (section === "face") return copy.headFace;
+  if (section === "back") return copy.back;
   return copy.body;
 }
 
-function getPhaseLabel(phase: LessonPhase, language: ExplanationLanguage) {
+function getStageLabel(stage: LessonStage, language: ExplanationLanguage) {
   const copy = bodyCopy(language);
 
-  const labels: Record<LessonPhase, string> = {
-    learn: copy.learnTheParts,
-    tap: copy.tapCorrectPart,
-    match: copy.matchTheWords,
-    listen: copy.listenAndChoose,
-    final: copy.finalChallenge,
+  const labels: Record<LessonStage, string> = {
+    face: copy.face,
+    body: copy.body,
+    back: copy.back,
+    tap: copy.practice,
+    listen: copy.listen,
+    match: copy.match,
+    final: copy.final,
     complete: copy.lessonComplete,
   };
 
-  return labels[phase];
+  return labels[stage];
 }
 
-function getPhaseDetail(
-  phase: LessonPhase,
-  language: ExplanationLanguage,
-  currentTapPart: BodyPart,
-  currentListenPart: BodyPart,
-  currentFinal: FinalQuestion,
-  currentFinalPart: BodyPart,
-  translate: (part: BodyPart) => string,
-  visitedCount: number,
-  matchedCount: number,
-  finalIndex: number,
-) {
-  const copy = bodyCopy(language);
+function getStageProgress(stage: LessonStage, tapIndex: number, listenIndex: number, matchedCount: number, finalIndex: number) {
+  const stageBase: Record<LessonStage, number> = {
+    face: 8,
+    body: 18,
+    back: 28,
+    tap: 38 + (tapIndex / tapQuestions.length) * 16,
+    listen: 56 + (listenIndex / listenQuestions.length) * 12,
+    match: 70 + (matchedCount / matchParts.length) * 12,
+    final: 84 + (finalIndex / finalQuestions.length) * 16,
+    complete: 100,
+  };
 
-  if (phase === "learn") {
-    return `${getUiText(language).lesson.learnModeHint} ${visitedCount}/${bodyParts.length}`;
-  }
-
-  if (phase === "tap") {
-    return `${tapPrompt(getUiText(language), language)} ${translate(currentTapPart)}`;
-  }
-
-  if (phase === "match") {
-    return `${getUiText(language).lesson.matchedPairs}: ${matchedCount}/${matchParts.length}`;
-  }
-
-  if (phase === "listen") {
-    return `${copy.chooseCorrectBodyPart}: ${currentListenPart.russian}`;
-  }
-
-  return `${getUiText(language).lesson.question} ${finalIndex + 1}/${finalQuestions.length}: ${getFinalPrompt(currentFinal, currentFinalPart, language)}`;
-}
-
-function tapPrompt(text: ReturnType<typeof getUiText>, language: ExplanationLanguage) {
-  return language === "ar" ? text.lesson.tapPromptPrefix : `${text.lesson.tapCorrectPart}:`;
+  return Math.min(100, stageBase[stage]);
 }
 
 function getFinalPrompt(question: FinalQuestion, part: BodyPart, language: ExplanationLanguage) {
   const copy = bodyCopy(language);
-  const localizedMeaning = language === "ar" ? part.arabic : part.english;
 
   if (question.type === "tap") {
-    return `${tapPrompt(getUiText(language), language)} ${localizedMeaning}`;
+    return `${copy.tapCorrectPart}: ${part.russian}`;
   }
 
-  if (question.type === "translation") {
-    return `${getUiText(language).lesson.chooseTranslation}: ${part.russian}`;
+  if (question.type === "meaning") {
+    return `${copy.chooseCorrectBodyPart}: ${part.russian}`;
   }
 
   if (question.type === "listen") {
-    return copy.chooseCorrectBodyPart;
+    return `${copy.listenAndChoose}: ${part.russian}`;
   }
 
-  return `${getUiText(language).lesson.chooseRussianWord}: ${localizedMeaning}`;
+  return `${copy.chooseCorrectBodyPart}: ${part.russian}`;
 }
 
-function getFinalCorrectAnswer(question: FinalQuestion, part: BodyPart, language: ExplanationLanguage) {
+function getFinalPromptTitle(question: FinalQuestion, language: ExplanationLanguage) {
+  const copy = bodyCopy(language);
+
+  if (question.type === "tap") return copy.tapCorrectPart;
+  if (question.type === "listen") return copy.listenAndChoose;
+  return copy.chooseCorrectBodyPart;
+}
+
+function getFinalPromptHelper(question: FinalQuestion, language: ExplanationLanguage) {
+  const copy = bodyCopy(language);
+
+  if (question.type === "listen") return copy.listenRussianWordHelper;
+  return copy.findRussianWordHelper;
+}
+
+function getFinalCorrectAnswer(question: FinalQuestion, part: BodyPart, translate: (part: BodyPart) => string) {
   if (question.type === "russian") return part.russian;
-  return language === "ar" ? part.arabic : part.english;
-}
-
-function getPhaseProgress(phase: LessonPhase, tapIndex: number, listenIndex: number, matchedCount: number, finalIndex: number) {
-  const phaseBase: Record<LessonPhase, number> = {
-    learn: 8,
-    tap: 20 + (tapIndex / tapQuestions.length) * 18,
-    match: 42 + (matchedCount / matchParts.length) * 18,
-    listen: 64 + (listenIndex / listenQuestions.length) * 14,
-    final: 82 + (finalIndex / finalQuestions.length) * 18,
-    complete: 100,
-  };
-
-  return Math.min(100, phaseBase[phase]);
+  return translate(part);
 }
 
 function bodyCopy(language: ExplanationLanguage) {
   const lessonText = getUiText(language).lesson;
+  const fallback = language === "ar" ? arabicBodyCopy : englishBodyCopy;
 
   return {
-    bodyParts: lessonText.bodyParts,
-    headFace: lessonText.headFace,
-    body: lessonText.body,
-    backView: lessonText.backView,
-    learnTheParts: lessonText.learnTheParts,
-    tapCorrectPart: lessonText.tapCorrectPart,
-    matchTheWords: lessonText.matchTheWords,
-    listenAndChoose: lessonText.listenAndChoose,
-    finalChallenge: lessonText.finalChallenge,
-    chooseCorrectBodyPart: lessonText.chooseCorrectBodyPart,
-    listenAndRepeat: lessonText.listenAndRepeat,
-    greatJob: lessonText.greatJob,
-    tryAgain: lessonText.tryAgain,
-    continueToPractice: lessonText.continueToPractice,
-    finishChallenge: lessonText.finishChallenge,
-    lessonComplete: lessonText.lessonCompleteBodyParts,
-    playPronunciation: lessonText.playPronunciation,
+    bodyParts: lessonText.bodyParts ?? fallback.bodyParts,
+    face: lessonText.face ?? fallback.face,
+    headFace: lessonText.headFace ?? fallback.headFace,
+    body: lessonText.body ?? fallback.body,
+    back: lessonText.backBodyPart ?? fallback.back,
+    tapBodyPart: lessonText.tapBodyPart ?? fallback.tapBodyPart,
+    tapCorrectPart: lessonText.tapCorrectPart ?? fallback.tapCorrectPart,
+    practice: lessonText.practiceStage ?? fallback.practice,
+    listen: lessonText.listenStage ?? fallback.listen,
+    match: lessonText.matchStage ?? fallback.match,
+    final: lessonText.finalStage ?? fallback.final,
+    listenAndChoose: lessonText.listenAndChoose ?? fallback.listenAndChoose,
+    matchTheWords: lessonText.matchTheWords ?? fallback.matchTheWords,
+    finalChallenge: lessonText.finalChallenge ?? fallback.finalChallenge,
+    chooseCorrectBodyPart: lessonText.chooseCorrectBodyPart ?? fallback.chooseCorrectBodyPart,
+    listenAndRepeat: lessonText.listenAndRepeat ?? fallback.listenAndRepeat,
+    correct: lessonText.correct ?? fallback.correct,
+    tryAgain: lessonText.tryAgain ?? fallback.tryAgain,
+    continue: lessonText.continue ?? fallback.continue,
+    continueToBody: lessonText.continueToBody ?? fallback.continueToBody,
+    continueToBack: lessonText.continueToBack ?? fallback.continueToBack,
+    startPractice: lessonText.startPractice ?? fallback.startPractice,
+    lessonComplete: lessonText.lessonCompleteBodyParts ?? fallback.lessonComplete,
+    playPronunciation: lessonText.playPronunciation ?? fallback.playPronunciation,
+    question: lessonText.question ?? fallback.question,
+    greatJob: lessonText.greatJob ?? fallback.greatJob,
+    findRussianWordHelper: fallback.findRussianWordHelper,
+    listenRussianWordHelper: fallback.listenRussianWordHelper,
   };
 }
+
+const englishBodyCopy = {
+  bodyParts: "Body Parts",
+  face: "Face",
+  headFace: "Head & Face",
+  body: "Body",
+  back: "Back",
+  tapBodyPart: "Tap a body part",
+  tapCorrectPart: "Tap the correct part",
+  practice: "Practice",
+  listen: "Listen",
+  match: "Match",
+  final: "Final",
+  listenAndChoose: "Listen and choose",
+  matchTheWords: "Match the words",
+  finalChallenge: "Final challenge",
+  chooseCorrectBodyPart: "Choose the correct body part",
+  listenAndRepeat: "Listen and repeat",
+  correct: "Correct",
+  tryAgain: "Try again",
+  continue: "Continue",
+  continueToBody: "Continue to body",
+  continueToBack: "Continue to back",
+  startPractice: "Start practice",
+  lessonComplete: "Lesson complete",
+  playPronunciation: "Play pronunciation",
+  question: "Question",
+  greatJob: "Great job",
+  findRussianWordHelper: "Find the body part that matches this Russian word.",
+  listenRussianWordHelper: "Listen to the Russian word, then choose the matching body part.",
+};
+
+const arabicBodyCopy = {
+  bodyParts: "أجزاء الجسم",
+  face: "الوجه",
+  headFace: "الرأس والوجه",
+  body: "الجسم",
+  back: "الظهر",
+  tapBodyPart: "اضغط على جزء من الجسم",
+  tapCorrectPart: "اضغط على الجزء الصحيح",
+  practice: "التدريب",
+  listen: "الاستماع",
+  match: "المطابقة",
+  final: "النهائي",
+  listenAndChoose: "استمع واختر",
+  matchTheWords: "طابق الكلمات",
+  finalChallenge: "التحدي النهائي",
+  chooseCorrectBodyPart: "اختر جزء الجسم الصحيح",
+  listenAndRepeat: "استمع وكرر",
+  correct: "صحيح",
+  tryAgain: "حاول مرة أخرى",
+  continue: "تابع",
+  continueToBody: "تابع إلى الجسم",
+  continueToBack: "تابع إلى الظهر",
+  startPractice: "ابدأ التدريب",
+  lessonComplete: "اكتمل الدرس",
+  playPronunciation: "تشغيل النطق",
+  question: "سؤال",
+  greatJob: "أحسنت",
+  findRussianWordHelper: "اختر الجزء الذي يطابق هذه الكلمة الروسية.",
+  listenRussianWordHelper: "استمع إلى الكلمة الروسية، ثم اختر جزء الجسم المطابق.",
+};
