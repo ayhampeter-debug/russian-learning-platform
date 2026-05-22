@@ -101,6 +101,19 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+body[data-yazkup-onboarding="open"] {
+  overflow: hidden;
+}
+
+body[data-yazkup-onboarding="open"] main {
+  filter: blur(14px) saturate(0.35) brightness(0.34);
+  opacity: 0.34;
+  pointer-events: none;
+  transform: scale(0.985);
+  transform-origin: center top;
+  user-select: none;
+}
+
 ::selection {
   background: rgb(87 212 232 / 0.35);
   color: var(--app-text);

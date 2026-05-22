@@ -124,19 +124,25 @@ const finalQuestions: FinalQuestion[] = [
 
 const stageOrder: LessonStage[] = ["face", "body", "back", "tap", "listen", "match", "final"];
 
+const bodySectionImages: Record<BodySection, { src: string; alt: string }> = {
+  face: { src: "/lessons/body-parts/head-face.png", alt: "Head and face character illustration" },
+  body: { src: "/lessons/body-parts/front-body.png", alt: "Front body character illustration" },
+  back: { src: "/lessons/body-parts/back-body.png", alt: "Back body character illustration" },
+};
+
 const bodyPartVisuals: Record<string, Pick<BodyPart, "x" | "y" | "highlight">> = {
-  head: { x: 25, y: 68, highlight: "left-[29%] top-[16%] h-[44%] w-[42%] rounded-[46%]" },
-  hair: { x: 50, y: 15, highlight: "left-[30%] top-[8%] h-[20%] w-[41%] rounded-t-full" },
-  eye: { x: 34, y: 39, highlight: "left-[34%] top-[34%] h-[10%] w-[16%] rounded-full" },
-  nose: { x: 60, y: 44, highlight: "left-[45%] top-[40%] h-[15%] w-[11%] rounded-full" },
-  mouth: { x: 50, y: 61, highlight: "left-[39%] top-[54%] h-[10%] w-[23%] rounded-full" },
-  ear: { x: 77, y: 39, highlight: "left-[70%] top-[32%] h-[20%] w-[12%] rounded-full" },
-  neck: { x: 50, y: 13, highlight: "left-[42%] top-[7%] h-[15%] w-[16%] rounded-xl" },
-  shoulder: { x: 29, y: 28, highlight: "left-[22%] top-[22%] h-[17%] w-[27%] rounded-full" },
-  arm: { x: 17, y: 53, highlight: "left-[7%] top-[32%] h-[42%] w-[18%] rounded-full -rotate-12" },
-  stomach: { x: 50, y: 52, highlight: "left-[37%] top-[39%] h-[25%] w-[27%] rounded-full" },
-  leg: { x: 42, y: 80, highlight: "left-[29%] top-[60%] h-[34%] w-[23%] rounded-full rotate-3" },
-  back: { x: 50, y: 44, highlight: "left-[28%] top-[30%] h-[41%] w-[44%] rounded-[38%]" },
+  head: { x: 50, y: 18, highlight: "" },
+  hair: { x: 50, y: 10, highlight: "" },
+  eye: { x: 40, y: 42, highlight: "" },
+  nose: { x: 50, y: 51, highlight: "" },
+  mouth: { x: 50, y: 62, highlight: "" },
+  ear: { x: 78, y: 45, highlight: "" },
+  neck: { x: 50, y: 17, highlight: "" },
+  shoulder: { x: 34, y: 27, highlight: "" },
+  arm: { x: 27, y: 48, highlight: "" },
+  stomach: { x: 50, y: 43, highlight: "" },
+  leg: { x: 50, y: 73, highlight: "" },
+  back: { x: 50, y: 36, highlight: "" },
 };
 
 export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
@@ -760,132 +766,60 @@ function BodyMap({
   translate: (part: BodyPart) => string;
 }) {
   const parts = bodyParts.filter((part) => part.section === section);
+  const image = bodySectionImages[section];
   const highlightedPart = parts.find((part) => part.id === (feedbackPartId ?? activePartId));
   const wrongPart = parts.find((part) => part.id === wrongPartId);
 
   return (
-    <div className="min-w-0 rounded-2xl border border-white/10 bg-slate-950/70 p-3 sm:p-4">
+    <div className="min-w-0 rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-white sm:p-4">
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-base font-black sm:text-lg" {...uiTextProps(language)}>{getSectionTitle(section, language)}</h2>
         <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-2 py-1 text-[0.65rem] font-black uppercase tracking-wider text-cyan-100" {...uiTextProps(language)}>
           {section === "body" ? getUiText(language).lesson.frontView : getSectionTitle(section, language)}
         </span>
       </div>
-      <div className="relative mx-auto mt-3 aspect-[4/5] h-[min(72vh,450px)] max-h-[480px] min-h-[20rem] w-full max-w-[22.5rem] overflow-hidden rounded-2xl border border-cyan-300/20 bg-[#F8FBFF] text-[#11203B] shadow-[inset_0_0_0_1px_rgba(17,32,59,0.05)] sm:h-[min(68vh,500px)] sm:max-h-[500px] sm:max-w-[25rem] lg:h-[min(62vh,540px)] lg:max-h-[540px]">
-        <BodySvg section={section} />
-        {highlightedPart ? <BodyRegionHighlight part={highlightedPart} tone={feedbackPartId ? "correct" : "active"} /> : null}
-        {wrongPart ? <BodyRegionHighlight part={wrongPart} tone="wrong" /> : null}
-        {parts.map((part) => {
-          const visual = getBodyPartVisual(part);
-          const isActive = part.id === activePartId;
-          const isCorrect = part.id === feedbackPartId;
-          const isWrong = part.id === wrongPartId;
-          const label = `${part.marker}. ${part.russian}, ${translate(part)}`;
+      <div className="mt-3 flex min-h-[20rem] items-center justify-center overflow-hidden rounded-2xl border border-cyan-300/20 bg-white p-2 shadow-[inset_0_0_0_1px_rgba(17,32,59,0.05)] sm:min-h-[22rem] sm:p-3">
+        <div className="relative mx-auto max-h-[min(62vh,31rem)] max-w-full text-[#11203B]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={image.src}
+            alt={image.alt}
+            className="block max-h-[min(62vh,31rem)] min-h-[18rem] w-auto max-w-full select-none object-contain"
+            draggable={false}
+          />
+          {highlightedPart ? <BodyRegionHighlight part={highlightedPart} tone={feedbackPartId ? "correct" : "active"} /> : null}
+          {wrongPart ? <BodyRegionHighlight part={wrongPart} tone="wrong" /> : null}
+          {parts.map((part) => {
+            const visual = getBodyPartVisual(part);
+            const isActive = part.id === activePartId;
+            const isCorrect = part.id === feedbackPartId;
+            const isWrong = part.id === wrongPartId;
+            const label = `${part.marker}. ${part.russian}, ${translate(part)}`;
 
-          return (
-            <button
-              type="button"
-              key={part.id}
-              onClick={() => onSelect(part)}
-              aria-label={label}
-              className={`absolute z-20 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-base font-black shadow-lg shadow-slate-900/20 transition after:absolute after:inset-[-9px] after:rounded-full after:border-2 after:border-current/20 after:content-[''] focus:outline-none focus:ring-4 focus:ring-[#11203B]/40 sm:h-14 sm:w-14 ${
-                isCorrect
-                  ? "border-emerald-800 bg-emerald-200 text-emerald-950 ring-4 ring-emerald-300/50"
-                  : isWrong
-                    ? "border-red-800 bg-red-200 text-red-950 ring-4 ring-red-300/50"
-                    : isActive
+            return (
+              <button
+                type="button"
+                key={part.id}
+                onClick={() => onSelect(part)}
+                aria-label={label}
+                className={`absolute z-20 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-sm font-black shadow-lg shadow-slate-900/20 transition after:absolute after:inset-[-10px] after:rounded-full after:border-2 after:border-current/20 after:content-[''] focus:outline-none focus:ring-4 focus:ring-[#11203B]/40 sm:h-12 sm:w-12 sm:text-base ${
+                  isCorrect
+                    ? "border-emerald-800 bg-emerald-200 text-emerald-950 ring-4 ring-emerald-300/50"
+                    : isWrong
+                      ? "border-red-800 bg-red-200 text-red-950 ring-4 ring-red-300/50"
+                      : isActive
                       ? "scale-110 border-[#11203B] bg-[#B7E531] text-[#11203B] ring-4 ring-[#57D4E8]/60"
                       : "border-[#0F766E] bg-white/95 text-[#11203B] hover:-translate-y-[54%] hover:bg-[#57D4E8]"
-              }`}
-              style={{ left: `${visual.x}%`, top: `${visual.y}%` }}
-            >
-              {isCorrect ? "OK" : isWrong ? "!" : part.marker}
-            </button>
-          );
-        })}
+                }`}
+                style={{ left: `${visual.x}%`, top: `${visual.y}%` }}
+              >
+                {isCorrect ? "OK" : isWrong ? "!" : part.marker}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
-  );
-}
-
-function BodySvg({ section }: { section: BodySection }) {
-  if (section === "face") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 240 300" preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full">
-        <defs>
-          <linearGradient id="body-head-bg" x1="34" x2="206" y1="18" y2="274" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#E9FBFF" />
-            <stop offset="1" stopColor="#F8FBFF" />
-          </linearGradient>
-          <linearGradient id="body-head-shirt" x1="82" x2="164" y1="218" y2="278" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#57D4E8" />
-            <stop offset="1" stopColor="#14B8A6" />
-          </linearGradient>
-        </defs>
-        <rect width="240" height="300" fill="url(#body-head-bg)" />
-        <circle cx="120" cy="77" r="67" fill="#57D4E8" opacity=".12" />
-        <path d="M73 93c-7-42 15-72 47-72 34 0 58 31 49 72 15 8 16 38-1 48-6 45-27 73-48 73s-42-28-48-73c-17-10-16-40 1-48Z" fill="#F3C3A5" stroke="#11203B" strokeWidth="4.5" strokeLinejoin="round" />
-        <path d="M72 91c4-43 28-67 63-64 28 2 44 25 38 66-20-12-40-18-62-18-14 0-27 5-39 16Z" fill="#11203B" />
-        <path d="M82 90c22-19 58-24 87 2" fill="none" stroke="#14B8A6" strokeWidth="4.5" strokeLinecap="round" opacity=".9" />
-        <path d="M76 110c-10 0-17 8-16 18 1 10 9 16 20 15" fill="#F3C3A5" stroke="#11203B" strokeWidth="4.5" strokeLinecap="round" />
-        <path d="M164 110c10 0 17 8 16 18-1 10-9 16-20 15" fill="#F3C3A5" stroke="#11203B" strokeWidth="4.5" strokeLinecap="round" />
-        <path d="M95 109c8-5 18-5 27 0M134 109c8-5 18-5 27 0" fill="none" stroke="#11203B" strokeWidth="3.6" strokeLinecap="round" />
-        <circle cx="108" cy="121" r="4.5" fill="#11203B" />
-        <circle cx="145" cy="121" r="4.5" fill="#11203B" />
-        <path d="M124 126c-5 15-8 24 1 29 4 2 10 0 14-3" fill="none" stroke="#11203B" strokeWidth="3.8" strokeLinecap="round" />
-        <path d="M104 166c13 9 31 9 44 0" fill="none" stroke="#E25B5B" strokeWidth="4.5" strokeLinecap="round" />
-        <path d="M96 221h52l14 56H82l14-56Z" fill="url(#body-head-shirt)" stroke="#11203B" strokeWidth="4.5" strokeLinejoin="round" />
-        <path d="M101 237h38" stroke="#B7E531" strokeWidth="6" strokeLinecap="round" />
-      </svg>
-    );
-  }
-
-  if (section === "back") {
-    return (
-      <svg aria-hidden="true" viewBox="0 0 240 300" preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full">
-        <defs>
-          <linearGradient id="body-back-shirt" x1="48" x2="198" y1="134" y2="245" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#57D4E8" />
-            <stop offset="1" stopColor="#14B8A6" />
-          </linearGradient>
-        </defs>
-        <rect width="240" height="300" fill="#F8FBFF" />
-        <circle cx="120" cy="166" r="86" fill="#57D4E8" opacity=".1" />
-        <path d="M87 50c0-28 15-46 33-46s33 18 33 46c0 34-15 56-33 56S87 84 87 50Z" fill="#F3C3A5" stroke="#11203B" strokeWidth="4.5" />
-        <path d="M80 43c8-30 29-45 54-39 17 5 27 18 28 41-23-12-54-14-82-2Z" fill="#11203B" />
-        <path d="M97 104h46v31H97z" fill="#F3C3A5" stroke="#11203B" strokeWidth="4.5" />
-        <path d="M70 132h100c16 0 28 12 28 28v83H42v-83c0-16 12-28 28-28Z" fill="url(#body-back-shirt)" stroke="#11203B" strokeWidth="4.5" />
-        <path d="M47 160 18 238c-5 15 6 29 22 31l30-88" fill="#F3C3A5" stroke="#11203B" strokeWidth="4.5" strokeLinejoin="round" />
-        <path d="M193 160 222 238c5 15-6 29-22 31l-30-88" fill="#F3C3A5" stroke="#11203B" strokeWidth="4.5" strokeLinejoin="round" />
-        <path d="M82 242h76l18 48h-43l-13-36-13 36H64l18-48Z" fill="#14B8A6" stroke="#11203B" strokeWidth="4.5" strokeLinejoin="round" />
-        <path d="M120 138v96" fill="none" stroke="#11203B" strokeWidth="4.5" strokeLinecap="round" opacity=".42" />
-        <path d="M86 154c19 15 49 15 68 0M83 180c22 9 52 9 74 0" fill="none" stroke="#11203B" strokeWidth="3.8" strokeLinecap="round" opacity=".52" />
-        <path d="M82 174h76" stroke="#B7E531" strokeWidth="6.5" strokeLinecap="round" opacity=".9" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg aria-hidden="true" viewBox="0 0 240 300" preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full">
-      <defs>
-        <linearGradient id="body-front-shirt" x1="45" x2="199" y1="60" y2="180" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#57D4E8" />
-          <stop offset="1" stopColor="#14B8A6" />
-        </linearGradient>
-      </defs>
-      <rect width="240" height="300" fill="#F8FBFF" />
-      <circle cx="120" cy="144" r="87" fill="#57D4E8" opacity=".1" />
-      <path d="M97 22h46v39H97z" fill="#F3C3A5" stroke="#11203B" strokeWidth="4.5" />
-      <path d="M71 59h98c17 0 30 13 30 30v91H41V89c0-17 13-30 30-30Z" fill="url(#body-front-shirt)" stroke="#11203B" strokeWidth="4.5" />
-      <path d="M43 92 17 172c-5 16 5 31 21 33l31-95" fill="#F3C3A5" stroke="#11203B" strokeWidth="4.5" strokeLinejoin="round" />
-      <path d="M197 92 223 172c5 16-5 31-21 33l-31-95" fill="#F3C3A5" stroke="#11203B" strokeWidth="4.5" strokeLinejoin="round" />
-      <path d="M82 180h76l20 98h-45l-13-65-13 65H62l20-98Z" fill="#14B8A6" stroke="#11203B" strokeWidth="4.5" strokeLinejoin="round" />
-      <path d="M88 101c20 16 45 16 64 0" fill="none" stroke="#11203B" strokeWidth="3.8" strokeLinecap="round" opacity=".75" />
-      <path d="M120 69v109" fill="none" stroke="#11203B" strokeWidth="3.8" strokeLinecap="round" opacity=".32" />
-      <path d="M88 80h64" stroke="#B7E531" strokeWidth="7" strokeLinecap="round" />
-      <circle cx="120" cy="132" r="18" fill="#F8FBFF" stroke="#11203B" strokeWidth="3.8" opacity=".92" />
-      <path d="M105 253h-26M135 253h26" stroke="#11203B" strokeWidth="4.5" strokeLinecap="round" opacity=".42" />
-    </svg>
   );
 }
 
@@ -1132,15 +1066,16 @@ function Feedback({
 function BodyRegionHighlight({ part, tone }: { part: BodyPart; tone: "active" | "correct" | "wrong" }) {
   const visual = getBodyPartVisual(part);
   const toneClass = {
-    active: "border-[#11203B]/80 bg-[#B7E531]/45 ring-[#57D4E8]/45",
-    correct: "border-emerald-800 bg-emerald-300/55 ring-emerald-300/45",
-    wrong: "border-red-800 bg-red-300/45 ring-red-300/45",
+    active: "border-[#11203B]/80 bg-[#B7E531]/20 ring-[#57D4E8]/45",
+    correct: "border-emerald-800 bg-emerald-300/20 ring-emerald-300/45",
+    wrong: "border-red-800 bg-red-300/20 ring-red-300/45",
   }[tone];
 
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none absolute z-10 border-[3px] shadow-[0_0_26px_rgba(87,212,232,0.22)] ring-8 ${visual.highlight} ${toneClass}`}
+      className={`pointer-events-none absolute z-10 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] shadow-[0_0_26px_rgba(87,212,232,0.22)] ring-8 sm:h-20 sm:w-20 ${toneClass}`}
+      style={{ left: `${visual.x}%`, top: `${visual.y}%` }}
     />
   );
 }

@@ -7,6 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "qa:body-parts": "node scripts/qa-body-parts.mjs",
+    "qa:screenshots": "npm run qa:body-parts",
     "db:ping": "node scripts/db-ping.mjs",
     "db:disable-user-rls": "node scripts/db-maintenance.mjs disable-user-rls",
     "db:check-user-rls": "node scripts/db-maintenance.mjs check-user-rls",
@@ -23,6 +25,7 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
