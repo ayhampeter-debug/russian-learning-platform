@@ -361,7 +361,7 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
               <ResultPill label={text.lesson.score} value={`${finalScore}/${finalQuestions.length}`} />
               <ResultPill label={text.lesson.accuracy} value={`${Math.round((finalScore / finalQuestions.length) * 100)}%`} />
             </div>
-            <div className="mt-8 grid gap-3 sm:grid-cols-3">
+            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <Link href={nextAction.href} className="rounded-full bg-cyan-400 px-5 py-4 font-black text-slate-950 transition hover:bg-cyan-300">
                 {localizeActionLabel(nextAction.label, language)}
               </Link>
@@ -370,6 +370,9 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
               </Link>
               <Link href="/practice" className="rounded-full border border-yellow-200 bg-yellow-300 px-5 py-4 font-black text-slate-950 transition hover:bg-yellow-200">
                 {text.lesson.practice}
+              </Link>
+              <Link href="/writing" className="rounded-full border border-cyan-200 bg-cyan-300 px-5 py-4 font-black text-slate-950 transition hover:bg-cyan-200">
+                {text.writing.title}
               </Link>
             </div>
           </div>

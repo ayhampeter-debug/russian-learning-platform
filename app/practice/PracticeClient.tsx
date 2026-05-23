@@ -90,15 +90,23 @@ export function PracticeClient() {
               {practiceText.intro}
             </p>
           </div>
-          {mistakes.length > 0 ? (
-            <button
-              type="button"
-              onClick={handleClearMistakes}
-              className="w-full rounded-full border border-red-300/40 px-5 py-3 font-black text-red-100 transition hover:bg-red-400/10 sm:w-auto"
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/writing"
+              className="w-full rounded-full bg-cyan-400 px-5 py-3 text-center font-black text-slate-950 transition hover:bg-cyan-300 sm:w-auto"
             >
-              {practiceText.clearAllMistakes}
-            </button>
-          ) : null}
+              {text.writing.title}
+            </Link>
+            {mistakes.length > 0 ? (
+              <button
+                type="button"
+                onClick={handleClearMistakes}
+                className="w-full rounded-full border border-red-300/40 px-5 py-3 font-black text-red-100 transition hover:bg-red-400/10 sm:w-auto"
+              >
+                {practiceText.clearAllMistakes}
+              </button>
+            ) : null}
+          </div>
         </div>
 
         {mistakes.length === 0 || !activeMistake ? (
@@ -110,10 +118,10 @@ export function PracticeClient() {
               {practiceText.noMistakesHint}
             </p>
             <Link
-              href="/dashboard"
+              href="/writing"
               className="mt-6 inline-flex rounded-full bg-cyan-400 px-6 py-3 font-black text-slate-950 transition hover:bg-cyan-300"
             >
-              {practiceText.backToDashboard}
+              {text.writing.title}
             </Link>
           </section>
         ) : (

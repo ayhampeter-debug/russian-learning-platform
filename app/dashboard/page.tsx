@@ -212,6 +212,7 @@ export default function DashboardPage() {
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <QuickLink href="/courses" label={text.dashboard.courses} />
               <QuickLink href="/worlds" label={text.dashboard.worlds} />
+              <QuickLink href="/writing" label={text.writing.title} />
               <QuickLink href="/practice" label={text.dashboard.reviewMistakes} />
               <QuickLink href="/profile" label={text.dashboard.profile} />
               <QuickLink href="/settings" label={text.dashboard.settings} />
