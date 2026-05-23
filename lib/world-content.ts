@@ -194,8 +194,36 @@ function mapWorldFromDatabase(world: DatabaseWorld): World {
 function mergeDatabaseAndStaticWorlds(databaseWorlds: World[]) {
   const databaseWorldIds = new Set(databaseWorlds.map((world) => world.id));
   const missingStaticWorlds = worlds.filter((world) => !databaseWorldIds.has(world.id));
+  const mergedWorlds = databaseWorlds.map((databaseWorld) => {
+    const staticWorld = worlds.find((world) => world.id === databaseWorld.id);
 
-  return [...databaseWorlds, ...missingStaticWorlds].sort((left, right) => left.number - right.number);
+    if (!staticWorld) {
+      return databaseWorld;
+    }
+
+    const databaseStageIds = new Set(databaseWorld.stages.map((stage) => stage.id));
+    const databaseLessonIds = new Set(databaseWorld.lessons.map((lesson) => lesson.id));
+    const missingStaticStages = staticWorld.stages.filter((stage) => !databaseStageIds.has(stage.id));
+    const missingStaticLessons = staticWorld.lessons.filter((lesson) => !databaseLessonIds.has(lesson.id));
+
+    return {
+      ...databaseWorld,
+      stages: [...databaseWorld.stages, ...missingStaticStages].sort(
+        (left, right) => getSortableNumber(left.number) - getSortableNumber(right.number),
+      ),
+      lessons: [...databaseWorld.lessons, ...missingStaticLessons].sort(
+        (left, right) => getSortableNumber(left.number) - getSortableNumber(right.number),
+      ),
+    };
+  });
+
+  return [...mergedWorlds, ...missingStaticWorlds].sort((left, right) => left.number - right.number);
+}
+
+function getSortableNumber(value: string) {
+  const parsed = Number.parseInt(value, 10);
+
+  return Number.isFinite(parsed) ? parsed : Number.MAX_SAFE_INTEGER;
 }
 
 function asRecord(value: unknown): JsonRecord {

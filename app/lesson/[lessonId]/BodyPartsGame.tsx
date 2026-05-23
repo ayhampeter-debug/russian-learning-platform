@@ -41,6 +41,8 @@ type BodyPart = {
   note?: Record<ExplanationLanguage, string>;
 };
 
+const SHOW_HOTSPOT_DEBUG = false;
+
 type AnswerState = {
   selectedId: string;
   isCorrect: boolean;
@@ -48,13 +50,13 @@ type AnswerState = {
 
 const bodyParts: BodyPart[] = [
   { id: "head", section: "face", russian: "голова", english: "head", arabic: "الرأس", marker: 1, x: 50, y: 31, highlight: "left-[28%] top-[14%] h-[42%] w-[44%] rounded-[45%]" },
-  { id: "hair", section: "face", russian: "волосы", english: "hair", arabic: "الشعر", marker: 2, x: 50, y: 16, highlight: "left-[30%] top-[9%] h-[20%] w-[42%] rounded-t-full" },
-  { id: "eye", section: "face", russian: "глаз", english: "eye", arabic: "العين", marker: 3, x: 42, y: 37, highlight: "left-[34%] top-[33%] h-[10%] w-[15%] rounded-full" },
-  { id: "nose", section: "face", russian: "нос", english: "nose", arabic: "الأنف", marker: 4, x: 50, y: 46, highlight: "left-[45%] top-[39%] h-[16%] w-[12%] rounded-full" },
-  { id: "mouth", section: "face", russian: "рот", english: "mouth", arabic: "الفم", marker: 5, x: 50, y: 57, highlight: "left-[39%] top-[53%] h-[10%] w-[23%] rounded-full" },
-  { id: "ear", section: "face", russian: "ухо", english: "ear", arabic: "الأذن", marker: 6, x: 74, y: 40, highlight: "left-[70%] top-[31%] h-[20%] w-[12%] rounded-full" },
-  { id: "neck", section: "body", russian: "шея", english: "neck", arabic: "الرقبة", marker: 7, x: 50, y: 14, highlight: "left-[41%] top-[7%] h-[16%] w-[18%] rounded-lg" },
-  { id: "shoulder", section: "body", russian: "плечо", english: "shoulder", arabic: "الكتف", marker: 8, x: 31, y: 29, highlight: "left-[24%] top-[22%] h-[17%] w-[24%] rounded-full" },
+  { id: "hair", section: "face", russian: "волосы", english: "hair", arabic: "الشعر", marker: 2, x: 50, y: 13, highlight: "left-[30%] top-[9%] h-[20%] w-[42%] rounded-t-full" },
+  { id: "eye", section: "face", russian: "глаз", english: "eye", arabic: "العين", marker: 3, x: 35, y: 47, highlight: "left-[34%] top-[33%] h-[10%] w-[15%] rounded-full" },
+  { id: "nose", section: "face", russian: "нос", english: "nose", arabic: "الأنف", marker: 4, x: 50, y: 57, highlight: "left-[45%] top-[39%] h-[16%] w-[12%] rounded-full" },
+  { id: "mouth", section: "face", russian: "рот", english: "mouth", arabic: "الفم", marker: 5, x: 50, y: 67, highlight: "left-[39%] top-[53%] h-[10%] w-[23%] rounded-full" },
+  { id: "ear", section: "face", russian: "ухо", english: "ear", arabic: "الأذن", marker: 6, x: 86, y: 52, highlight: "left-[70%] top-[31%] h-[20%] w-[12%] rounded-full" },
+  { id: "neck", section: "body", russian: "шея", english: "neck", arabic: "الرقبة", marker: 7, x: 50, y: 29, highlight: "left-[41%] top-[7%] h-[16%] w-[18%] rounded-lg" },
+  { id: "shoulder", section: "body", russian: "плечо", english: "shoulder", arabic: "الكتف", marker: 8, x: 25, y: 36, highlight: "left-[24%] top-[22%] h-[17%] w-[24%] rounded-full" },
   {
     id: "arm",
     section: "body",
@@ -63,14 +65,14 @@ const bodyParts: BodyPart[] = [
     arabic: "الذراع / اليد",
     marker: 9,
     x: 18,
-    y: 51,
+    y: 57,
     highlight: "left-[8%] top-[31%] h-[42%] w-[18%] rounded-full -rotate-12",
     note: {
       en: "рука can mean arm or hand depending on context.",
       ar: "كلمة рука قد تعني الذراع أو اليد حسب السياق.",
     },
   },
-  { id: "stomach", section: "body", russian: "живот", english: "stomach/belly", arabic: "البطن", marker: 10, x: 50, y: 51, highlight: "left-[37%] top-[39%] h-[25%] w-[27%] rounded-full" },
+  { id: "stomach", section: "body", russian: "живот", english: "stomach/belly", arabic: "البطن", marker: 10, x: 50, y: 47, highlight: "left-[37%] top-[39%] h-[25%] w-[27%] rounded-full" },
   {
     id: "leg",
     section: "body",
@@ -78,8 +80,8 @@ const bodyParts: BodyPart[] = [
     english: "leg/foot",
     arabic: "الساق / القدم",
     marker: 11,
-    x: 43,
-    y: 80,
+    x: 63,
+    y: 90,
     highlight: "left-[29%] top-[60%] h-[34%] w-[23%] rounded-full rotate-3",
     note: {
       en: "нога can mean leg or foot depending on context.",
@@ -94,7 +96,7 @@ const bodyParts: BodyPart[] = [
     arabic: "الظهر",
     marker: 12,
     x: 50,
-    y: 44,
+    y: 38,
     highlight: "left-[29%] top-[32%] h-[38%] w-[43%] rounded-[40%]",
     note: {
       en: "спина means back.",
@@ -124,25 +126,25 @@ const finalQuestions: FinalQuestion[] = [
 
 const stageOrder: LessonStage[] = ["face", "body", "back", "tap", "listen", "match", "final"];
 
-const bodySectionImages: Record<BodySection, { src: string; alt: string }> = {
-  face: { src: "/lessons/body-parts/head-face.png", alt: "Head and face character illustration" },
-  body: { src: "/lessons/body-parts/front-body.png", alt: "Front body character illustration" },
-  back: { src: "/lessons/body-parts/back-body.png", alt: "Back body character illustration" },
+const bodySectionImages: Record<BodySection, { src: string; alt: string; width: number; height: number }> = {
+  face: { src: "/lessons/body-parts/head-face.png", alt: "Head and face character illustration", width: 757, height: 972 },
+  body: { src: "/lessons/body-parts/front-body.png", alt: "Front body character illustration", width: 436, height: 1342 },
+  back: { src: "/lessons/body-parts/back-body.png", alt: "Back body character illustration", width: 449, height: 1304 },
 };
 
 const bodyPartVisuals: Record<string, Pick<BodyPart, "x" | "y" | "highlight">> = {
-  head: { x: 50, y: 18, highlight: "" },
-  hair: { x: 50, y: 10, highlight: "" },
-  eye: { x: 40, y: 42, highlight: "" },
-  nose: { x: 50, y: 51, highlight: "" },
-  mouth: { x: 50, y: 62, highlight: "" },
-  ear: { x: 78, y: 45, highlight: "" },
-  neck: { x: 50, y: 17, highlight: "" },
-  shoulder: { x: 34, y: 27, highlight: "" },
-  arm: { x: 27, y: 48, highlight: "" },
-  stomach: { x: 50, y: 43, highlight: "" },
-  leg: { x: 50, y: 73, highlight: "" },
-  back: { x: 50, y: 36, highlight: "" },
+  head: { x: 50, y: 31, highlight: "" },
+  hair: { x: 50, y: 13, highlight: "" },
+  eye: { x: 35, y: 47, highlight: "" },
+  nose: { x: 50, y: 57, highlight: "" },
+  mouth: { x: 50, y: 67, highlight: "" },
+  ear: { x: 86, y: 52, highlight: "" },
+  neck: { x: 50, y: 29, highlight: "" },
+  shoulder: { x: 25, y: 36, highlight: "" },
+  arm: { x: 18, y: 57, highlight: "" },
+  stomach: { x: 50, y: 47, highlight: "" },
+  leg: { x: 63, y: 90, highlight: "" },
+  back: { x: 50, y: 38, highlight: "" },
 };
 
 export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
@@ -172,6 +174,7 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
   const currentFinal = finalQuestions[finalIndex];
   const currentFinalPart = getPart(currentFinal.partId);
   const lessonProgress = getStageProgress(stage, tapIndex, listenIndex, matchedIds.length, finalIndex);
+  const matchOptionParts = useMemo(() => getStableDerangedParts(matchParts.map(getPart), "body-parts-match-meanings"), []);
   const nextAction = useMemo(
     () => ({
       href: getNextAvailablePath(activeProgress),
@@ -365,7 +368,7 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
               <Link href="/worlds" className="rounded-full border border-white/10 bg-white/10 px-5 py-4 font-black text-white transition hover:bg-white/15">
                 {text.lesson.backToWorlds}
               </Link>
-              <Link href="/practice" className="rounded-full border border-yellow-300/40 bg-yellow-300/10 px-5 py-4 font-black text-yellow-100 transition hover:bg-yellow-300/20">
+              <Link href="/practice" className="rounded-full border border-yellow-200 bg-yellow-300 px-5 py-4 font-black text-slate-950 transition hover:bg-yellow-200">
                 {text.lesson.practice}
               </Link>
             </div>
@@ -449,6 +452,7 @@ export function BodyPartsGame({ lesson }: { lesson: Lesson }) {
             selectedRussianId={selectedRussianId}
             matchedIds={matchedIds}
             feedback={matchFeedback}
+            optionParts={matchOptionParts}
             language={language}
             translate={translation}
             onSelectRussian={setSelectedRussianId}
@@ -594,6 +598,7 @@ function MatchPractice({
   selectedRussianId,
   matchedIds,
   feedback,
+  optionParts,
   language,
   translate,
   onSelectRussian,
@@ -603,6 +608,7 @@ function MatchPractice({
   selectedRussianId: string;
   matchedIds: string[];
   feedback: AnswerState | null;
+  optionParts: BodyPart[];
   language: ExplanationLanguage;
   translate: (part: BodyPart) => string;
   onSelectRussian: (id: string) => void;
@@ -652,7 +658,7 @@ function MatchPractice({
         </div>
         <div className="grid gap-2">
           <p className="px-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400" {...uiTextProps(language)}>{text.lesson.chooseTranslation}</p>
-          {parts.map((part) => (
+          {optionParts.map((part) => (
             <button
               type="button"
               key={part.id}
@@ -741,9 +747,11 @@ function FinalPractice({
           <ChoiceChallenge question={question} targetPart={targetPart} answer={answer} language={language} translate={translate} onAnswer={onAnswer} />
         )}
       </div>
-      <aside className="hidden min-w-0 lg:block lg:sticky lg:top-24 lg:self-start">
-        <SelectedPartCard part={targetPart} language={language} translate={translate} note={targetPart.note?.[language]} />
-      </aside>
+      {answer ? (
+        <aside className="hidden min-w-0 lg:block lg:sticky lg:top-24 lg:self-start">
+          <SelectedPartCard part={targetPart} language={language} translate={translate} note={targetPart.note?.[language]} />
+        </aside>
+      ) : null}
     </section>
   );
 }
@@ -769,6 +777,7 @@ function BodyMap({
   const image = bodySectionImages[section];
   const highlightedPart = parts.find((part) => part.id === (feedbackPartId ?? activePartId));
   const wrongPart = parts.find((part) => part.id === wrongPartId);
+  const imageRatio = image.width / image.height;
 
   return (
     <div className="min-w-0 rounded-2xl border border-white/10 bg-slate-950/70 p-3 text-white sm:p-4">
@@ -779,44 +788,65 @@ function BodyMap({
         </span>
       </div>
       <div className="mt-3 flex min-h-[20rem] items-center justify-center overflow-hidden rounded-2xl border border-cyan-300/20 bg-white p-2 shadow-[inset_0_0_0_1px_rgba(17,32,59,0.05)] sm:min-h-[22rem] sm:p-3">
-        <div className="relative mx-auto max-h-[min(62vh,31rem)] max-w-full text-[#11203B]">
+        <div
+          className="relative mx-auto w-full text-[#11203B]"
+          style={{
+            aspectRatio: `${image.width} / ${image.height}`,
+            maxWidth: `min(100%, ${(imageRatio * 31).toFixed(2)}rem, ${(imageRatio * 62).toFixed(2)}vh)`,
+          }}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={image.src}
             alt={image.alt}
-            className="block max-h-[min(62vh,31rem)] min-h-[18rem] w-auto max-w-full select-none object-contain"
+            className="absolute inset-0 h-full w-full select-none object-contain"
             draggable={false}
           />
-          {highlightedPart ? <BodyRegionHighlight part={highlightedPart} tone={feedbackPartId ? "correct" : "active"} /> : null}
-          {wrongPart ? <BodyRegionHighlight part={wrongPart} tone="wrong" /> : null}
-          {parts.map((part) => {
-            const visual = getBodyPartVisual(part);
-            const isActive = part.id === activePartId;
-            const isCorrect = part.id === feedbackPartId;
-            const isWrong = part.id === wrongPartId;
-            const label = `${part.marker}. ${part.russian}, ${translate(part)}`;
+          <div className="absolute inset-0">
+            {highlightedPart ? <BodyRegionHighlight part={highlightedPart} tone={feedbackPartId ? "correct" : "active"} /> : null}
+            {wrongPart ? <BodyRegionHighlight part={wrongPart} tone="wrong" /> : null}
+            {parts.map((part) => {
+              const visual = getBodyPartVisual(part);
+              const isActive = part.id === activePartId;
+              const isCorrect = part.id === feedbackPartId;
+              const isWrong = part.id === wrongPartId;
+              const label = `${part.marker}. ${part.russian}, ${translate(part)}`;
 
-            return (
-              <button
-                type="button"
-                key={part.id}
-                onClick={() => onSelect(part)}
-                aria-label={label}
-                className={`absolute z-20 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-sm font-black shadow-lg shadow-slate-900/20 transition after:absolute after:inset-[-10px] after:rounded-full after:border-2 after:border-current/20 after:content-[''] focus:outline-none focus:ring-4 focus:ring-[#11203B]/40 sm:h-12 sm:w-12 sm:text-base ${
-                  isCorrect
-                    ? "border-emerald-800 bg-emerald-200 text-emerald-950 ring-4 ring-emerald-300/50"
-                    : isWrong
-                      ? "border-red-800 bg-red-200 text-red-950 ring-4 ring-red-300/50"
-                      : isActive
-                      ? "scale-110 border-[#11203B] bg-[#B7E531] text-[#11203B] ring-4 ring-[#57D4E8]/60"
-                      : "border-[#0F766E] bg-white/95 text-[#11203B] hover:-translate-y-[54%] hover:bg-[#57D4E8]"
-                }`}
-                style={{ left: `${visual.x}%`, top: `${visual.y}%` }}
-              >
-                {isCorrect ? "OK" : isWrong ? "!" : part.marker}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  type="button"
+                  key={part.id}
+                  onClick={() => onSelect(part)}
+                  aria-label={label}
+                  className="group absolute z-20 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-transparent text-[13px] font-black transition focus:outline-none focus:ring-2 focus:ring-[#11203B]/35"
+                  style={{ left: `${visual.x}%`, top: `${visual.y}%` }}
+                >
+                  <span
+                    className={`flex h-7 w-7 items-center justify-center rounded-full border text-[13px] font-black leading-none shadow-sm shadow-slate-900/15 transition ${
+                      isCorrect
+                        ? "border-emerald-800 bg-emerald-200 text-emerald-950 ring-1 ring-emerald-300/70"
+                        : isWrong
+                          ? "border-red-800 bg-red-200 text-red-950 ring-1 ring-red-300/70"
+                          : isActive
+                            ? "border-[#11203B] bg-[#B7E531] text-[#11203B] ring-2 ring-[#57D4E8]/45"
+                            : "border-[#0F766E] bg-white/95 text-[#11203B] group-hover:bg-[#57D4E8]"
+                    }`}
+                  >
+                    {isCorrect ? "OK" : isWrong ? "!" : part.marker}
+                  </span>
+                  {SHOW_HOTSPOT_DEBUG ? (
+                    <>
+                      <span className="pointer-events-none absolute left-1/2 top-0 h-11 w-px -translate-x-1/2 bg-fuchsia-500/80" />
+                      <span className="pointer-events-none absolute left-0 top-1/2 h-px w-11 -translate-y-1/2 bg-fuchsia-500/80" />
+                      <span className="pointer-events-none absolute left-8 top-7 rounded bg-slate-950/85 px-1 py-0.5 text-[10px] font-bold text-white">
+                        {visual.x},{visual.y}
+                      </span>
+                    </>
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
@@ -919,7 +949,14 @@ function ChoiceChallenge({
   onAnswer: (isCorrect: boolean, userAnswer: string) => void;
 }) {
   const correctAnswer = question.type === "russian" ? targetPart.russian : translate(targetPart);
-  const options = question.type === "russian" ? question.options : question.options.map((option) => translate(getPartByEnglish(option)));
+  const options = useMemo(
+    () =>
+      getStableShuffledValues(
+        question.type === "russian" ? question.options : question.options.map((option) => translate(getPartByEnglish(option))),
+        `body-parts-final-${question.id}-${language}`,
+      ),
+    [language, question.id, question.options, question.type, translate],
+  );
 
   return (
     <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -1066,15 +1103,15 @@ function Feedback({
 function BodyRegionHighlight({ part, tone }: { part: BodyPart; tone: "active" | "correct" | "wrong" }) {
   const visual = getBodyPartVisual(part);
   const toneClass = {
-    active: "border-[#11203B]/80 bg-[#B7E531]/20 ring-[#57D4E8]/45",
-    correct: "border-emerald-800 bg-emerald-300/20 ring-emerald-300/45",
-    wrong: "border-red-800 bg-red-300/20 ring-red-300/45",
+    active: "border-[#11203B]/75 bg-transparent ring-[#57D4E8]/35",
+    correct: "border-emerald-800/80 bg-transparent ring-emerald-300/35",
+    wrong: "border-red-800/80 bg-transparent ring-red-300/35",
   }[tone];
 
   return (
     <div
       aria-hidden="true"
-      className={`pointer-events-none absolute z-10 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] shadow-[0_0_26px_rgba(87,212,232,0.22)] ring-8 sm:h-20 sm:w-20 ${toneClass}`}
+      className={`pointer-events-none absolute z-10 h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 ring-2 ${toneClass}`}
       style={{ left: `${visual.x}%`, top: `${visual.y}%` }}
     />
   );
@@ -1133,7 +1170,45 @@ function getListenOptions(targetPart: BodyPart) {
     back: ["back", "stomach", "shoulder", "head"],
   };
 
-  return (optionIds[targetPart.id] ?? [targetPart.id, "head", "arm", "leg"]).map(getPart);
+  return getStableShuffledParts(
+    (optionIds[targetPart.id] ?? [targetPart.id, "head", "arm", "leg"]).map(getPart),
+    `body-parts-listen-${targetPart.id}`,
+  );
+}
+
+function getStableShuffledValues<T>(values: T[], seed: string) {
+  return [...values].sort((left, right) => stableHash(`${seed}:${String(left)}`) - stableHash(`${seed}:${String(right)}`));
+}
+
+function getStableShuffledParts(parts: BodyPart[], seed: string) {
+  return [...parts].sort((left, right) => stableHash(`${seed}:${left.id}`) - stableHash(`${seed}:${right.id}`));
+}
+
+function getStableDerangedParts(parts: BodyPart[], seed: string) {
+  if (parts.length < 2) return parts;
+
+  const originalIds = parts.map((part) => part.id);
+  const shuffledParts = getStableShuffledParts(parts, seed);
+
+  for (let attempts = 0; attempts < shuffledParts.length; attempts += 1) {
+    if (shuffledParts.every((part, index) => part.id !== originalIds[index])) {
+      return shuffledParts;
+    }
+
+    shuffledParts.push(shuffledParts.shift() ?? shuffledParts[0]);
+  }
+
+  return [...parts.slice(1), parts[0]];
+}
+
+function stableHash(value: string) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+  }
+
+  return hash;
 }
 
 function getSectionTitle(section: BodySection, language: ExplanationLanguage) {
