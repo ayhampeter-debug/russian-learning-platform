@@ -13,13 +13,12 @@ type LandingText = {
   createAccount: string;
   exploreSite: string;
   login: string;
-  basics: string;
-  bodyParts: string;
+  learningJourney: string;
+  wordOfDay: string;
+  newWords: string;
   writingPractice: string;
+  mistakeReview: string;
   progress: string;
-  xp: string;
-  visualLabel: string;
-  typingLabel: string;
   featureTitle: string;
   features: Array<{
     title: string;
@@ -31,81 +30,80 @@ type LandingText = {
 const landingText: Record<ExplanationLanguage, LandingText> = {
   ar: {
     heroTitle: "YazkUp صديقك الذي سيساعدك في تعلم اللغات",
-    heroSubtitle: "ابدأ بالروسية، وتدرّب على الكتابة خطوة بخطوة.",
+    heroSubtitle: "تعلّم، تدرّب، وتقدّم خطوة بخطوة.",
     createAccount: "إنشاء حساب",
     exploreSite: "استكشف الموقع",
     login: "تسجيل الدخول",
-    basics: "الأساسيات",
-    bodyParts: "أجزاء الجسم",
+    learningJourney: "رحلتك التعليمية",
+    wordOfDay: "كلمة اليوم",
+    newWords: "كلمات جديدة",
     writingPractice: "تدريب الكتابة",
+    mistakeReview: "مراجعة الأخطاء",
     progress: "التقدّم",
-    xp: "نقاط XP",
-    visualLabel: "تعلّم بصري",
-    typingLabel: "تدريب سريع",
     featureTitle: "تعلّم، اكتب، وراجع في مكان واحد",
     features: [
       {
         title: "تعلّم بصريًا",
-        line: "صور وبطاقات واضحة للكلمات.",
+        line: "صور وبطاقات تفاعلية",
         visual: "visual",
       },
       {
         title: "تدريب الكتابة",
-        line: "اكتب الكلمات الروسية خطوة بخطوة.",
+        line: "اكتب الكلمات الروسية بثقة",
         visual: "typing",
       },
       {
         title: "مراجعة الأخطاء",
-        line: "ارجع للكلمات التي تحتاج تدريبًا.",
+        line: "ارجع للكلمات الصعبة",
         visual: "review",
       },
       {
         title: "تقدّم يومي",
-        line: "تابع نقاطك وتقدّمك بسهولة.",
+        line: "تابع تقدّمك كل يوم",
         visual: "progress",
       },
     ],
   },
   en: {
     heroTitle: "YazkUp is your friend for learning languages",
-    heroSubtitle: "Start with Russian and practice typing step by step.",
+    heroSubtitle: "Learn, practice, and progress step by step.",
     createAccount: "Create account",
     exploreSite: "Explore site",
     login: "Log in",
-    basics: "Basics",
-    bodyParts: "Body parts",
+    learningJourney: "Your learning journey",
+    wordOfDay: "Word of the day",
+    newWords: "New words",
     writingPractice: "Writing practice",
+    mistakeReview: "Mistake review",
     progress: "Progress",
-    xp: "XP",
-    visualLabel: "Visual learning",
-    typingLabel: "Quick practice",
     featureTitle: "Learn, type, and review in one place",
     features: [
       {
         title: "Learn visually",
-        line: "Clear images and word cards.",
+        line: "Images and interactive cards",
         visual: "visual",
       },
       {
         title: "Writing practice",
-        line: "Type Russian words step by step.",
+        line: "Type Russian words with confidence",
         visual: "typing",
       },
       {
         title: "Mistake review",
-        line: "Return to words that need practice.",
+        line: "Return to difficult words",
         visual: "review",
       },
       {
         title: "Daily progress",
-        line: "Track XP and progress with ease.",
+        line: "Track your progress every day",
         visual: "progress",
       },
     ],
   },
 };
 
-const russianChips = ["голова", "рука", "нос", "писать"];
+const arabicLandingFont =
+  "[font-family:var(--font-ibm-plex-arabic),var(--font-geist-sans),Inter,ui-sans-serif,sans-serif]";
 
 export default function Home() {
   const { language } = useExplanationLanguage();
@@ -115,60 +113,47 @@ export default function Home() {
 
   return (
     <main
-      className="landing-page min-h-screen overflow-x-hidden bg-[var(--brand-light)] text-[var(--app-text)] [font-family:var(--font-geist-sans),Inter,ui-sans-serif,system-ui,sans-serif] dark:bg-[var(--app-bg)]"
+      className="landing-page min-h-screen overflow-x-hidden bg-white text-[var(--app-text)] [font-family:var(--font-geist-sans),Inter,ui-sans-serif,system-ui,sans-serif] dark:bg-[var(--app-bg)]"
       dir={direction}
     >
-      <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
-        <div className="landing-wave landing-wave-one" />
-        <div className="landing-wave landing-wave-two" />
-        <div className="landing-blob landing-blob-teal" />
-        <div className="landing-blob landing-blob-cyan" />
-        <div className="landing-blob landing-blob-lime" />
-        <div className="absolute inset-x-0 top-0 h-72 bg-[linear-gradient(180deg,rgb(255_255_255_/_0.98),rgb(255_255_255_/_0.58),rgb(255_255_255_/_0))] dark:bg-[linear-gradient(180deg,rgb(8_19_35_/_0.96),rgb(8_19_35_/_0.34),rgb(8_19_35_/_0))]" />
-      </div>
-
+      <LandingAtmosphere />
       <LandingHeader text={text} language={language} />
 
-      <section className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 pb-12 pt-4 sm:px-6 sm:pb-16 lg:min-h-[calc(100vh-6.75rem)] lg:grid-cols-[0.92fr_1.08fr] lg:gap-14 lg:pb-20 lg:pt-8">
+      <section className="relative z-10 mx-auto grid w-full max-w-7xl items-center gap-8 px-4 pb-12 pt-2 sm:px-6 sm:pb-16 lg:grid-cols-[0.94fr_1.06fr] lg:gap-12 lg:pb-20 lg:pt-6">
         <div
           className="landing-reveal mx-auto max-w-2xl text-center lg:mx-0 lg:text-start"
           {...uiTextProps(language)}
         >
-          <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-white/80 bg-white/78 px-3 py-2 text-xs font-black text-[var(--app-primary-strong)] shadow-[0_12px_34px_rgb(17_32_59_/_0.07)] backdrop-blur-xl dark:border-white/10 dark:bg-white/5">
-            <span className="h-2 w-2 shrink-0 rounded-full bg-[var(--brand-lime)] shadow-[0_0_0_5px_rgb(183_229_49_/_0.18)]" />
-            <span className="truncate">
-              {text.basics} · {text.bodyParts} · {text.writingPractice}
-            </span>
-          </div>
-
           <h1
             aria-label={text.heroTitle}
-            className={`mx-auto mt-6 max-w-[15ch] text-balance text-[2.45rem] font-black leading-[1.1] text-[var(--brand-navy)] sm:text-[3.35rem] lg:mx-0 lg:text-[4.25rem] dark:text-[var(--app-text)] ${
-              isArabic
-                ? "[font-family:var(--font-alexandria),var(--font-geist-sans),sans-serif] sm:max-w-[13ch] lg:max-w-[14ch] lg:leading-[1.16]"
-                : "tracking-normal"
+            className={`mx-auto max-w-[16ch] text-balance text-[1.95rem] font-extrabold leading-[1.13] text-[var(--brand-navy)] sm:text-[2.6rem] lg:mx-0 lg:text-[3.05rem] dark:text-[var(--app-text)] ${
+              isArabic ? `${arabicLandingFont} font-bold sm:max-w-[16ch] lg:max-w-[17ch] lg:leading-[1.18]` : ""
             }`}
           >
             <HeroHeadline language={language} />
           </h1>
 
-          <p className="mx-auto mt-5 max-w-md text-base font-semibold leading-7 text-[var(--app-text-muted)] sm:text-lg lg:mx-0">
+          <p
+            className={`mx-auto mt-5 max-w-md text-base font-semibold leading-7 text-[var(--app-text-muted)] sm:text-lg lg:mx-0 ${
+              isArabic ? arabicLandingFont : ""
+            }`}
+          >
             {text.heroSubtitle}
           </p>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
+          <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
             <Link
               href="/signup"
-              className={`inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--brand-navy)] px-7 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgb(17_32_59_/_0.18)] transition hover:-translate-y-0.5 hover:bg-[var(--brand-teal)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-cyan)] focus:ring-offset-2 focus:ring-offset-white dark:bg-[var(--brand-cyan)] dark:text-[#06111d] dark:focus:ring-offset-[var(--app-bg)] ${
-                isArabic ? "[font-family:var(--font-alexandria),var(--font-geist-sans),sans-serif]" : ""
+              className={`landing-primary-cta inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--brand-navy)] px-7 py-3 text-sm font-black shadow-[0_18px_42px_rgb(17_32_59_/_0.2)] transition hover:-translate-y-0.5 hover:bg-[var(--brand-teal)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-cyan)] focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[var(--app-bg)] ${
+                isArabic ? `${arabicLandingFont} font-bold` : ""
               }`}
             >
               {text.createAccount}
             </Link>
             <Link
               href="/worlds"
-              className={`inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--app-border)] bg-white/86 px-7 py-3 text-sm font-black text-[var(--brand-navy)] shadow-[0_14px_34px_rgb(17_32_59_/_0.07)] backdrop-blur transition hover:-translate-y-0.5 hover:border-[var(--brand-teal)] hover:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--brand-cyan)] focus:ring-offset-2 focus:ring-offset-white dark:bg-white/5 dark:text-[var(--app-text)] dark:hover:bg-white/10 dark:focus:ring-offset-[var(--app-bg)] ${
-                isArabic ? "[font-family:var(--font-alexandria),var(--font-geist-sans),sans-serif]" : ""
+              className={`inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--app-border)] bg-white/88 px-7 py-3 text-sm font-black text-[var(--brand-navy)] shadow-[0_14px_32px_rgb(17_32_59_/_0.07)] backdrop-blur transition hover:-translate-y-0.5 hover:border-[var(--brand-teal)] hover:bg-white focus:outline-none focus:ring-2 focus:ring-[var(--brand-cyan)] focus:ring-offset-2 focus:ring-offset-white dark:bg-white/5 dark:text-[var(--app-text)] dark:hover:bg-white/10 dark:focus:ring-offset-[var(--app-bg)] ${
+                isArabic ? `${arabicLandingFont} font-bold` : ""
               }`}
             >
               {text.exploreSite}
@@ -179,11 +164,11 @@ export default function Home() {
         <HeroMockup text={text} language={language} />
       </section>
 
-      <section className="relative mx-auto w-full max-w-7xl px-4 pb-20 sm:px-6 lg:pb-24">
+      <section className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6 lg:pb-24">
         <div className="mb-6 flex items-end justify-between gap-6" {...uiTextProps(language)}>
           <h2
-            className={`max-w-2xl text-2xl font-black leading-tight text-[var(--brand-navy)] sm:text-3xl lg:text-[2.45rem] dark:text-[var(--app-text)] ${
-              isArabic ? "[font-family:var(--font-alexandria),var(--font-geist-sans),sans-serif]" : ""
+            className={`max-w-2xl text-2xl font-black leading-tight text-[var(--brand-navy)] sm:text-3xl lg:text-[2.35rem] dark:text-[var(--app-text)] ${
+              isArabic ? `${arabicLandingFont} font-bold` : ""
             }`}
           >
             {text.featureTitle}
@@ -198,6 +183,19 @@ export default function Home() {
         </div>
       </section>
     </main>
+  );
+}
+
+function LandingAtmosphere() {
+  return (
+    <div className="pointer-events-none fixed inset-0 overflow-hidden" aria-hidden="true">
+      <div className="landing-wave landing-wave-one" />
+      <div className="landing-wave landing-wave-two" />
+      <div className="landing-blob landing-blob-teal" />
+      <div className="landing-blob landing-blob-cyan" />
+      <div className="landing-blob landing-blob-lime" />
+      <div className="absolute inset-x-0 top-0 h-72 bg-[linear-gradient(180deg,rgb(255_255_255_/_0.98),rgb(255_255_255_/_0.72),rgb(255_255_255_/_0))] dark:bg-[linear-gradient(180deg,rgb(8_19_35_/_0.96),rgb(8_19_35_/_0.42),rgb(8_19_35_/_0))]" />
+    </div>
   );
 }
 
@@ -231,23 +229,23 @@ function LandingHeader({
 
   return (
     <header className="relative z-20 mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-5">
-      <div className="flex min-h-16 flex-wrap items-center justify-between gap-3 rounded-[1.45rem] border border-white/78 bg-white/86 px-3 py-3 shadow-[0_18px_55px_rgb(17_32_59_/_0.1)] backdrop-blur-xl dark:border-white/10 dark:bg-[#0c1a30]/82 sm:flex-nowrap sm:px-5">
-        <BrandLogo />
+      <div className="mx-auto flex min-h-16 max-w-6xl flex-wrap items-center justify-between gap-3 rounded-[1.55rem] border border-white bg-white/88 px-3 py-3 shadow-[0_18px_55px_rgb(17_32_59_/_0.1)] backdrop-blur-2xl dark:border-white/10 dark:bg-[#0c1a30]/86 sm:flex-nowrap sm:px-5">
+        <BrandLogo className="shrink-0" />
 
         <div className="ms-auto flex min-w-0 flex-1 items-center justify-end gap-2 sm:flex-none sm:gap-3">
-          <LanguageSelector className="shrink-0" />
+          <LanguageSelector className="shrink-0 [&>label]:!hidden" />
           <Link
             href="/login"
-            className={`inline-flex shrink-0 rounded-full border border-transparent px-3 py-2.5 text-xs font-black text-[var(--app-text-soft)] transition hover:bg-[var(--app-primary-soft)] hover:text-[var(--brand-navy)] dark:hover:text-[var(--app-text)] sm:px-4 sm:text-sm ${
-              isArabic ? "[font-family:var(--font-alexandria),var(--font-geist-sans),sans-serif]" : ""
+            className={`inline-flex shrink-0 rounded-full px-3 py-2.5 text-xs font-black text-[var(--app-text-soft)] transition hover:bg-[var(--app-primary-soft)] hover:text-[var(--brand-navy)] dark:hover:text-[var(--app-text)] sm:px-4 sm:text-sm ${
+              isArabic ? `${arabicLandingFont} font-bold` : ""
             }`}
           >
             {text.login}
           </Link>
           <Link
             href="/signup"
-            className={`inline-flex shrink-0 rounded-full bg-[var(--brand-navy)] px-3 py-2.5 text-xs font-black text-white shadow-[0_10px_24px_rgb(17_32_59_/_0.15)] transition hover:bg-[var(--brand-teal)] dark:bg-[var(--brand-cyan)] dark:text-[#06111d] sm:px-4 sm:text-sm ${
-              isArabic ? "[font-family:var(--font-alexandria),var(--font-geist-sans),sans-serif]" : ""
+            className={`landing-primary-cta inline-flex shrink-0 rounded-full bg-[var(--brand-navy)] px-3 py-2.5 text-xs font-black shadow-[0_10px_24px_rgb(17_32_59_/_0.15)] transition hover:bg-[var(--brand-teal)] sm:px-4 sm:text-sm ${
+              isArabic ? `${arabicLandingFont} font-bold` : ""
             }`}
           >
             {text.createAccount}
@@ -265,119 +263,124 @@ function HeroMockup({
   text: LandingText;
   language: ExplanationLanguage;
 }) {
+  const isArabic = language === "ar";
+  const visualTitle = isArabic ? "تعلّم بصري" : "Visual learning";
+  const writingTitle = text.writingPractice;
+  const reviewTitle = isArabic ? "راجع كلماتك" : "Review your words";
+  const vocabulary = ["привет", "дом", "язык", "писать"];
+
   return (
     <div className="landing-reveal landing-reveal-delay relative mx-auto w-full max-w-[39rem]" {...uiTextProps(language)}>
-      <div className="landing-chip-float absolute -left-3 top-8 z-10 hidden rounded-2xl border border-white/85 bg-white/88 px-4 py-3 text-sm font-black text-[var(--brand-navy)] shadow-[0_18px_44px_rgb(17_32_59_/_0.11)] backdrop-blur-xl sm:block dark:border-white/10 dark:bg-[#0c1a30]/88 dark:text-[var(--app-text)]">
-        голова
-      </div>
-      <div className="landing-chip-float landing-chip-float-delay absolute -right-1 bottom-20 z-10 hidden rounded-full bg-[var(--brand-lime)] px-4 py-2 text-sm font-black text-[var(--brand-navy)] shadow-[0_18px_44px_rgb(108_143_0_/_0.18)] sm:block">
-        +40 {text.xp}
-      </div>
+      <div className="relative overflow-hidden rounded-[2.15rem] border border-white bg-white/78 p-3 shadow-[0_30px_86px_rgb(17_32_59_/_0.15)] backdrop-blur-2xl dark:border-white/10 dark:bg-[#0c1a30]/82 sm:p-5">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_16%_16%,rgb(87_212_232_/_0.24),transparent_27%),radial-gradient(circle_at_86%_18%,rgb(183_229_49_/_0.2),transparent_23%),linear-gradient(145deg,rgb(248_251_255_/_0.98),rgb(255_255_255_/_0.84))] dark:bg-[radial-gradient(circle_at_16%_16%,rgb(87_212_232_/_0.16),transparent_27%),radial-gradient(circle_at_86%_18%,rgb(183_229_49_/_0.12),transparent_23%),linear-gradient(145deg,rgb(8_19_35_/_0.96),rgb(12_26_48_/_0.88))]" />
 
-      <div className="relative rounded-[2.1rem] border border-white/82 bg-white/78 p-3 shadow-[0_28px_80px_rgb(17_32_59_/_0.14)] backdrop-blur-2xl dark:border-white/10 dark:bg-[#0c1a30]/82 sm:p-5">
-        <div className="absolute inset-0 rounded-[2.1rem] bg-[radial-gradient(circle_at_12%_10%,rgb(87_212_232_/_0.24),transparent_28%),radial-gradient(circle_at_86%_2%,rgb(183_229_49_/_0.2),transparent_24%),radial-gradient(circle_at_90%_88%,rgb(20_184_166_/_0.17),transparent_30%)]" />
-        <div className="relative overflow-hidden rounded-[1.65rem] border border-[var(--app-border)] bg-[linear-gradient(145deg,rgb(248_251_255_/_0.96),rgb(255_255_255_/_0.86))] p-4 dark:bg-[linear-gradient(145deg,rgb(8_19_35_/_0.96),rgb(12_26_48_/_0.86))] sm:p-5">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-black uppercase text-[var(--app-text-faint)]">
-                YazkUp
-              </p>
-              <h2 className="mt-1 text-xl font-black text-[var(--brand-navy)] dark:text-[var(--app-text)]">
-                {text.basics}
-              </h2>
+        <div className="relative grid min-h-[31rem] gap-3 rounded-[1.75rem] border border-white/80 bg-white/78 p-3 shadow-[inset_0_1px_0_rgb(255_255_255_/_0.86),0_22px_60px_rgb(17_32_59_/_0.1)] backdrop-blur-2xl dark:border-white/10 dark:bg-[#10223d]/76 sm:min-h-[33rem] sm:gap-4 sm:p-4 lg:grid-cols-[1.18fr_0.82fr]">
+          <section className="relative isolate min-h-[19rem] overflow-hidden rounded-[1.45rem] border border-[var(--app-border-muted)] bg-[linear-gradient(145deg,rgb(255_255_255_/_0.92),rgb(241_250_253_/_0.9))] p-4 shadow-[0_16px_40px_rgb(17_32_59_/_0.07)] dark:bg-[linear-gradient(145deg,rgb(17_34_60_/_0.86),rgb(12_26_48_/_0.78))] sm:min-h-[24rem] sm:p-5 lg:row-span-2">
+            <div className="absolute inset-x-8 bottom-4 top-20 rounded-full bg-[radial-gradient(ellipse_at_center,rgb(87_212_232_/_0.18),transparent_68%)]" />
+            <div className="relative z-10 flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--app-text-faint)]">
+                  YazkUp
+                </p>
+                <h3 className={`mt-1 text-xl leading-tight text-[var(--brand-navy)] dark:text-[var(--app-text)] sm:text-2xl ${isArabic ? `${arabicLandingFont} font-bold` : "font-black"}`}>
+                  {visualTitle}
+                </h3>
+              </div>
+              <span className="shrink-0 rounded-full bg-[var(--app-secondary-soft)] px-3 py-1.5 text-xs font-black text-[var(--app-primary-strong)]">
+                4 {isArabic ? "كلمات" : "words"}
+              </span>
             </div>
-            <ProgressRing />
-          </div>
 
-          <div className="mt-5 grid gap-3 sm:grid-cols-[0.92fr_1.08fr]">
-            <div className="landing-float rounded-[1.35rem] border border-[var(--app-border)] bg-white/92 p-4 shadow-[0_18px_42px_rgb(17_32_59_/_0.09)] dark:bg-white/5">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <span className="text-sm font-black text-[var(--app-text)]">
-                  {text.bodyParts}
+            <div className="relative z-10 mt-3 grid min-h-[15rem] grid-cols-[0.9fr_1.1fr] items-center gap-2 sm:mt-4 sm:min-h-[18rem]">
+              <div className="relative mx-auto flex h-full max-h-[18rem] w-full items-end justify-center sm:max-h-[21rem]">
+                <div className="absolute bottom-0 h-[76%] w-[82%] rounded-t-full bg-[linear-gradient(180deg,rgb(87_212_232_/_0.18),rgb(183_229_49_/_0.1))]" />
+                <Image
+                  src="/lessons/body-parts/front-body.png"
+                  alt=""
+                  width={217}
+                  height={768}
+                  aria-hidden="true"
+                  className="relative z-10 h-[15rem] w-auto object-contain drop-shadow-[0_18px_28px_rgb(17_32_59_/_0.16)] sm:h-[18.5rem]"
+                />
+              </div>
+
+              <div className="grid content-center gap-2" dir="ltr">
+                {vocabulary.map((word, index) => (
+                  <span
+                    key={word}
+                    className={`inline-flex w-fit items-center gap-2 rounded-full border border-white bg-white/88 px-3 py-2 text-sm font-black text-[var(--brand-navy)] shadow-[0_12px_28px_rgb(17_32_59_/_0.07)] dark:border-white/10 dark:bg-white/10 dark:text-[var(--app-text)] ${
+                      index % 2 === 0 ? "justify-self-start" : "justify-self-end"
+                    }`}
+                  >
+                    <span className="h-2 w-2 rounded-full bg-[var(--brand-teal)]" />
+                    {word}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-[1.45rem] border border-[var(--app-border-muted)] bg-white/86 p-4 shadow-[0_16px_40px_rgb(17_32_59_/_0.07)] dark:bg-white/5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className={`text-base text-[var(--brand-navy)] dark:text-[var(--app-text)] ${isArabic ? `${arabicLandingFont} font-bold` : "font-black"}`}>
+                  {writingTitle}
+                </h3>
+                <p className="mt-1 text-2xl font-black text-[var(--brand-navy)] dark:text-[var(--app-text)]" dir="ltr">
+                  писать
+                </p>
+              </div>
+              <span className="shrink-0 rounded-full bg-[var(--brand-lime)] px-3 py-1.5 text-xs font-black text-[var(--brand-navy)]">
+                +40 XP
+              </span>
+            </div>
+
+            <div className="mt-4 rounded-[1.05rem] bg-[var(--app-surface-muted)] p-2.5 dark:bg-[#081323]/48" dir="ltr">
+              <div className="flex gap-1.5">
+                {["п", "и", "с", "а", "т", "ь"].map((letter) => (
+                  <span
+                    key={letter}
+                    className="grid h-9 min-w-0 flex-1 place-items-center rounded-xl bg-white text-sm font-black text-[var(--brand-navy)] shadow-sm dark:bg-white/10 dark:text-[var(--app-text)]"
+                  >
+                    {letter}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-[1.45rem] border border-[var(--app-border-muted)] bg-white/86 p-4 shadow-[0_16px_40px_rgb(17_32_59_/_0.07)] dark:bg-white/5">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className={`text-base text-[var(--brand-navy)] dark:text-[var(--app-text)] ${isArabic ? `${arabicLandingFont} font-bold` : "font-black"}`}>
+                  {text.progress}
+                </h3>
+                <p className={`mt-1 text-sm font-bold text-[var(--app-text-muted)] ${isArabic ? arabicLandingFont : ""}`}>
+                  {reviewTitle}
+                </p>
+              </div>
+              <ProgressRing />
+            </div>
+
+            <div className="mt-4 h-2 overflow-hidden rounded-full bg-[var(--app-surface-muted)]">
+              <div className="landing-progress-fill h-full rounded-full bg-gradient-to-r from-[var(--brand-teal)] via-[var(--brand-cyan)] to-[var(--brand-lime)]" />
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2" dir="ltr">
+              {vocabulary.map((word) => (
+                <span
+                  key={word}
+                  className="rounded-full bg-[var(--app-secondary-soft)] px-3 py-1.5 text-xs font-black text-[var(--app-primary-strong)]"
+                >
+                  {word}
                 </span>
-                <span className="rounded-full bg-[var(--app-primary-soft)] px-2 py-1 text-xs font-black text-[var(--app-primary-strong)]">
-                  RU
-                </span>
-              </div>
-              <div className="grid grid-cols-[0.72fr_1fr] items-center gap-2">
-                <div className="relative grid h-32 place-items-center overflow-hidden rounded-3xl bg-[linear-gradient(180deg,rgb(225_244_249_/_0.86),rgb(255_255_255_/_0.72))] dark:bg-[linear-gradient(180deg,rgb(16_34_61_/_0.88),rgb(8_19_35_/_0.72))]">
-                  <Image
-                    src="/lessons/body-parts/head-face.png"
-                    alt=""
-                    width={116}
-                    height={116}
-                    className="h-24 w-auto object-contain drop-shadow-[0_16px_22px_rgb(17_32_59_/_0.14)]"
-                  />
-                </div>
-                <div className="relative grid h-32 place-items-center overflow-hidden rounded-3xl bg-[linear-gradient(180deg,rgb(241_248_252_/_0.94),rgb(255_255_255_/_0.76))] dark:bg-[linear-gradient(180deg,rgb(16_34_61_/_0.88),rgb(8_19_35_/_0.72))]">
-                  <Image
-                    src="/lessons/body-parts/front-body.png"
-                    alt=""
-                    width={118}
-                    height={132}
-                    className="h-full w-auto object-contain drop-shadow-[0_18px_26px_rgb(17_32_59_/_0.16)]"
-                  />
-                  <span className="absolute right-1 top-4 rounded-full bg-white px-2 py-1 text-xs font-black text-[var(--brand-navy)] shadow-md dark:bg-[#10223d] dark:text-[var(--app-text)]">
-                    нос
-                  </span>
-                </div>
-              </div>
+              ))}
             </div>
-
-            <div className="grid gap-3">
-              <div className="landing-float-slow rounded-[1.35rem] border border-[var(--app-border)] bg-white/92 p-4 shadow-[0_18px_42px_rgb(17_32_59_/_0.09)] dark:bg-white/5">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-sm font-black text-[var(--app-text)]">
-                    {text.typingLabel}
-                  </span>
-                  <span className="text-xs font-black text-[var(--app-text-faint)]">
-                    02:15
-                  </span>
-                </div>
-                <div className="mt-4 rounded-2xl bg-[var(--app-surface-muted)] p-3">
-                  <p className="text-2xl font-black text-[var(--brand-navy)] dark:text-[var(--app-text)]">
-                    рука
-                  </p>
-                  <div className="mt-3 flex gap-1.5">
-                    {["р", "у", "к", "а"].map((letter) => (
-                      <span
-                        key={letter}
-                        className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-sm font-black text-[var(--brand-navy)] shadow-sm dark:bg-[#10223d] dark:text-[var(--app-text)]"
-                      >
-                        {letter}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-[1.35rem] border border-[var(--app-border)] bg-white/92 p-4 shadow-[0_18px_42px_rgb(17_32_59_/_0.09)] dark:bg-white/5">
-                <div className="flex items-center justify-between text-sm font-black">
-                  <span>{text.progress}</span>
-                  <span className="text-[var(--app-primary-strong)]">68%</span>
-                </div>
-                <div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--app-surface-muted)]">
-                  <div className="landing-progress-fill h-full rounded-full bg-gradient-to-r from-[var(--brand-teal)] via-[var(--brand-cyan)] to-[var(--brand-lime)]" />
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {russianChips.map((chip) => (
-                    <span
-                      key={chip}
-                      className="rounded-full border border-[var(--app-border)] bg-[var(--app-surface-muted)] px-3 py-1.5 text-xs font-black text-[var(--app-text-soft)]"
-                    >
-                      {chip}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          </section>
         </div>
       </div>
     </div>
   );
 }
-
 function ProgressRing() {
   return (
     <div className="relative h-16 w-16 shrink-0">
@@ -398,14 +401,18 @@ function FeatureCard({
   index: number;
   language: ExplanationLanguage;
 }) {
+  const isArabic = language === "ar";
+
   return (
     <article
-      className="landing-feature-card group min-w-0 rounded-[1.35rem] border border-white/78 bg-white/82 p-4 shadow-[0_18px_48px_rgb(17_32_59_/_0.08)] backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-[0_24px_56px_rgb(17_32_59_/_0.12)] dark:border-white/10 dark:bg-white/5"
+      className={`landing-feature-card group min-w-0 rounded-[1.35rem] border border-white bg-white/86 p-4 shadow-[0_18px_48px_rgb(17_32_59_/_0.08)] backdrop-blur-xl transition hover:-translate-y-1 hover:shadow-[0_24px_56px_rgb(17_32_59_/_0.12)] dark:border-white/10 dark:bg-white/5 ${
+        isArabic ? arabicLandingFont : ""
+      }`}
       {...uiTextProps(language)}
       style={{ animationDelay: `${index * 80}ms` }}
     >
       <FeatureVisual type={feature.visual} />
-      <h3 className="mt-4 text-lg font-black text-[var(--brand-navy)] dark:text-[var(--app-text)]">
+      <h3 className={`mt-4 text-lg text-[var(--brand-navy)] dark:text-[var(--app-text)] ${isArabic ? "font-bold" : "font-black"}`}>
         {feature.title}
       </h3>
       <p className="mt-1 text-sm font-semibold leading-6 text-[var(--app-text-muted)]">
@@ -439,7 +446,7 @@ function FeatureVisual({ type }: { type: LandingText["features"][number]["visual
     return (
       <div className="h-32 overflow-hidden rounded-2xl bg-[linear-gradient(135deg,rgb(183_229_49_/_0.2),rgb(20_184_166_/_0.14))] p-3">
         <div className="grid gap-2">
-          {["голова", "рука", "нос"].map((word, wordIndex) => (
+          {["дом", "язык", "стол"].map((word, wordIndex) => (
             <div key={word} className="flex items-center justify-between gap-3 rounded-xl bg-white/88 px-3 py-2 shadow-sm dark:bg-[#10223d]/85">
               <span className="truncate text-sm font-black">{word}</span>
               <span className={`h-2.5 w-12 shrink-0 rounded-full ${wordIndex === 1 ? "bg-[var(--brand-teal)]" : "bg-[var(--brand-lime)]"}`} />
@@ -473,10 +480,11 @@ function FeatureVisual({ type }: { type: LandingText["features"][number]["visual
         </div>
         <div className="rounded-2xl bg-[var(--brand-navy)] p-3 text-white shadow-sm">
           <div className="h-2 w-10 rounded-full bg-[var(--brand-lime)]" />
-          <div className="mt-3 text-sm font-black">нос</div>
+          <div className="mt-3 text-sm font-black">язык</div>
           <div className="mt-5 h-7 rounded-full bg-white/15" />
         </div>
       </div>
     </div>
   );
 }
+

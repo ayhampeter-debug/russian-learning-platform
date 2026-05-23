@@ -335,41 +335,49 @@ body[data-yazkup-onboarding="open"] main {
 
 .landing-page {
   isolation: isolate;
+  background:
+    radial-gradient(circle at 8% 18%, rgb(87 212 232 / 0.14), transparent 28rem),
+    radial-gradient(circle at 88% 12%, rgb(183 229 49 / 0.14), transparent 25rem),
+    linear-gradient(180deg, #ffffff 0%, #fbfdff 52%, #f7fbff 100%);
+}
+
+.landing-primary-cta {
+  color: #f8fbff !important;
 }
 
 .landing-wave {
   position: absolute;
   inset-inline: -12%;
-  height: 22rem;
+  height: 20rem;
   border-radius: 9999px;
-  opacity: 0.42;
-  filter: blur(34px);
+  opacity: 0.34;
+  filter: blur(38px);
   transform: rotate(-5deg);
   animation: landing-wave 16s ease-in-out infinite alternate;
 }
 
 .landing-wave-one {
-  top: 9rem;
+  top: 8rem;
   background:
-    linear-gradient(90deg, transparent 0%, rgb(87 212 232 / 0.22) 24%, rgb(183 229 49 / 0.18) 54%, transparent 88%),
+    linear-gradient(90deg, transparent 0%, rgb(87 212 232 / 0.2) 24%, rgb(183 229 49 / 0.16) 54%, transparent 88%),
     radial-gradient(ellipse at 50% 50%, rgb(20 184 166 / 0.14), transparent 68%);
 }
 
 .landing-wave-two {
-  top: 23rem;
+  top: 22rem;
   background:
-    linear-gradient(90deg, transparent 4%, rgb(183 229 49 / 0.14) 30%, rgb(87 212 232 / 0.18) 62%, transparent 94%),
+    linear-gradient(90deg, transparent 4%, rgb(183 229 49 / 0.13) 30%, rgb(87 212 232 / 0.16) 62%, transparent 94%),
     radial-gradient(ellipse at 42% 50%, rgb(87 212 232 / 0.12), transparent 64%);
   animation-delay: -7s;
 }
 
 .landing-blob {
   position: absolute;
-  width: 24rem;
-  height: 24rem;
+  width: 23rem;
+  height: 23rem;
   border-radius: 9999px;
-  filter: blur(58px);
-  opacity: 0.34;
+  filter: blur(64px);
+  opacity: 0.28;
   animation: landing-drift 14s ease-in-out infinite alternate;
 }
 
@@ -391,6 +399,33 @@ body[data-yazkup-onboarding="open"] main {
   inset-inline-start: 36%;
   background: rgb(183 229 49 / 0.48);
   animation-delay: -9s;
+}
+
+.landing-orbit-chip {
+  position: absolute;
+  border: 1px solid rgb(255 255 255 / 0.9);
+  background: rgb(255 255 255 / 0.72);
+  color: var(--brand-navy);
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+  padding: 0.65rem 0.85rem;
+  border-radius: 9999px;
+  box-shadow: 0 16px 38px rgb(17 32 59 / 0.08);
+  backdrop-filter: blur(18px);
+  opacity: 0.72;
+  animation: landing-orbit 11s ease-in-out infinite alternate;
+}
+
+.landing-orbit-chip-one {
+  top: 16rem;
+  inset-inline-start: 8%;
+}
+
+.landing-orbit-chip-two {
+  top: 32rem;
+  inset-inline-end: 10%;
+  animation-delay: -5s;
 }
 
 .landing-reveal {
@@ -456,6 +491,15 @@ body[data-yazkup-onboarding="open"] main {
   }
 }
 
+@keyframes landing-orbit {
+  from {
+    transform: translate3d(0, 0, 0) rotate(-4deg);
+  }
+  to {
+    transform: translate3d(0.75rem, -0.9rem, 0) rotate(3deg);
+  }
+}
+
 @keyframes landing-float {
   0%,
   100% {
@@ -475,9 +519,34 @@ body[data-yazkup-onboarding="open"] main {
   }
 }
 
+@media (max-width: 640px) {
+  .landing-page {
+    background:
+      radial-gradient(circle at 12% 12%, rgb(87 212 232 / 0.16), transparent 18rem),
+      radial-gradient(circle at 86% 34%, rgb(183 229 49 / 0.13), transparent 18rem),
+      linear-gradient(180deg, #ffffff 0%, #fbfdff 58%, #f7fbff 100%);
+  }
+
+  .landing-wave {
+    height: 14rem;
+    opacity: 0.26;
+  }
+
+  .landing-blob {
+    width: 16rem;
+    height: 16rem;
+    opacity: 0.2;
+  }
+
+  .landing-orbit-chip {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .landing-wave,
   .landing-blob,
+  .landing-orbit-chip,
   .landing-reveal,
   .landing-float,
   .landing-float-slow,
