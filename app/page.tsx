@@ -2,7 +2,7 @@
 
 import { Navigation } from "@/components/Navigation";
 import { useExplanationLanguage } from "@/components/LanguageSelector";
-import { worldOne, worlds } from "@/lib/learning-data";
+import { basicsWorld } from "@/lib/learning-data";
 import { getUiText, uiTextProps, type UiText } from "@/lib/ui-translations";
 import type { ExplanationLanguage } from "@/lib/language-preference";
 import { useUser } from "@clerk/nextjs";
@@ -10,8 +10,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 type Tone = "teal" | "cyan" | "lime" | "navy";
-
-const worldTwo = worlds.find((world) => world.number === 2);
 
 export default function Home() {
   const { language } = useExplanationLanguage();
@@ -234,19 +232,19 @@ function ProductPreview({
             </h2>
           </div>
           <span className="rounded-full bg-[var(--app-xp-soft)] px-3 py-1.5 text-sm font-black text-[var(--app-xp)]">
-            {worldOne.xp} XP
+            {basicsWorld.xp} XP
           </span>
         </div>
 
         <div className="mt-6">
           <div className="mb-3 flex justify-between gap-3 text-sm font-semibold text-[var(--app-text-muted)]">
             <span {...uiTextProps(language)}>{text.home.worldProgressPreview}</span>
-            <span>{worldOne.progressPercent}%</span>
+            <span>{basicsWorld.progressPercent}%</span>
           </div>
           <div className="h-2.5 overflow-hidden rounded-full bg-[var(--app-surface-muted)]">
             <div
               className="h-full rounded-full bg-[var(--primary)]"
-              style={{ width: `${worldOne.progressPercent}%` }}
+              style={{ width: `${basicsWorld.progressPercent}%` }}
             />
           </div>
         </div>
@@ -259,7 +257,7 @@ function ProductPreview({
           />
           <PreviewPill
             label={text.home.availableWorlds}
-            value={worldTwo ? text.home.worldOneTwo : text.home.worldOneOnly}
+            value={text.home.basics}
             language={language}
           />
         </div>

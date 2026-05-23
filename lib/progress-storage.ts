@@ -3,7 +3,16 @@
 import { useUser } from "@clerk/nextjs";
 import type { ProgressApiResponse, SavedProgress } from "@/lib/progress-types";
 import { useEffect, useSyncExternalStore } from "react";
-import { userProgress, worldOne, worlds, type Lesson, type StageStatus, type World } from "@/lib/learning-data";
+import {
+  activeWorlds,
+  basicsWorld,
+  userProgress,
+  worldOne,
+  worlds,
+  type Lesson,
+  type StageStatus,
+  type World,
+} from "@/lib/learning-data";
 import { recordLessonPractice, resetDailyStreak } from "@/lib/streak-storage";
 
 export type { SavedProgress } from "@/lib/progress-types";
@@ -393,7 +402,7 @@ export function isLessonTemporarilyAvailable(lessonId: string) {
 }
 
 export function getUnlockedLessonIds(completedLessonIds: string[]) {
-  return getUnlockedWorldLessonIds(worldOne, completedLessonIds);
+  return getUnlockedWorldLessonIds(basicsWorld, completedLessonIds);
 }
 
 export function getUnlockedWorldLessonIds(world: World, completedLessonIds: string[]) {
@@ -417,7 +426,10 @@ export function getUnlockedWorldLessonIds(world: World, completedLessonIds: stri
 }
 
 export function getWorldForLesson(lesson: Lesson) {
-  return worlds.find((world) => world.lessons.some((worldLesson) => worldLesson.id === lesson.id));
+  return (
+    activeWorlds.find((world) => world.lessons.some((worldLesson) => worldLesson.id === lesson.id)) ??
+    worlds.find((world) => world.lessons.some((worldLesson) => worldLesson.id === lesson.id))
+  );
 }
 
 export function getWorldBossChallengeId(world: World) {
@@ -444,7 +456,7 @@ export function getWorldBossState(world: World, progress: SavedProgress) {
 }
 
 export function isWorldUnlocked(world: World, progress: SavedProgress) {
-  if (world.number === 1) {
+  if (activeWorlds.some((activeWorld) => activeWorld.id === world.id) || world.number === 1) {
     return true;
   }
 
@@ -530,7 +542,7 @@ export function isBossChallengeCompleted(progress: SavedProgress) {
   return isWorldBossCompleted(worldOne, progress);
 }
 
-export function getNextRecommendedLesson(progress: SavedProgress, availableWorlds: World[] = worlds) {
+export function getNextRecommendedLesson(progress: SavedProgress, availableWorlds: World[] = activeWorlds) {
   return (
     availableWorlds
       .filter((world) => isWorldUnlocked(world, progress))
@@ -539,10 +551,14 @@ export function getNextRecommendedLesson(progress: SavedProgress, availableWorld
   );
 }
 
-export function getNextAvailablePath(progress: SavedProgress, availableWorlds: World[] = worlds) {
+export function getNextAvailablePath(progress: SavedProgress, availableWorlds: World[] = activeWorlds) {
   const nextLesson = getNextRecommendedLesson(progress, availableWorlds);
   if (nextLesson) {
     return `/lesson/${nextLesson.id}`;
+  }
+
+  if (availableWorlds === activeWorlds) {
+    return "/writing";
   }
 
   const worldOneBossState = getWorldBossState(worldOne, progress);
@@ -554,10 +570,14 @@ export function getNextAvailablePath(progress: SavedProgress, availableWorlds: W
   return "/worlds?complete=1";
 }
 
-export function getNextAvailableLabel(progress: SavedProgress, availableWorlds: World[] = worlds) {
+export function getNextAvailableLabel(progress: SavedProgress, availableWorlds: World[] = activeWorlds) {
   const nextLesson = getNextRecommendedLesson(progress, availableWorlds);
   if (nextLesson) {
     return `Continue: ${nextLesson.title}`;
+  }
+
+  if (availableWorlds === activeWorlds) {
+    return "Practice writing";
   }
 
   const worldOneBossState = getWorldBossState(worldOne, progress);
@@ -581,7 +601,7 @@ export function getLessonDisplayState(lesson: Lesson, progress: SavedProgress): 
 }
 
 export function getNextStageLessonId(stageId: string, progress: SavedProgress) {
-  const stageLessons = worldOne.lessons.filter((lesson) => lesson.stageId === stageId);
+  const stageLessons = basicsWorld.lessons.filter((lesson) => lesson.stageId === stageId);
   const unlockedLessonIds = new Set(getUnlockedLessonIds(progress.completedLessonIds));
 
   return (
@@ -593,8 +613,8 @@ export function getNextStageLessonId(stageId: string, progress: SavedProgress) {
 }
 
 export function getProgressSummary(progress: SavedProgress) {
-  const worldSummaries = worlds.map((world) => getWorldProgressSummary(world, progress));
-  const fallbackWorldSummary = getWorldProgressSummary(worldOne, progress);
+  const worldSummaries = activeWorlds.map((world) => getWorldProgressSummary(world, progress));
+  const fallbackWorldSummary = getWorldProgressSummary(basicsWorld, progress);
   const currentWorldSummary =
     worldSummaries.find((summary) => summary.unlocked && !summary.completed) ??
     worldSummaries.find((summary) => summary.unlocked) ??
@@ -611,9 +631,9 @@ export function getProgressSummary(progress: SavedProgress) {
           .every((lesson) => progress.completedLessonIds.includes(lesson.id)),
     )
     .map((stage) => stage.id);
-  const bossState = getWorldBossState(worldOne, progress);
-  const bossUnlocked = bossState !== "locked";
-  const bossCompleted = bossState === "completed";
+  const bossState = "locked" as const;
+  const bossUnlocked = false;
+  const bossCompleted = false;
   const totalSteps = currentWorldSummary.totalSteps;
   const clearedSteps = currentWorldSummary.clearedSteps;
   const currentWorldProgressPercent = currentWorldSummary.progressPercent;
@@ -621,32 +641,28 @@ export function getProgressSummary(progress: SavedProgress) {
     (total, lesson) => total + lesson.xpReward,
     currentWorldSummary.bossCompleted ? 200 : 0,
   );
-  const nextLesson = getNextRecommendedLesson(progress);
+  const nextLesson = getNextRecommendedLesson(progress, activeWorlds);
   const worldOneSummary = worldSummaries.find((summary) => summary.world.id === "world-1");
   const worldTwoSummary = worldSummaries.find((summary) => summary.world.id === "world-2");
-  const totalCompletedLessons = worlds
+  const totalCompletedLessons = activeWorlds
     .flatMap((world) => world.lessons)
     .filter((lesson) => progress.completedLessonIds.includes(lesson.id)).length;
   const allAvailableContentComplete =
-    !nextLesson && bossCompleted && worldSummaries.every((summary) => summary.completed || !summary.unlocked);
+    !nextLesson && worldSummaries.every((summary) => summary.completed || !summary.unlocked);
   const nextGoalTitle = nextLesson
     ? `Complete ${nextLesson.title}`
-    : bossState === "available"
-      ? "Defeat the World 1 Boss"
-      : "Review your worlds";
+    : "Basics completed";
   const nextGoalDescription = nextLesson
     ? `Earn ${nextLesson.xpReward} XP and keep moving through ${
         getWorldForLesson(nextLesson)?.subtitle ?? "your current world"
       }.`
-    : bossState === "available"
-      ? "Complete the final challenge to finish World 1 and unlock World 2."
-      : "All available lessons are complete. Review unlocked worlds or replay the boss.";
+    : "Basics completed. Practice writing or review mistakes.";
 
   return {
     completedLessons: completedWorldLessons,
     completedStageIds,
     completedChallenges: progress.completedChallengeIds,
-    unlockedLessonIds: worlds.flatMap((world) =>
+    unlockedLessonIds: activeWorlds.flatMap((world) =>
       isWorldUnlocked(world, progress) ? getUnlockedWorldLessonIds(world, progress.completedLessonIds) : [],
     ),
     bossUnlocked,
@@ -658,8 +674,8 @@ export function getProgressSummary(progress: SavedProgress) {
     worldTwoSummary,
     totalCompletedLessons,
     allAvailableContentComplete,
-    continueHref: getNextAvailablePath(progress),
-    continueLabel: getNextAvailableLabel(progress),
+    continueHref: getNextAvailablePath(progress, activeWorlds),
+    continueLabel: getNextAvailableLabel(progress, activeWorlds),
     nextRecommendedLesson: nextLesson,
     totalSteps,
     clearedSteps,

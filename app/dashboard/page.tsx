@@ -2,13 +2,12 @@
 
 import { Navigation } from "@/components/Navigation";
 import { useExplanationLanguage } from "@/components/LanguageSelector";
-import { userProgress, worldOne, worlds } from "@/lib/learning-data";
+import { activeWorlds, basicsWorld, userProgress } from "@/lib/learning-data";
 import {
   getUiText,
   localizeActionLabel,
   localizeLessonTitle,
   localizeProgressDescription,
-  localizeWorldDescription,
   localizeWorldSubtitle,
   translateStatus,
   uiTextProps,
@@ -39,12 +38,8 @@ export default function DashboardPage() {
     language === "ar"
       ? text.common.explanationLanguageValueArabic
       : text.common.explanationLanguageValueEnglish;
-  const bossActionUnlocked = summary.bossUnlocked || summary.bossCompleted;
   const currentWorld = summary.currentWorld;
-  const worldOneSummary = summary.worldOneSummary ?? getWorldProgressSummary(worldOne, progress);
-  const worldTwo = worlds.find((world) => world.number === 2);
-  const worldTwoSummary =
-    summary.worldTwoSummary ?? (worldTwo ? getWorldProgressSummary(worldTwo, progress) : null);
+  const basicsSummary = summary.worldSummaries[0] ?? getWorldProgressSummary(basicsWorld, progress);
   const noProgress =
     summary.completedLessons.length === 0 &&
     summary.completedChallenges.length === 0 &&
@@ -109,7 +104,7 @@ export default function DashboardPage() {
           />
           <StatCard
             title={text.dashboard.lessonsDone}
-            value={`${summary.totalCompletedLessons}/${worlds.flatMap((world) => world.lessons).length}`}
+            value={`${summary.totalCompletedLessons}/${activeWorlds.flatMap((world) => world.lessons).length}`}
             icon="OK"
             label={text.dashboard.totalLessonsCompleted}
             tone="success"
@@ -192,10 +187,12 @@ export default function DashboardPage() {
               {text.dashboard.currentCourseRussian}
             </p>
             <h2 className="mt-3 text-2xl font-black" {...uiTextProps(language)}>
-              {text.dashboard.courseCardTitle}
+              {text.dashboard.basics}
             </h2>
             <p className="mt-3 text-sm leading-6 text-slate-300" {...uiTextProps(language)}>
-              {text.dashboard.courseCardText}
+              {summary.nextRecommendedLesson
+                ? text.dashboard.courseCardText
+                : text.dashboard.basicsCompletedFull}
             </p>
             <Link
               href={summary.continueHref}
@@ -303,58 +300,37 @@ export default function DashboardPage() {
 
           <div className="rounded-2xl border border-white/10 bg-white/10 p-4 sm:rounded-3xl sm:p-6">
             <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.dashboard.nextRecommended}</p>
-            <h2 className="mt-2 text-xl font-bold sm:text-2xl">
+            <h2 className="mt-2 text-xl font-bold sm:text-2xl" {...uiTextProps(language)}>
               {summary.nextRecommendedLesson
                 ? localizeLessonTitle(summary.nextRecommendedLesson.title, language)
-                : summary.bossCompleted
-                  ? text.dashboard.worldOneCompleted
-                  : localizeLessonTitle(worldOne.bossTitle, language)}
+                : text.dashboard.basicsCompleted}
             </h2>
             <p className="mt-3 text-slate-300" {...uiTextProps(language)}>
               {summary.nextRecommendedLesson
                 ? localizeProgressDescription(summary.nextGoalDescription, language)
-                : summary.bossCompleted
-                  ? text.dashboard.bossDefeatedNext
-                  : localizeWorldDescription(text.dashboard.bossReady, language)}
+                : text.dashboard.basicsCompletedFull}
             </p>
 
             <div className="mt-6 grid gap-3 text-sm">
               <ProgressLine
-                label={text.dashboard.world1}
+                label={text.dashboard.basics}
                 value={
-                  worldOneSummary.completed
+                  basicsSummary.completed
                     ? text.dashboard.completed
-                    : `${worldOneSummary.completedLessonCount}/${worldOneSummary.totalLessons} ${text.dashboard.lessons}`
+                    : `${basicsSummary.completedLessonCount}/${basicsSummary.totalLessons} ${text.dashboard.lessons}`
                 }
               />
               <ProgressLine
-                label={text.dashboard.bossChallenge}
-                value={
-                  summary.bossCompleted
-                    ? text.dashboard.bossDefeated
-                    : summary.bossUnlocked
-                      ? text.dashboard.available
-                      : text.dashboard.locked
-                }
+                label={text.writing.title}
+                value={text.dashboard.available}
               />
               <ProgressLine
-                label={text.dashboard.world2}
-                value={
-                  worldTwoSummary?.unlocked
-                    ? text.dashboard.unlocked
-                    : text.dashboard.locked
-                }
+                label={text.dashboard.reviewMistakes}
+                value={mistakeCount > 0 ? `${mistakeCount}` : text.dashboard.noMistakesToReviewYet}
               />
             </div>
 
-            {bossActionUnlocked ? (
-              <Link
-                href={summary.bossCompleted ? summary.continueHref : "/challenge"}
-                className="mt-6 block w-full rounded-full bg-white px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-slate-200"
-              >
-                {summary.bossCompleted ? localizeActionLabel(summary.continueLabel, language) : text.dashboard.startBossChallenge}
-              </Link>
-            ) : summary.nextRecommendedLesson ? (
+            {summary.nextRecommendedLesson ? (
               <Link
                 href={summary.continueHref}
                 className="mt-6 block w-full rounded-full bg-cyan-400 px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-300"
@@ -362,13 +338,12 @@ export default function DashboardPage() {
                 {text.dashboard.continueLearning}
               </Link>
             ) : (
-              <button
-                disabled
-                aria-disabled="true"
-                className="mt-6 block w-full rounded-full bg-slate-800 px-5 py-3 text-center font-semibold text-slate-500"
+              <Link
+                href="/writing"
+                className="mt-6 block w-full rounded-full bg-cyan-400 px-5 py-3 text-center font-semibold text-slate-950 transition hover:bg-cyan-300"
               >
-                {text.dashboard.completeWorldOneLessons}
-              </button>
+                {text.dashboard.practiceWriting}
+              </Link>
             )}
           </div>
           </div>

@@ -31,7 +31,6 @@ import {
   type SentenceOrderExercise,
   type World,
   worldOne,
-  worlds,
 } from "@/lib/learning-data";
 import {
   areWorldLessonsCompleted,
@@ -1341,8 +1340,8 @@ function getLessonNextAction(lesson: Lesson, progress: SavedProgress) {
   }
 
   return {
-    href: getNextAvailablePath(progress, worlds),
-    label: getNextAvailableLabel(progress, worlds),
+    href: getNextAvailablePath(progress),
+    label: getNextAvailableLabel(progress),
   };
 }
 

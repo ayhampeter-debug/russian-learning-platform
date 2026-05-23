@@ -19,16 +19,14 @@ const navItems: NavItem[] = [
   { href: "/courses", labelKey: "courses" },
   { href: "/dashboard", labelKey: "dashboard" },
   { href: "/worlds", labelKey: "worlds" },
-  { href: "/challenge", labelKey: "challenge" },
+  { href: "/writing", labelKey: "writing" },
+  { href: "/practice", labelKey: "practice" },
   { href: "/profile", labelKey: "profile" },
   { href: "/settings", labelKey: "settings" },
 ];
 
 const mobileNavItems: NavItem[] = [
-  ...navItems.slice(0, 4),
-  { href: "/practice", labelKey: "practice" },
-  { href: "/writing", labelKey: "writing" },
-  ...navItems.slice(4),
+  ...navItems,
   { href: "/feedback", labelKey: "feedback" },
 ];
 

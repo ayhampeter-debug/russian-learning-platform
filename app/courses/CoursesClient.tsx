@@ -2,7 +2,7 @@
 
 import { Navigation } from "@/components/Navigation";
 import { useExplanationLanguage } from "@/components/LanguageSelector";
-import { worlds } from "@/lib/learning-data";
+import { activeWorlds } from "@/lib/learning-data";
 import { useCurrentCourse } from "@/lib/onboarding-preferences";
 import {
   getUiText,
@@ -60,6 +60,9 @@ export function CoursesClient() {
             <p className="mt-2 text-sm text-slate-300" {...uiTextProps(language)}>
               {text.courses.explanationLanguage}: {explanationLanguage}
             </p>
+            <p className="mt-2 text-sm font-semibold text-cyan-100" {...uiTextProps(language)}>
+              {text.courses.currentActiveModuleBasics}
+            </p>
           </div>
         </div>
 
@@ -83,11 +86,11 @@ export function CoursesClient() {
             </div>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              <CourseStat label={text.courses.worldsAvailable} value="2" />
+              <CourseStat label={text.courses.activeModule} value={text.courses.basics} />
               <CourseStat label="XP" value={progress.totalXp.toLocaleString()} />
               <CourseStat
                 label={text.dashboard.completedLessons}
-                value={`${summary.totalCompletedLessons}/${worlds.flatMap((world) => world.lessons).length}`}
+                value={`${summary.totalCompletedLessons}/${activeWorlds.flatMap((world) => world.lessons).length}`}
               />
             </div>
 

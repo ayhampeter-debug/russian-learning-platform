@@ -6,7 +6,7 @@ import { Navigation } from "@/components/Navigation";
 import { useExplanationLanguage } from "@/components/LanguageSelector";
 import { normalizeRussianText, PronounceButton } from "@/components/PronounceButton";
 import type { ExplanationLanguage } from "@/lib/language-preference";
-import { worlds, type VocabularyItem } from "@/lib/learning-data";
+import { activeWorlds, type VocabularyItem } from "@/lib/learning-data";
 import { addMistake } from "@/lib/mistake-storage";
 import { explanationTextProps, localizeMeaning } from "@/lib/russian-explanations";
 import { getUiText, uiTextProps } from "@/lib/ui-translations";
@@ -642,7 +642,7 @@ function ResultStat({ title, value }: { title: string; value: string }) {
 function buildWritingWords(): WritingWord[] {
   const seen = new Set<string>();
 
-  return worlds.flatMap((world) =>
+  return activeWorlds.flatMap((world) =>
     world.lessons.flatMap((lesson) =>
       lesson.vocabulary.flatMap((item: VocabularyItem, index) => {
         const russian = normalizeRussianText(item.russian).trim();

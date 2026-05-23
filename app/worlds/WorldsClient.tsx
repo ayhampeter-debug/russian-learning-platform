@@ -84,7 +84,7 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
               >
                 <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center">
                   <div>
-                    <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.worlds.world} {world.number}</p>
+                    <p className="text-sm text-slate-400" {...uiTextProps(language)}>{text.common.activeModule}</p>
                     <h2 className="text-2xl font-bold sm:text-3xl" {...uiTextProps(language)}>
                       {localizeWorldTitle(world.title, language)}
                     </h2>

@@ -1,8 +1,9 @@
-import { worldOne, type Lesson } from "@/lib/learning-data";
+import { redirect } from "next/navigation";
+import type { Lesson } from "@/lib/learning-data";
 import { LessonSessionClient } from "./[lessonId]/LessonSessionClient";
 
 export default function LessonPage() {
-  return <LessonExperience lesson={worldOne.lessons[0]} />;
+  redirect("/lesson/body-parts");
 }
 
 export function LessonExperience({ lesson }: { lesson: Lesson }) {

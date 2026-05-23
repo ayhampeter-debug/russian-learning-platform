@@ -1850,6 +1850,49 @@ export const worldTwo: World = {
   ],
 };
 
+const bodyPartsLesson = worldTwo.lessons.find((lesson) => lesson.id === "body-parts");
+
+if (!bodyPartsLesson) {
+  throw new Error("Body Parts lesson is required for the active Basics module.");
+}
+
+export const basicsWorld: World = {
+  id: "basics",
+  number: 1,
+  title: "Basics",
+  subtitle: "Basics",
+  description: "Learn the main body parts in Russian with a visual body map.",
+  progressPercent: 0,
+  profileProgressPercent: 0,
+  dashboardProgressPercent: 0,
+  xp: bodyPartsLesson.xpReward,
+  bossTitle: "",
+  bossDescription: "",
+  dailyChallengeTitle: "Writing Practice",
+  dailyChallengeDescription: "Practice writing Russian vocabulary.",
+  stages: [
+    {
+      id: "basics",
+      number: "1",
+      title: "Basics",
+      description: "Start with Body Parts.",
+      status: "Unlocked",
+      xp: bodyPartsLesson.xpReward,
+    },
+  ],
+  lessons: [
+    {
+      ...bodyPartsLesson,
+      number: "1",
+      stageId: "basics",
+      status: "Unlocked",
+      locked: false,
+    },
+  ],
+};
+
+export const activeWorlds = [basicsWorld];
+
 export const worlds = [worldOne, worldTwo];
 
 export const worldTwoChallengeQuestions: ChallengeQuestion[] = [

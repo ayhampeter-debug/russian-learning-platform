@@ -2,7 +2,16 @@ import "server-only";
 
 import { logContentFallback, withContentFallbackTimeout } from "@/lib/content-fallback-log";
 import { getPrismaClient } from "@/lib/prisma";
-import { worldOne, worlds, type Lesson, type Stage, type StageStatus, type World } from "@/lib/learning-data";
+import {
+  activeWorlds,
+  basicsWorld,
+  worldOne,
+  worlds,
+  type Lesson,
+  type Stage,
+  type StageStatus,
+  type World,
+} from "@/lib/learning-data";
 
 type ContentSource = "database" | "static";
 
@@ -59,7 +68,7 @@ type DatabaseWorld = {
 
 export async function getWorldOneContent(): Promise<WorldContentResult> {
   const { source, worlds: contentWorlds } = await getWorldsContent();
-  const world = contentWorlds.find((contentWorld) => contentWorld.number === 1) ?? worldOne;
+  const world = contentWorlds.find((contentWorld) => contentWorld.id === basicsWorld.id) ?? basicsWorld;
 
   return { source, world };
 }
@@ -104,7 +113,9 @@ export async function getWorldsContent(): Promise<WorldsContentResult> {
 
     return {
       source: "database",
-      worlds: mergeDatabaseAndStaticWorlds(databaseWorlds.map(mapWorldFromDatabase)),
+      worlds: buildActiveWorldsFromContent(
+        mergeDatabaseAndStaticWorlds(databaseWorlds.map(mapWorldFromDatabase)),
+      ),
     };
   } catch (error) {
     logContentFallback("Falling back to static worlds content.", { error });
@@ -112,10 +123,36 @@ export async function getWorldsContent(): Promise<WorldsContentResult> {
   }
 }
 
+function buildActiveWorldsFromContent(contentWorlds: World[]) {
+  const bodyPartsLesson =
+    contentWorlds.flatMap((world) => world.lessons).find((lesson) => lesson.id === "body-parts") ??
+    basicsWorld.lessons[0];
+
+  return [
+    {
+      ...basicsWorld,
+      xp: bodyPartsLesson.xpReward,
+      stages: basicsWorld.stages.map((stage) => ({
+        ...stage,
+        xp: bodyPartsLesson.xpReward,
+      })),
+      lessons: [
+        {
+          ...bodyPartsLesson,
+          number: "1",
+          stageId: "basics",
+          status: "Unlocked" as const,
+          locked: false,
+        },
+      ],
+    },
+  ];
+}
+
 function getStaticWorldsContent(): WorldsContentResult {
   return {
     source: "static",
-    worlds,
+    worlds: activeWorlds,
   };
 }
 
