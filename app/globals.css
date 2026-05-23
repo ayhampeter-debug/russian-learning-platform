@@ -98,7 +98,7 @@
 body {
   background: var(--app-bg);
   color: var(--app-text);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
 body[data-yazkup-onboarding="open"] {
@@ -331,4 +331,159 @@ body[data-yazkup-onboarding="open"] main {
 :root[data-theme="light"] .cl-card,
 :root[data-theme="light"] .cl-cardBox {
   color: var(--app-text);
+}
+
+.landing-page {
+  isolation: isolate;
+}
+
+.landing-wave {
+  position: absolute;
+  inset-inline: -12%;
+  height: 22rem;
+  border-radius: 9999px;
+  opacity: 0.42;
+  filter: blur(34px);
+  transform: rotate(-5deg);
+  animation: landing-wave 16s ease-in-out infinite alternate;
+}
+
+.landing-wave-one {
+  top: 9rem;
+  background:
+    linear-gradient(90deg, transparent 0%, rgb(87 212 232 / 0.22) 24%, rgb(183 229 49 / 0.18) 54%, transparent 88%),
+    radial-gradient(ellipse at 50% 50%, rgb(20 184 166 / 0.14), transparent 68%);
+}
+
+.landing-wave-two {
+  top: 23rem;
+  background:
+    linear-gradient(90deg, transparent 4%, rgb(183 229 49 / 0.14) 30%, rgb(87 212 232 / 0.18) 62%, transparent 94%),
+    radial-gradient(ellipse at 42% 50%, rgb(87 212 232 / 0.12), transparent 64%);
+  animation-delay: -7s;
+}
+
+.landing-blob {
+  position: absolute;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 9999px;
+  filter: blur(58px);
+  opacity: 0.34;
+  animation: landing-drift 14s ease-in-out infinite alternate;
+}
+
+.landing-blob-teal {
+  top: 7rem;
+  inset-inline-start: -8rem;
+  background: rgb(20 184 166 / 0.72);
+}
+
+.landing-blob-cyan {
+  top: 3rem;
+  inset-inline-end: -6rem;
+  background: rgb(87 212 232 / 0.66);
+  animation-delay: -5s;
+}
+
+.landing-blob-lime {
+  bottom: 6rem;
+  inset-inline-start: 36%;
+  background: rgb(183 229 49 / 0.48);
+  animation-delay: -9s;
+}
+
+.landing-reveal {
+  animation: landing-reveal 700ms ease-out both;
+}
+
+.landing-reveal-delay {
+  animation-delay: 130ms;
+}
+
+.landing-float {
+  animation: landing-float 5.5s ease-in-out infinite;
+}
+
+.landing-float-slow {
+  animation: landing-float 7s ease-in-out infinite;
+  animation-delay: -2s;
+}
+
+.landing-chip-float {
+  animation: landing-float 6s ease-in-out infinite;
+}
+
+.landing-chip-float-delay {
+  animation-delay: -2.8s;
+}
+
+.landing-feature-card {
+  animation: landing-reveal 620ms ease-out both;
+}
+
+.landing-progress-fill {
+  width: 68%;
+  animation: landing-progress 1.15s ease-out both;
+}
+
+@keyframes landing-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes landing-drift {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(1.5rem, -1rem, 0) scale(1.08);
+  }
+}
+
+@keyframes landing-wave {
+  from {
+    transform: translate3d(-1rem, 0, 0) rotate(-5deg);
+  }
+  to {
+    transform: translate3d(1.25rem, -0.75rem, 0) rotate(-3deg);
+  }
+}
+
+@keyframes landing-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes landing-progress {
+  from {
+    width: 0;
+  }
+  to {
+    width: 68%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-wave,
+  .landing-blob,
+  .landing-reveal,
+  .landing-float,
+  .landing-float-slow,
+  .landing-chip-float,
+  .landing-feature-card,
+  .landing-progress-fill {
+    animation: none;
+  }
 }

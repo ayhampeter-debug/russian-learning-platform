@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Alexandria, Geist, Geist_Mono } from "next/font/google";
 import { OnboardingSetup } from "@/components/OnboardingSetup";
 import { ThemeProvider, themeStorageKey } from "@/components/ThemeProvider";
 import { UserSync } from "@/components/UserSync";
@@ -14,6 +14,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const alexandria = Alexandria({
+  variable: "--font-alexandria",
+  subsets: ["arabic", "latin"],
+  weight: ["400", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -80,7 +86,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html
         lang="en"
-        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${alexandria.variable} h-full antialiased`}
         suppressHydrationWarning
       >
         <body className="min-h-full flex flex-col">
