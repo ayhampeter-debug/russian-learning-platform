@@ -20,7 +20,7 @@ export type { SavedProgress } from "@/lib/progress-types";
 const progressStorageKey = "russian-learning-platform-progress";
 const progressChangeEventName = "russian-learning-platform-progress-change";
 const progressRequestTimeoutMs = 4_000;
-const temporarilyAvailableLessonIds = new Set(["body-parts"]);
+const temporarilyAvailableLessonIds = new Set(["body-parts", "colors"]);
 
 export type LessonProgressState = {
   status: StageStatus | "In progress";

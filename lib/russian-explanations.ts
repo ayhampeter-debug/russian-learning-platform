@@ -68,6 +68,18 @@ const uiText: Record<UiKey, Record<ExplanationLanguage, string>> = {
 };
 
 const meaningArabic: Record<string, string> = {
+  red: "أحمر",
+  blue: "أزرق",
+  green: "أخضر",
+  yellow: "أصفر",
+  black: "أسود",
+  white: "أبيض",
+  orange: "برتقالي",
+  purple: "بنفسجي",
+  pink: "وردي",
+  brown: "بني",
+  gray: "رمادي",
+  "light blue": "أزرق فاتح",
   "A friend": "صديق",
   "A stranger or group": "شخص غريب أو مجموعة",
   "Alright": "حسنا",

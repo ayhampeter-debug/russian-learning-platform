@@ -2,7 +2,7 @@
 
 import { Navigation } from "@/components/Navigation";
 import { useExplanationLanguage } from "@/components/LanguageSelector";
-import type { StageStatus, World } from "@/lib/learning-data";
+import type { Lesson, StageStatus, World } from "@/lib/learning-data";
 import {
   getUiText,
   localizeLessonTitle,
@@ -23,6 +23,7 @@ import {
   type SavedProgress,
   useProgress,
 } from "@/lib/progress-storage";
+import Image from "next/image";
 import Link from "next/link";
 
 export function WorldsClient({ worlds }: { worlds: World[] }) {
@@ -124,45 +125,49 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
                   </div>
                 </div>
 
-                <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-                  {world.stages.map((stage) => {
-                    const stageLessons = world.lessons.filter((lesson) => lesson.stageId === stage.id);
-                    const stageState = getWorldStageProgressState(world, stage.id, progress);
-                    const lessonId = getNextWorldStageLessonId(world, stage.id, progress);
-                    const hasAvailableLesson = stageLessons.some(
-                      (lesson) => !getLessonProgressState(lesson, progress).locked,
-                    );
-                    const completedLessonCount = stageLessons.filter((lesson) =>
-                      progress.completedLessonIds.includes(lesson.id),
-                    ).length;
-                    const locked = (!worldUnlocked && !hasAvailableLesson) || stageState.locked;
+                {world.id === "basics" ? (
+                  <BasicsLessonsSection world={world} progress={progress} text={text} language={language} />
+                ) : (
+                  <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                    {world.stages.map((stage) => {
+                      const stageLessons = world.lessons.filter((lesson) => lesson.stageId === stage.id);
+                      const stageState = getWorldStageProgressState(world, stage.id, progress);
+                      const lessonId = getNextWorldStageLessonId(world, stage.id, progress);
+                      const hasAvailableLesson = stageLessons.some(
+                        (lesson) => !getLessonProgressState(lesson, progress).locked,
+                      );
+                      const completedLessonCount = stageLessons.filter((lesson) =>
+                        progress.completedLessonIds.includes(lesson.id),
+                      ).length;
+                      const locked = (!worldUnlocked && !hasAvailableLesson) || stageState.locked;
 
-                    return (
-                      <StageCard
-                        key={stage.id}
-                        worldId={world.id}
-                        number={stage.number}
-                        title={localizeWorldTitle(stage.title, language)}
-                        description={localizeWorldDescription(stage.description, language)}
-                        status={locked ? "Locked" : stageState.status}
-                        statusLabel={translateStatus(getProgressStatusLabel(locked ? "Locked" : stageState.status), language)}
-                        locked={locked}
-                        xp={`${stage.xp} XP`}
-                        boss={stage.boss}
-                        lessonId={lessonId}
-                        completedLessonCount={completedLessonCount}
-                        lessonCount={stageLessons.length}
-                        lessons={stageLessons.map((lesson) => ({
-                          id: lesson.id,
-                          title: localizeLessonTitle(lesson.title, language),
-                          state: getLessonDisplayState(lesson, progress),
-                        }))}
-                        text={text}
-                        language={language}
-                      />
-                    );
-                  })}
-                </div>
+                      return (
+                        <StageCard
+                          key={stage.id}
+                          worldId={world.id}
+                          number={stage.number}
+                          title={localizeWorldTitle(stage.title, language)}
+                          description={localizeWorldDescription(stage.description, language)}
+                          status={locked ? "Locked" : stageState.status}
+                          statusLabel={translateStatus(getProgressStatusLabel(locked ? "Locked" : stageState.status), language)}
+                          locked={locked}
+                          xp={`${stage.xp} XP`}
+                          boss={stage.boss}
+                          lessonId={lessonId}
+                          completedLessonCount={completedLessonCount}
+                          lessonCount={stageLessons.length}
+                          lessons={stageLessons.map((lesson) => ({
+                            id: lesson.id,
+                            title: localizeLessonTitle(lesson.title, language),
+                            state: getLessonDisplayState(lesson, progress),
+                          }))}
+                          text={text}
+                          language={language}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -170,6 +175,151 @@ export function WorldsClient({ worlds }: { worlds: World[] }) {
       </section>
     </main>
   );
+}
+
+function BasicsLessonsSection({
+  world,
+  progress,
+  text,
+  language,
+}: {
+  world: World;
+  progress: SavedProgress;
+  text: UiText;
+  language: ExplanationLanguage;
+}) {
+  const completedLessonCount = world.lessons.filter((lesson) =>
+    progress.completedLessonIds.includes(lesson.id),
+  ).length;
+
+  return (
+    <section className="rounded-[1.75rem] border border-slate-200/80 bg-slate-50 p-4 text-slate-950 shadow-[0_24px_70px_rgb(8_19_35_/_0.12)] sm:p-6">
+      <div className="mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+        <div {...uiTextProps(language)}>
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-700">
+            {text.common.activeModule}
+          </p>
+          <h3 className="mt-2 text-2xl font-black sm:text-3xl">Basics</h3>
+          <p className="mt-2 text-sm font-semibold text-slate-500">دروسان بصريان للبدء بسرعة.</p>
+        </div>
+        <span className="w-fit rounded-full border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-black text-cyan-800">
+          {completedLessonCount}/{world.lessons.length} {text.worlds.lessonsComplete}
+        </span>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {world.lessons.map((lesson) => (
+          <BasicsLessonCard
+            key={lesson.id}
+            lesson={lesson}
+            state={getLessonDisplayState(lesson, progress)}
+            locked={getLessonProgressState(lesson, progress).locked}
+            language={language}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function BasicsLessonCard({
+  lesson,
+  state,
+  locked,
+  language,
+}: {
+  lesson: Lesson;
+  state: "Completed" | "Current" | "Available" | "Locked";
+  locked: boolean;
+  language: ExplanationLanguage;
+}) {
+  const content = getBasicsLessonContent(lesson);
+  const completed = state === "Completed";
+  const status = completed ? "مكتمل" : state === "Current" ? "تابع" : "ابدأ";
+  const ctaLabel = completed ? "راجع الدرس" : state === "Current" ? "تابع الدرس" : "ابدأ الدرس";
+
+  return (
+    <article
+      className={`group flex min-w-0 flex-col overflow-hidden rounded-[1.35rem] border bg-white shadow-[0_18px_48px_rgb(15_23_42_/_0.09)] transition ${
+        locked
+          ? "border-slate-200 opacity-70"
+          : "border-slate-200/90 hover:-translate-y-0.5 hover:border-cyan-200 hover:shadow-[0_24px_60px_rgb(15_23_42_/_0.14)]"
+      }`}
+    >
+      <div className="relative h-44 overflow-hidden bg-[linear-gradient(135deg,rgb(236_254_255),rgb(240_253_244))]">
+        {lesson.id === "body-parts" ? (
+          <>
+            <div className="absolute inset-x-10 bottom-0 top-8 rounded-t-full bg-white/70" />
+            <Image
+              src="/lessons/body-parts/front-body.png"
+              alt=""
+              width={174}
+              height={537}
+              aria-hidden="true"
+              className="relative mx-auto h-full w-auto object-contain object-bottom drop-shadow-[0_16px_24px_rgb(15_23_42_/_0.16)]"
+            />
+          </>
+        ) : (
+          <div className="grid h-full grid-cols-4 gap-3 p-5">
+            {["bg-red-400", "bg-blue-500", "bg-emerald-400", "bg-yellow-300", "bg-violet-500", "bg-pink-400", "bg-orange-400", "bg-slate-700"].map((swatch) => (
+              <span
+                key={swatch}
+                className={`rounded-2xl border border-white/70 shadow-[0_12px_24px_rgb(15_23_42_/_0.13)] ${swatch}`}
+                aria-hidden="true"
+              />
+            ))}
+          </div>
+        )}
+        <span className="absolute end-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-black text-slate-700 shadow-sm">
+          {status}
+        </span>
+      </div>
+
+      <div className="flex flex-1 flex-col p-5" {...uiTextProps(language)}>
+        <h4 className="text-xl font-black text-slate-950">{content.title}</h4>
+        <p className="mt-2 min-h-12 text-sm font-semibold leading-6 text-slate-500">
+          {content.description}
+        </p>
+
+        <div className="mt-5 grid grid-cols-3 gap-2 text-center text-xs font-black text-slate-600">
+          <span className="rounded-2xl bg-slate-100 px-2 py-2">{lesson.exercises.length} خطوات</span>
+          <span className="rounded-2xl bg-cyan-50 px-2 py-2 text-cyan-800">{lesson.xpReward} XP</span>
+          <span className="rounded-2xl bg-lime-50 px-2 py-2 text-lime-800">{status}</span>
+        </div>
+
+        {locked ? (
+          <button
+            disabled
+            aria-disabled="true"
+            className="mt-5 w-full cursor-not-allowed rounded-full bg-slate-200 px-5 py-3 text-center text-sm font-black text-slate-500"
+          >
+            مقفل
+          </button>
+        ) : (
+          <Link
+            href={`/lesson/${lesson.id}`}
+            className="mt-5 w-full rounded-full bg-slate-950 px-5 py-3 text-center text-sm font-black text-white transition hover:bg-cyan-700"
+          >
+            {ctaLabel}
+          </Link>
+        )}
+      </div>
+    </article>
+  );
+}
+
+function getBasicsLessonContent(lesson: Lesson) {
+  if (lesson.id === "colors") {
+    return {
+      title: "Colors / الألوان",
+      description: "تعرّف على أسماء الألوان بالروسية من خلال التمارين البصرية.",
+    };
+  }
+
+  return {
+    title: "Body Parts / أجزاء الجسم",
+    description: "تعلم أسماء أجزاء الجسم بالروسية بطريقة تفاعلية.",
+  };
 }
 
 function getNextWorldStageLessonId(world: World, stageId: string, progress: SavedProgress) {

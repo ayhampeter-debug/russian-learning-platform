@@ -34,6 +34,7 @@ export type Lesson = {
 export type VocabularyItem = {
   russian: string;
   english: string;
+  arabic?: string;
   note?: string;
 };
 
@@ -1856,16 +1857,88 @@ if (!bodyPartsLesson) {
   throw new Error("Body Parts lesson is required for the active Basics module.");
 }
 
+export const colorsLesson: Lesson = {
+  id: "colors",
+  number: "2",
+  title: "Colors",
+  description: "Learn colors in Russian with vivid swatches, listening, matching, and typing practice.",
+  stageId: "basics",
+  status: "Unlocked",
+  xp: 100,
+  xpReward: 100,
+  locked: false,
+  vocabulary: [
+    { russian: "красный", english: "red", arabic: "أحمر" },
+    { russian: "синий", english: "blue", arabic: "أزرق" },
+    { russian: "зелёный", english: "green", arabic: "أخضر" },
+    { russian: "жёлтый", english: "yellow", arabic: "أصفر" },
+    { russian: "чёрный", english: "black", arabic: "أسود" },
+    { russian: "белый", english: "white", arabic: "أبيض" },
+    { russian: "оранжевый", english: "orange", arabic: "برتقالي" },
+    { russian: "фиолетовый", english: "purple", arabic: "بنفسجي" },
+    { russian: "розовый", english: "pink", arabic: "وردي" },
+    { russian: "коричневый", english: "brown", arabic: "بني" },
+    { russian: "серый", english: "gray", arabic: "رمادي" },
+    { russian: "голубой", english: "light blue", arabic: "أزرق فاتح" },
+  ],
+  exercises: [
+    {
+      id: "colors-red",
+      type: "multipleChoice",
+      prompt: "Choose the meaning.",
+      display: "красный",
+      options: ["red", "blue", "green", "yellow"],
+      correctAnswer: "red",
+      explanation: "красный means red.",
+      points: 10,
+    },
+    {
+      id: "colors-green-yo",
+      type: "multipleChoice",
+      prompt: "Choose the Russian word for green.",
+      display: "green",
+      options: ["зелёный", "жёлтый", "серый", "синий"],
+      correctAnswer: "зелёный",
+      explanation: "зелёный is spelled with ё.",
+      points: 10,
+    },
+    {
+      id: "colors-yellow-yo",
+      type: "multipleChoice",
+      prompt: "Choose the Russian word for yellow.",
+      display: "yellow",
+      options: ["жёлтый", "белый", "голубой", "розовый"],
+      correctAnswer: "жёлтый",
+      explanation: "жёлтый is spelled with ё.",
+      points: 10,
+    },
+    {
+      id: "colors-match",
+      type: "matching",
+      prompt: "Match the color words.",
+      pairs: [
+        { russian: "красный", english: "red" },
+        { russian: "синий", english: "blue" },
+        { russian: "зелёный", english: "green" },
+        { russian: "жёлтый", english: "yellow" },
+      ],
+      englishOptions: ["yellow", "green", "red", "blue"],
+      explanation: "These are core Russian color words.",
+      points: 20,
+    },
+  ],
+};
+
 export const basicsWorld: World = {
   id: "basics",
   number: 1,
   title: "Basics",
   subtitle: "Basics",
-  description: "Learn the main body parts in Russian with a visual body map.",
+  description: "Learn essential Russian basics through interactive visual lessons.",
   progressPercent: 0,
   profileProgressPercent: 0,
   dashboardProgressPercent: 0,
-  xp: bodyPartsLesson.xpReward,
+  xp: bodyPartsLesson.xpReward + colorsLesson.xpReward,
   bossTitle: "",
   bossDescription: "",
   dailyChallengeTitle: "Writing Practice",
@@ -1875,9 +1948,9 @@ export const basicsWorld: World = {
       id: "basics",
       number: "1",
       title: "Basics",
-      description: "Start with Body Parts.",
+      description: "Start with Body Parts, then learn Colors.",
       status: "Unlocked",
-      xp: bodyPartsLesson.xpReward,
+      xp: bodyPartsLesson.xpReward + colorsLesson.xpReward,
     },
   ],
   lessons: [
@@ -1888,6 +1961,7 @@ export const basicsWorld: World = {
       status: "Unlocked",
       locked: false,
     },
+    colorsLesson,
   ],
 };
 

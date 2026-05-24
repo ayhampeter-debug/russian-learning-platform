@@ -127,24 +127,40 @@ function buildActiveWorldsFromContent(contentWorlds: World[]) {
   const bodyPartsLesson =
     contentWorlds.flatMap((world) => world.lessons).find((lesson) => lesson.id === "body-parts") ??
     basicsWorld.lessons[0];
+  const colorsLesson =
+    contentWorlds.flatMap((world) => world.lessons).find((lesson) => lesson.id === "colors") ??
+    basicsWorld.lessons.find((lesson) => lesson.id === "colors");
+  const basicsLessons = [
+    {
+      ...bodyPartsLesson,
+      number: "1",
+      stageId: "basics",
+      status: "Unlocked" as const,
+      locked: false,
+    },
+    ...(colorsLesson
+      ? [
+          {
+            ...colorsLesson,
+            number: "2",
+            stageId: "basics",
+            status: "Unlocked" as const,
+            locked: false,
+          },
+        ]
+      : []),
+  ];
+  const basicsXp = basicsLessons.reduce((total, lesson) => total + lesson.xpReward, 0);
 
   return [
     {
       ...basicsWorld,
-      xp: bodyPartsLesson.xpReward,
+      xp: basicsXp,
       stages: basicsWorld.stages.map((stage) => ({
         ...stage,
-        xp: bodyPartsLesson.xpReward,
+        xp: basicsXp,
       })),
-      lessons: [
-        {
-          ...bodyPartsLesson,
-          number: "1",
-          stageId: "basics",
-          status: "Unlocked" as const,
-          locked: false,
-        },
-      ],
+      lessons: basicsLessons,
     },
   ];
 }
