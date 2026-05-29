@@ -47,6 +47,8 @@ export const uiText = {
     },
     nav: {
       home: "Home",
+      startLearning: "Start Learning",
+      writingPractice: "Writing Practice",
       courses: "Courses",
       dashboard: "Dashboard",
       worlds: "Worlds",
@@ -727,6 +729,8 @@ export const uiText = {
     },
     nav: {
       home: "الرئيسية",
+      startLearning: "ابدأ التعلّم",
+      writingPractice: "تدريب الكتابة",
       courses: "المساقات",
       dashboard: "لوحة التعلم",
       worlds: "العوالم",

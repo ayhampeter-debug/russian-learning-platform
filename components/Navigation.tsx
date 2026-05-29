@@ -16,19 +16,13 @@ type NavItem = {
 
 const navItems: NavItem[] = [
   { href: "/", labelKey: "home" },
-  { href: "/courses", labelKey: "courses" },
-  { href: "/dashboard", labelKey: "dashboard" },
-  { href: "/worlds", labelKey: "worlds" },
-  { href: "/writing", labelKey: "writing" },
-  { href: "/practice", labelKey: "practice" },
+  { href: "/worlds", labelKey: "startLearning" },
+  { href: "/writing", labelKey: "writingPractice" },
   { href: "/profile", labelKey: "profile" },
   { href: "/settings", labelKey: "settings" },
 ];
 
-const mobileNavItems: NavItem[] = [
-  ...navItems,
-  { href: "/feedback", labelKey: "feedback" },
-];
+const mobileNavItems: NavItem[] = navItems;
 
 export function Navigation() {
   const pathname = usePathname();
