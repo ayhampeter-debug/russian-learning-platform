@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
+import { type FormEvent, type ReactNode, type RefObject, useMemo, useRef, useState } from "react";
+import { useExplanationLanguage } from "@/components/LanguageSelector";
 import { Navigation } from "@/components/Navigation";
 import { PronounceButton } from "@/components/PronounceButton";
-import { useExplanationLanguage } from "@/components/LanguageSelector";
 import type { ExplanationLanguage } from "@/lib/language-preference";
 import type { Lesson } from "@/lib/learning-data";
 import { addMistake } from "@/lib/mistake-storage";
@@ -20,13 +22,11 @@ import {
   localizeLessonTitle,
   uiTextProps,
 } from "@/lib/ui-translations";
-import Link from "next/link";
-import { type FormEvent, type ReactNode, type RefObject, useMemo, useRef, useState } from "react";
 
-type ColorStage = "learn" | "tap" | "listen" | "match" | "type" | "final" | "complete";
+type ColorStage = "learn" | "choose" | "listen" | "match" | "type" | "final" | "complete";
 type AnswerState = { selectedId: string; isCorrect: boolean };
 type FinalQuestion =
-  | { id: string; type: "tap" | "listen" | "type"; colorId: string }
+  | { id: string; type: "choose" | "listen" | "type"; colorId: string }
   | { id: string; type: "match"; colorId: "match-set" };
 
 type ColorWord = {
@@ -36,41 +36,44 @@ type ColorWord = {
   arabic: string;
   hex: string;
   ring: string;
+  textTone: "light" | "dark";
 };
 
 const colors: ColorWord[] = [
-  { id: "red", russian: "красный", english: "red", arabic: "أحمر", hex: "#e53935", ring: "#fecaca" },
-  { id: "blue", russian: "синий", english: "blue", arabic: "أزرق", hex: "#2563eb", ring: "#bfdbfe" },
-  { id: "green", russian: "зелёный", english: "green", arabic: "أخضر", hex: "#16a34a", ring: "#bbf7d0" },
-  { id: "yellow", russian: "жёлтый", english: "yellow", arabic: "أصفر", hex: "#facc15", ring: "#fef08a" },
-  { id: "black", russian: "чёрный", english: "black", arabic: "أسود", hex: "#111827", ring: "#cbd5e1" },
-  { id: "white", russian: "белый", english: "white", arabic: "أبيض", hex: "#f8fafc", ring: "#cbd5e1" },
-  { id: "orange", russian: "оранжевый", english: "orange", arabic: "برتقالي", hex: "#f97316", ring: "#fed7aa" },
-  { id: "purple", russian: "фиолетовый", english: "purple", arabic: "بنفسجي", hex: "#7c3aed", ring: "#ddd6fe" },
-  { id: "pink", russian: "розовый", english: "pink", arabic: "وردي", hex: "#ec4899", ring: "#fbcfe8" },
-  { id: "brown", russian: "коричневый", english: "brown", arabic: "بني", hex: "#8b5a2b", ring: "#e7d3bd" },
-  { id: "gray", russian: "серый", english: "gray", arabic: "رمادي", hex: "#64748b", ring: "#cbd5e1" },
-  { id: "light-blue", russian: "голубой", english: "light blue", arabic: "أزرق فاتح", hex: "#38bdf8", ring: "#bae6fd" },
+  { id: "red", russian: "красный", english: "red", arabic: "أحمر", hex: "#EF4444", ring: "#FECACA", textTone: "light" },
+  { id: "blue", russian: "синий", english: "blue", arabic: "أزرق", hex: "#2563EB", ring: "#BFDBFE", textTone: "light" },
+  { id: "green", russian: "зелёный", english: "green", arabic: "أخضر", hex: "#22C55E", ring: "#BBF7D0", textTone: "dark" },
+  { id: "yellow", russian: "жёлтый", english: "yellow", arabic: "أصفر", hex: "#FACC15", ring: "#FEF08A", textTone: "dark" },
+  { id: "black", russian: "чёрный", english: "black", arabic: "أسود", hex: "#111827", ring: "#CBD5E1", textTone: "light" },
+  { id: "white", russian: "белый", english: "white", arabic: "أبيض", hex: "#FFFFFF", ring: "#CBD5E1", textTone: "dark" },
+  { id: "orange", russian: "оранжевый", english: "orange", arabic: "برتقالي", hex: "#F97316", ring: "#FED7AA", textTone: "light" },
+  { id: "purple", russian: "фиолетовый", english: "purple", arabic: "بنفسجي", hex: "#8B5CF6", ring: "#DDD6FE", textTone: "light" },
+  { id: "pink", russian: "розовый", english: "pink", arabic: "وردي", hex: "#EC4899", ring: "#FBCFE8", textTone: "light" },
+  { id: "brown", russian: "коричневый", english: "brown", arabic: "بني", hex: "#92400E", ring: "#E7D3BD", textTone: "light" },
+  { id: "gray", russian: "серый", english: "gray", arabic: "رمادي", hex: "#6B7280", ring: "#CBD5E1", textTone: "light" },
+  { id: "light-blue", russian: "голубой", english: "light blue", arabic: "أزرق فاتح", hex: "#38BDF8", ring: "#BAE6FD", textTone: "dark" },
 ];
 
-const tapQuestionIds = ["red", "blue", "green", "yellow", "purple", "light-blue"];
+const chooseQuestionIds = ["red", "blue", "green", "yellow", "purple", "light-blue"];
 const listenQuestionIds = ["black", "white", "orange", "pink", "brown", "gray"];
-const typeQuestionIds = ["зелёный", "жёлтый", "синий", "голубой", "красный"].map((russian) => getColorByRussian(russian).id);
+const typeQuestionIds = ["green", "yellow", "blue", "light-blue", "red"];
 const matchIds = ["red", "blue", "green", "yellow", "black", "white"];
+const finalMatchIds = ["red", "green", "yellow", "purple"];
+const stageOrder: ColorStage[] = ["learn", "choose", "listen", "match", "type", "final"];
+
 const defaultFinalQuestions: FinalQuestion[] = [
-  { id: "final-tap-red", type: "tap", colorId: "red" },
+  { id: "final-choose-red", type: "choose", colorId: "red" },
   { id: "final-listen-blue", type: "listen", colorId: "blue" },
   { id: "final-type-green", type: "type", colorId: "green" },
-  { id: "final-tap-yellow", type: "tap", colorId: "yellow" },
+  { id: "final-choose-yellow", type: "choose", colorId: "yellow" },
   { id: "final-match-core", type: "match", colorId: "match-set" },
   { id: "final-listen-purple", type: "listen", colorId: "purple" },
   { id: "final-type-light-blue", type: "type", colorId: "light-blue" },
-  { id: "final-tap-orange", type: "tap", colorId: "orange" },
+  { id: "final-choose-orange", type: "choose", colorId: "orange" },
   { id: "final-listen-black", type: "listen", colorId: "black" },
   { id: "final-type-yellow", type: "type", colorId: "yellow" },
 ];
 
-const stageOrder: ColorStage[] = ["learn", "tap", "listen", "match", "type", "final"];
 const russianKeyboardRows = [
   ["й", "ц", "у", "к", "е", "н", "г", "ш", "щ", "з", "х", "ъ"],
   ["ф", "ы", "в", "а", "п", "р", "о", "л", "д", "ж", "э"],
@@ -84,8 +87,8 @@ export function ColorsLessonGame({ lesson }: { lesson: Lesson }) {
   const progressState = useProgress();
   const inputRef = useRef<HTMLInputElement>(null);
   const [stage, setStage] = useState<ColorStage>("learn");
-  const [tapIndex, setTapIndex] = useState(0);
-  const [tapAnswer, setTapAnswer] = useState<AnswerState | null>(null);
+  const [chooseIndex, setChooseIndex] = useState(0);
+  const [chooseAnswer, setChooseAnswer] = useState<AnswerState | null>(null);
   const [listenIndex, setListenIndex] = useState(0);
   const [listenAnswer, setListenAnswer] = useState<AnswerState | null>(null);
   const [selectedRussianId, setSelectedRussianId] = useState("");
@@ -105,14 +108,14 @@ export function ColorsLessonGame({ lesson }: { lesson: Lesson }) {
   const [completionProgress, setCompletionProgress] = useState<SavedProgress | null>(null);
 
   const activeProgress = completionProgress ?? progressState;
-  const currentTapColor = getColor(tapQuestionIds[tapIndex]);
+  const currentChooseColor = getColor(chooseQuestionIds[chooseIndex]);
   const currentListenColor = getColor(listenQuestionIds[listenIndex]);
   const currentTypeColor = getColor(typeQuestionIds[typeIndex]);
   const currentFinal = finalQuestions[finalIndex] ?? finalQuestions[0];
-  const currentFinalColor = currentFinal.type === "match" ? getColor("red") : getColor(currentFinal.colorId);
+  const currentFinalColor = currentFinal.type === "match" ? getColor(finalMatchIds[0]) : getColor(currentFinal.colorId);
   const matchOptions = useMemo(() => getStableDerangedColors(matchIds.map(getColor), "colors-match"), []);
-  const finalMatchOptions = useMemo(() => getStableDerangedColors(matchIds.slice(0, 4).map(getColor), "colors-final-match"), []);
-  const progress = getStageProgress(stage, tapIndex, listenIndex, Object.keys(matchAnswers).length, typeIndex, finalIndex, finalQuestions.length);
+  const finalMatchOptions = useMemo(() => getStableDerangedColors(finalMatchIds.map(getColor), "colors-final-match"), []);
+  const progress = getStageProgress(stage, chooseIndex, listenIndex, Object.keys(matchAnswers).length, typeIndex, finalIndex, finalQuestions.length);
   const nextAction = useMemo(
     () => ({ href: getNextAvailablePath(activeProgress), label: getNextAvailableLabel(activeProgress) }),
     [activeProgress],
@@ -129,7 +132,7 @@ export function ColorsLessonGame({ lesson }: { lesson: Lesson }) {
   }
 
   function resetAnswerState() {
-    setTapAnswer(null);
+    setChooseAnswer(null);
     setListenAnswer(null);
     setSelectedRussianId("");
     setMatchSubmitted(false);
@@ -152,12 +155,12 @@ export function ColorsLessonGame({ lesson }: { lesson: Lesson }) {
     });
   }
 
-  function answerTap(color: ColorWord) {
-    if (tapAnswer) return;
-    const isCorrect = color.id === currentTapColor.id;
-    setTapAnswer({ selectedId: color.id, isCorrect });
+  function answerChoose(color: ColorWord) {
+    if (chooseAnswer) return;
+    const isCorrect = color.id === currentChooseColor.id;
+    setChooseAnswer({ selectedId: color.id, isCorrect });
     if (!isCorrect) {
-      recordMistake(`colors-tap-${currentTapColor.id}`, `${copy.tapCorrectColor}: ${currentTapColor.russian}`, meaning(color), currentTapColor);
+      recordMistake(`colors-choose-${currentChooseColor.id}`, `${copy.tapCorrectColor}: ${currentChooseColor.russian}`, meaning(color), currentChooseColor);
     }
   }
 
@@ -168,6 +171,16 @@ export function ColorsLessonGame({ lesson }: { lesson: Lesson }) {
     if (!isCorrect) {
       recordMistake(`colors-listen-${currentListenColor.id}`, copy.listenAndChooseColor, meaning(color), currentListenColor);
     }
+  }
+
+  function assignMatchAnswer(russianId: string, colorId: string, final = false) {
+    const setAnswers = final ? setFinalMatchAnswers : setMatchAnswers;
+    setAnswers((answers) => {
+      const nextAnswers = Object.fromEntries(
+        Object.entries(answers).filter(([existingRussianId, existingColorId]) => existingRussianId !== russianId && existingColorId !== colorId),
+      );
+      return { ...nextAnswers, [russianId]: colorId };
+    });
   }
 
   function submitMatch() {
@@ -191,37 +204,37 @@ export function ColorsLessonGame({ lesson }: { lesson: Lesson }) {
     }
   }
 
-  function answerFinal(isCorrect: boolean, userAnswer: string) {
+  function answerFinal(isCorrect: boolean, userAnswer: string, correctColor = currentFinalColor) {
     if (finalAnswer) return;
     setFinalAnswer({ selectedId: userAnswer, isCorrect });
     if (isCorrect) {
       setFinalScore((score) => score + 1);
-    } else {
-      setMissedFinalIds((ids) => (ids.includes(currentFinal.id) ? ids : [...ids, currentFinal.id]));
-      recordMistake(currentFinal.id, getFinalPrompt(currentFinal, copy), userAnswer, currentFinalColor);
+      return;
     }
+    setMissedFinalIds((ids) => (ids.includes(currentFinal.id) ? ids : [...ids, currentFinal.id]));
+    recordMistake(currentFinal.id, getFinalPrompt(currentFinal, copy), userAnswer, correctColor);
   }
 
   function submitFinalType(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
     if (currentFinal.type !== "type") return;
-    answerFinal(answersMatch(finalTypedAnswer, currentFinalColor.russian), finalTypedAnswer);
+    answerFinal(answersMatch(finalTypedAnswer, currentFinalColor.russian), finalTypedAnswer, currentFinalColor);
   }
 
   function submitFinalMatch() {
-    if (currentFinal.type !== "match" || finalAnswer || Object.keys(finalMatchAnswers).length !== 4) return;
-    const targetColors = matchIds.slice(0, 4).map(getColor);
-    const allCorrect = targetColors.every((color) => finalMatchAnswers[color.id] === color.id);
-    answerFinal(allCorrect, copy.matchTheColor);
+    if (currentFinal.type !== "match" || finalAnswer || Object.keys(finalMatchAnswers).length !== finalMatchIds.length) return;
+    const targetColors = finalMatchIds.map(getColor);
+    const wrongColor = targetColors.find((color) => finalMatchAnswers[color.id] !== color.id);
+    answerFinal(!wrongColor, copy.matchTheColor, wrongColor ?? targetColors[0]);
   }
 
-  function continueTap() {
-    if (tapIndex >= tapQuestionIds.length - 1) {
+  function continueChoose() {
+    if (chooseIndex >= chooseQuestionIds.length - 1) {
       changeStage("listen");
       return;
     }
-    setTapIndex((index) => index + 1);
-    setTapAnswer(null);
+    setChooseIndex((index) => index + 1);
+    setChooseAnswer(null);
   }
 
   function continueListen() {
@@ -241,6 +254,7 @@ export function ColorsLessonGame({ lesson }: { lesson: Lesson }) {
     setTypeIndex((index) => index + 1);
     setTypedAnswer("");
     setTypeAnswer(null);
+    window.setTimeout(() => inputRef.current?.focus(), 0);
   }
 
   function continueFinal() {
@@ -259,9 +273,10 @@ export function ColorsLessonGame({ lesson }: { lesson: Lesson }) {
 
   function restart() {
     setStage("learn");
-    setTapIndex(0);
+    setChooseIndex(0);
     setListenIndex(0);
     setMatchAnswers({});
+    setMatchSubmitted(false);
     setTypeIndex(0);
     setFinalQuestions(defaultFinalQuestions);
     setFinalIndex(0);
@@ -285,87 +300,102 @@ export function ColorsLessonGame({ lesson }: { lesson: Lesson }) {
     const accuracy = Math.round((finalScore / Math.max(1, finalQuestions.length)) * 100);
 
     return (
-      <main className="min-h-screen bg-slate-950 text-white">
-        <Navigation />
-        <section className="mx-auto flex min-h-[calc(100vh-8rem)] max-w-5xl items-center px-4 pb-8 sm:px-6">
-          <div className="w-full rounded-3xl border border-white/10 bg-white p-5 text-center text-slate-950 shadow-2xl shadow-cyan-950/20 sm:p-8">
-            <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-700" {...uiTextProps(language)}>{text.lesson.lessonComplete}</p>
-            <h1 className="mt-3 text-3xl font-black sm:text-5xl" {...uiTextProps(language)}>{localizeLessonTitle(lesson.title, language)}</h1>
-            <div className="mx-auto mt-6 grid max-w-3xl gap-3 sm:grid-cols-3">
-              <ResultPill label={text.lesson.score} value={`${finalScore}/${finalQuestions.length}`} />
-              <ResultPill label={text.lesson.accuracy} value={`${accuracy}%`} />
-              <ResultPill label={text.lesson.xpEarned} value={`${xpEarned} XP`} />
+      <LessonShell>
+        <section className="mx-auto flex min-h-[calc(100vh-9rem)] max-w-5xl items-center px-4 pb-10 sm:px-6">
+          <div className="w-full overflow-hidden rounded-[2rem] border border-white bg-white text-[var(--brand-navy)] shadow-[0_28px_90px_rgb(17_32_59_/_0.16)] dark:border-white/10 dark:bg-[#10223d] dark:text-[var(--app-text)]">
+            <div className="bg-[linear-gradient(135deg,rgb(87_212_232_/_0.18),rgb(183_229_49_/_0.28),rgb(255_255_255_/_0.82))] p-6 text-center dark:bg-[linear-gradient(135deg,rgb(20_184_166_/_0.18),rgb(183_229_49_/_0.14),rgb(16_34_61_/_0.9))] sm:p-8">
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-[var(--brand-teal)]" {...uiTextProps(language)}>
+                {text.lesson.lessonComplete}
+              </p>
+              <h1 className="mt-3 text-3xl font-black leading-tight sm:text-5xl" {...uiTextProps(language)}>
+                {localizeLessonTitle(lesson.title, language)}
+              </h1>
+              <p className="mx-auto mt-3 max-w-2xl text-sm font-bold text-[var(--app-text-muted)] sm:text-base" {...uiTextProps(language)}>
+                {copy.completeMessage}
+              </p>
             </div>
-            <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <button type="button" onClick={retryMissed} className="rounded-full bg-lime-300 px-5 py-4 font-black text-slate-950 transition hover:bg-lime-200" {...uiTextProps(language)}>
-                {copy.retryMissed}
-              </button>
-              <Link href="/writing" className="rounded-full bg-cyan-300 px-5 py-4 font-black text-slate-950 transition hover:bg-cyan-200" {...uiTextProps(language)}>
-                {copy.practiceColorsInWriting}
-              </Link>
-              <Link href="/worlds" className="rounded-full border border-slate-200 bg-white px-5 py-4 font-black text-slate-950 transition hover:bg-slate-50" {...uiTextProps(language)}>
-                {copy.backToBasics}
-              </Link>
-              <Link href={nextAction.href} className="rounded-full bg-slate-950 px-5 py-4 font-black text-white transition hover:bg-slate-800" {...uiTextProps(language)}>
-                {localizeActionLabel(nextAction.label, language)}
-              </Link>
+            <div className="p-5 sm:p-8">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <ResultPill label={text.lesson.score} value={`${finalScore}/${finalQuestions.length}`} />
+                <ResultPill label={text.lesson.accuracy} value={`${accuracy}%`} />
+                <ResultPill label={text.lesson.xpEarned} value={`${xpEarned} XP`} />
+              </div>
+              <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <Link href="/worlds" className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--card-border)] bg-white px-5 py-3 text-center font-black text-[var(--brand-navy)] shadow-sm transition hover:border-[var(--brand-teal)] hover:bg-[var(--app-primary-soft)] dark:bg-white/10 dark:text-[var(--app-text)]" {...uiTextProps(language)}>
+                  {copy.backToBasics}
+                </Link>
+                <Link href="/writing" className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--brand-cyan)] px-5 py-3 text-center font-black text-[var(--brand-navy)] shadow-sm transition hover:bg-cyan-200" {...uiTextProps(language)}>
+                  {copy.practiceWriting}
+                </Link>
+                <button type="button" onClick={restart} className="min-h-12 rounded-full bg-[var(--brand-lime)] px-5 py-3 font-black text-[var(--brand-navy)] shadow-sm transition hover:bg-lime-200" {...uiTextProps(language)}>
+                  {copy.retry}
+                </button>
+                <Link href={nextAction.href} className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--brand-navy)] px-5 py-3 text-center font-black text-[#f8fbff] shadow-sm transition hover:bg-[var(--brand-teal)]" {...uiTextProps(language)}>
+                  {localizeActionLabel(nextAction.label, language)}
+                </Link>
+              </div>
+              {missedFinalIds.length > 0 ? (
+                <button type="button" onClick={retryMissed} className="mx-auto mt-4 block text-sm font-black text-[var(--brand-teal)] underline underline-offset-4" {...uiTextProps(language)}>
+                  {copy.retryMissed}
+                </button>
+              ) : null}
             </div>
-            <button type="button" onClick={restart} className="mt-4 text-sm font-black text-cyan-700 underline" {...uiTextProps(language)}>
-              {copy.restartLesson}
-            </button>
           </div>
         </section>
-      </main>
+      </LessonShell>
     );
   }
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-slate-950 text-white">
-      <Navigation />
-      <div className="sticky top-0 z-20 border-b border-white/10 bg-slate-950/95 px-4 py-2 backdrop-blur">
+    <LessonShell>
+      <div className="sticky top-0 z-20 border-b border-cyan-950/10 bg-white/88 px-4 py-2 shadow-sm backdrop-blur-2xl dark:border-white/10 dark:bg-[#081323]/88">
         <div className="mx-auto max-w-6xl">
-          <div className="flex items-center justify-between gap-3 text-xs font-black" {...uiTextProps(language)}>
+          <div className="flex items-center justify-between gap-3 text-xs font-black text-[var(--brand-navy)] dark:text-[var(--app-text)]" {...uiTextProps(language)}>
             <span>{getStageLabel(stage, copy)}</span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/10">
-            <div className="h-full rounded-full bg-cyan-300 transition-all" style={{ width: `${progress}%` }} />
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
+            <div className="h-full rounded-full bg-[linear-gradient(90deg,var(--brand-teal),var(--brand-cyan),var(--brand-lime))] transition-all" style={{ width: `${progress}%` }} />
           </div>
         </div>
       </div>
 
-      <section className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
-        <header className="py-5">
-          <p className="text-xs font-black uppercase tracking-[0.22em] text-cyan-300" {...uiTextProps(language)}>{copy.russianTopic}</p>
-          <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <section className="mx-auto max-w-6xl px-4 pb-10 sm:px-6">
+        <header className="py-5 sm:py-7">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div className="min-w-0">
-              <h1 className="break-words text-3xl font-black sm:text-5xl" {...uiTextProps(language)}>{localizeLessonTitle(lesson.title, language)}</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base" {...uiTextProps(language)}>
+              <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--brand-teal)]" {...uiTextProps(language)}>
+                {copy.russianTopic}
+              </p>
+              <h1 className="mt-3 break-words text-3xl font-black leading-tight text-[var(--brand-navy)] sm:text-5xl dark:text-[var(--app-text)]" {...uiTextProps(language)}>
+                {localizeLessonTitle(lesson.title, language)}
+              </h1>
+              <p className="mt-3 max-w-2xl text-sm font-semibold leading-6 text-[var(--app-text-muted)] sm:text-base" {...uiTextProps(language)}>
                 {localizeLessonDescription(lesson.description, language)}
               </p>
             </div>
-            <StageStepper stage={stage} copy={copy} />
+            <StageStepper stage={stage} copy={copy} onSelect={changeStage} />
           </div>
         </header>
 
         {stage === "learn" ? (
-          <LearnStage language={language} copy={copy} meaning={meaning} onContinue={() => changeStage("tap")} />
+          <LearnStage language={language} copy={copy} meaning={meaning} onContinue={() => changeStage("choose")} />
         ) : null}
 
-        {stage === "tap" ? (
-          <PracticePanel title={copy.tapCorrectColor} detail={currentTapColor.russian} language={language}>
-            <ColorChoiceGrid target={currentTapColor} answer={tapAnswer} onChoose={answerTap} />
-            {tapAnswer ? <Feedback correct={tapAnswer.isCorrect} color={currentTapColor} language={language} meaning={meaning} onContinue={continueTap} /> : null}
+        {stage === "choose" ? (
+          <PracticePanel title={copy.tapCorrectColor} detail={currentChooseColor.russian} language={language}>
+            {chooseAnswer ? <Feedback correct={chooseAnswer.isCorrect} color={currentChooseColor} language={language} meaning={meaning} onContinue={continueChoose} /> : null}
+            <ColorChoiceGrid target={currentChooseColor} answer={chooseAnswer} language={language} meaning={meaning} onChoose={answerChoose} />
           </PracticePanel>
         ) : null}
 
         {stage === "listen" ? (
           <PracticePanel title={copy.listenAndChooseColor} detail="" language={language}>
             <div className="mb-5 flex justify-center">
-              <PronounceButton text={currentListenColor.russian} ariaLabel={copy.playPronunciation} title={copy.playPronunciation} className="h-20 w-20 border-cyan-300 bg-cyan-50 text-cyan-800 hover:bg-cyan-100" />
+              <PronounceButton text={currentListenColor.russian} ariaLabel={copy.playPronunciation} title={copy.playPronunciation} className="h-20 w-20 border-[var(--brand-cyan)] bg-cyan-50 text-[var(--brand-navy)] shadow-lg shadow-cyan-950/10 hover:bg-cyan-100 dark:bg-cyan-300/15 dark:text-cyan-100" />
             </div>
-            <ColorChoiceGrid target={currentListenColor} answer={listenAnswer} onChoose={answerListen} />
             {listenAnswer ? <Feedback correct={listenAnswer.isCorrect} color={currentListenColor} language={language} meaning={meaning} onContinue={continueListen} /> : null}
+            <ColorChoiceGrid target={currentListenColor} answer={listenAnswer} language={language} meaning={meaning} onChoose={answerListen} />
           </PracticePanel>
         ) : null}
 
@@ -382,7 +412,7 @@ export function ColorsLessonGame({ lesson }: { lesson: Lesson }) {
             onSelectRussian={setSelectedRussianId}
             onSelectColor={(colorId) => {
               if (!selectedRussianId || matchSubmitted) return;
-              setMatchAnswers((answers) => ({ ...answers, [selectedRussianId]: colorId }));
+              assignMatchAnswer(selectedRussianId, colorId);
               setSelectedRussianId("");
             }}
             onSubmit={submitMatch}
@@ -419,13 +449,13 @@ export function ColorsLessonGame({ lesson }: { lesson: Lesson }) {
             selectedRussianId={finalSelectedRussianId}
             finalMatchOptions={finalMatchOptions}
             meaning={meaning}
-            onChoose={(color) => answerFinal(color.id === currentFinalColor.id, meaning(color))}
+            onChoose={(color) => answerFinal(color.id === currentFinalColor.id, meaning(color), currentFinalColor)}
             onTypedAnswerChange={setFinalTypedAnswer}
             onTypeSubmit={submitFinalType}
             onMatchRussian={setFinalSelectedRussianId}
             onMatchColor={(colorId) => {
               if (!finalSelectedRussianId || finalAnswer) return;
-              setFinalMatchAnswers((answers) => ({ ...answers, [finalSelectedRussianId]: colorId }));
+              assignMatchAnswer(finalSelectedRussianId, colorId, true);
               setFinalSelectedRussianId("");
             }}
             onMatchSubmit={submitFinalMatch}
@@ -433,6 +463,15 @@ export function ColorsLessonGame({ lesson }: { lesson: Lesson }) {
           />
         ) : null}
       </section>
+    </LessonShell>
+  );
+}
+
+function LessonShell({ children }: { children: ReactNode }) {
+  return (
+    <main className="min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#f7fcff_0%,#eef8fb_48%,#f7fbff_100%)] text-[var(--brand-navy)] dark:bg-[linear-gradient(180deg,#081323_0%,#10223d_50%,#081323_100%)] dark:text-[var(--app-text)]">
+      <Navigation />
+      {children}
     </main>
   );
 }
@@ -450,63 +489,111 @@ function LearnStage({
 }) {
   return (
     <section>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mb-5 rounded-[1.5rem] border border-white bg-white/90 p-4 shadow-[0_18px_48px_rgb(17_32_59_/_0.08)] dark:border-white/10 dark:bg-white/8 sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-black text-[var(--brand-navy)] dark:text-[var(--app-text)]" {...uiTextProps(language)}>
+              {copy.learnColors}
+            </h2>
+            <p className="mt-1 text-sm font-semibold text-[var(--app-text-muted)]" {...uiTextProps(language)}>
+              {copy.learnHint}
+            </p>
+          </div>
+          <button type="button" onClick={onContinue} className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--brand-navy)] px-6 py-3 font-black text-[#f8fbff] shadow-sm transition hover:bg-[var(--brand-teal)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-cyan)] focus:ring-offset-2 focus:ring-offset-white dark:bg-[var(--brand-lime)] dark:text-[var(--brand-navy)] dark:focus:ring-offset-[#10223d]" {...uiTextProps(language)}>
+            {copy.startPractice}
+          </button>
+        </div>
+      </div>
+      <div className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {colors.map((color) => (
-          <article key={color.id} className="rounded-3xl border border-slate-200 bg-white p-4 text-slate-950 shadow-xl shadow-cyan-950/10">
-            <div className="flex items-center gap-4">
-              <ColorSwatch color={color} size="large" />
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center justify-between gap-2">
-                  <p className="break-words text-2xl font-black" dir="ltr" lang="ru">{color.russian}</p>
-                  <PronounceButton text={color.russian} className="border-cyan-500/40 bg-cyan-50 text-cyan-800 hover:bg-cyan-100" />
-                </div>
-                <p className="mt-1 text-sm font-bold text-slate-600" {...uiTextProps(language)}>{meaning(color)}</p>
-              </div>
-            </div>
-          </article>
+          <ColorLearnCard key={color.id} color={color} language={language} meaning={meaning(color)} />
         ))}
       </div>
-      <button type="button" onClick={onContinue} className="mt-6 w-full rounded-full bg-cyan-300 px-6 py-4 font-black text-slate-950 transition hover:bg-cyan-200 sm:w-auto" {...uiTextProps(language)}>
-        {copy.startPractice}
-      </button>
     </section>
+  );
+}
+
+function ColorLearnCard({ color, language, meaning }: { color: ColorWord; language: ExplanationLanguage; meaning: string }) {
+  return (
+    <article className="grid min-h-[18rem] overflow-hidden rounded-[1.5rem] border border-white bg-white shadow-[0_18px_48px_rgb(17_32_59_/_0.1)] transition hover:-translate-y-0.5 hover:shadow-[0_24px_58px_rgb(17_32_59_/_0.14)] dark:border-white/10 dark:bg-[#10223d]">
+      <ColorSwatchBlock color={color} size="hero" showLabel />
+      <div className="flex min-w-0 items-start justify-between gap-3 p-4">
+        <div className="min-w-0">
+          <p className="break-words text-3xl font-black leading-tight text-[var(--brand-navy)] dark:text-[var(--app-text)]" dir="ltr" lang="ru">
+            {color.russian}
+          </p>
+          <p className="mt-1 text-base font-bold text-[var(--app-text-muted)]" {...uiTextProps(language)}>
+            {meaning}
+          </p>
+        </div>
+        <PronounceButton text={color.russian} className="h-11 w-11 border-[var(--brand-cyan)] bg-cyan-50 text-[var(--brand-navy)] hover:bg-cyan-100 dark:bg-cyan-300/15 dark:text-cyan-100" />
+      </div>
+    </article>
   );
 }
 
 function PracticePanel({ title, detail, language, children }: { title: string; detail: string; language: ExplanationLanguage; children: ReactNode }) {
   return (
-    <section className="rounded-3xl border border-cyan-100 bg-white p-4 text-slate-950 shadow-2xl shadow-cyan-950/20 sm:p-6">
-      <div className="mb-5 text-center">
-        <h2 className="text-2xl font-black sm:text-3xl" {...uiTextProps(language)}>{title}</h2>
-        {detail ? <p className="mt-3 text-5xl font-black text-slate-950" dir="ltr" lang="ru">{detail}</p> : null}
+    <section className="overflow-hidden rounded-[1.75rem] border border-white bg-white p-4 text-[var(--brand-navy)] shadow-[0_26px_70px_rgb(17_32_59_/_0.13)] dark:border-white/10 dark:bg-[#10223d] dark:text-[var(--app-text)] sm:p-6">
+      <div className="mb-5 rounded-[1.35rem] bg-[linear-gradient(135deg,rgb(87_212_232_/_0.16),rgb(183_229_49_/_0.16),rgb(248_251_255_/_0.9))] p-5 text-center dark:bg-[linear-gradient(135deg,rgb(20_184_166_/_0.14),rgb(183_229_49_/_0.1),rgb(8_19_35_/_0.3))]">
+        <h2 className="text-2xl font-black leading-tight sm:text-3xl" {...uiTextProps(language)}>
+          {title}
+        </h2>
+        {detail ? (
+          <p className="mt-3 text-5xl font-black leading-none tracking-normal text-[var(--brand-navy)] sm:text-6xl dark:text-[var(--app-text)]" dir="ltr" lang="ru">
+            {detail}
+          </p>
+        ) : null}
       </div>
       {children}
     </section>
   );
 }
 
-function ColorChoiceGrid({ target, answer, onChoose }: { target: ColorWord; answer: AnswerState | null; onChoose: (color: ColorWord) => void }) {
+function ColorChoiceGrid({
+  target,
+  answer,
+  language,
+  meaning,
+  onChoose,
+}: {
+  target: ColorWord;
+  answer: AnswerState | null;
+  language: ExplanationLanguage;
+  meaning: (color: ColorWord) => string;
+  onChoose: (color: ColorWord) => void;
+}) {
   const options = useMemo(() => getColorOptions(target), [target]);
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      {options.map((color) => {
+    <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {options.map((color, index) => {
         const selected = answer?.selectedId === color.id;
         const correct = color.id === target.id;
+        const optionLabel = language === "ar" ? `الخيار ${index + 1}` : `Option ${index + 1}`;
         return (
           <button
             key={color.id}
             type="button"
             disabled={Boolean(answer)}
             onClick={() => onChoose(color)}
-            className={`rounded-3xl border p-3 text-left transition focus:outline-none focus:ring-2 focus:ring-cyan-400 ${
+            aria-label={answer ? meaning(color) : optionLabel}
+            className={`group min-w-0 rounded-[1.35rem] border p-2.5 text-left shadow-sm transition focus:outline-none focus:ring-2 focus:ring-[var(--brand-cyan)] focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-[#10223d] ${
               answer && correct
                 ? "border-emerald-400 bg-emerald-50"
                 : selected && !correct
                   ? "border-red-400 bg-red-50"
-                  : "border-slate-200 bg-slate-50 hover:border-cyan-300"
+                  : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-[var(--brand-teal)] dark:border-white/10 dark:bg-white/5"
             }`}
           >
-            <ColorSwatch color={color} />
+            <ColorSwatchBlock color={color} size="choice" showLabel={Boolean(answer)} />
+            <span className="mt-2 block truncate px-1 text-sm font-black text-[var(--brand-navy)] dark:text-[var(--app-text)]" {...uiTextProps(language)}>
+              {answer ? meaning(color) : optionLabel}
+            </span>
+            {answer ? (
+              <span className={`mt-1 block px-1 text-xs font-black ${correct ? "text-emerald-700" : selected ? "text-red-700" : "text-slate-500"}`} {...uiTextProps(language)}>
+                {correct ? getUiText(language).lesson.correct : selected ? getUiText(language).lesson.notQuite : ""}
+              </span>
+            ) : null}
           </button>
         );
       })}
@@ -545,32 +632,83 @@ function MatchPanel({
 }) {
   const complete = Object.keys(answers).length === ids.length;
   const allCorrect = ids.map(getColor).every((color) => answers[color.id] === color.id);
+  const firstWrong = ids.map(getColor).find((color) => answers[color.id] !== color.id) ?? getColor(ids[0]);
+
   return (
-    <section className="rounded-3xl border border-cyan-100 bg-white p-4 text-slate-950 shadow-2xl shadow-cyan-950/20 sm:p-6">
-      <h2 className="text-2xl font-black" {...uiTextProps(language)}>{copy.matchTheColor}</h2>
-      <div className="mt-5 grid gap-4 lg:grid-cols-2">
-        <div className="grid gap-2">
-          {ids.map(getColor).map((color) => (
-            <button key={color.id} type="button" disabled={submitted} onClick={() => onSelectRussian(selectedRussianId === color.id ? "" : color.id)} className={`rounded-2xl border px-4 py-3 text-left text-xl font-black ${selectedRussianId === color.id ? "border-cyan-400 bg-cyan-50" : "border-slate-200 bg-slate-50"}`} dir="ltr" lang="ru">
-              {color.russian}
-            </button>
-          ))}
+    <section className="rounded-[1.75rem] border border-white bg-white p-4 text-[var(--brand-navy)] shadow-[0_26px_70px_rgb(17_32_59_/_0.13)] dark:border-white/10 dark:bg-[#10223d] dark:text-[var(--app-text)] sm:p-6">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-black sm:text-3xl" {...uiTextProps(language)}>{copy.matchTheColor}</h2>
+          <p className="mt-1 text-sm font-semibold text-[var(--app-text-muted)]" {...uiTextProps(language)}>
+            {selectedRussianId ? copy.chooseSwatch : copy.chooseRussianFirst}
+          </p>
         </div>
-        <div className="grid gap-2">
-          {optionColors.map((color) => {
-            const used = Object.values(answers).includes(color.id);
+        <span className="rounded-full bg-[var(--app-primary-soft)] px-3 py-1.5 text-xs font-black text-[var(--brand-teal)]" {...uiTextProps(language)}>
+          {Object.keys(answers).length}/{ids.length}
+        </span>
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-2">
+        <div className="grid content-start gap-2">
+          {ids.map(getColor).map((color) => {
+            const assigned = answers[color.id] ? getColor(answers[color.id]) : null;
+            const isWrong = submitted && assigned?.id !== color.id;
+            const isRight = submitted && assigned?.id === color.id;
             return (
-              <button key={color.id} type="button" disabled={submitted || !selectedRussianId} onClick={() => onSelectColor(color.id)} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-left font-black disabled:opacity-70">
-                <ColorSwatch color={color} size="small" />
-                <span {...uiTextProps(language)}>{used ? copy.matched : meaning(color)}</span>
+              <button
+                key={color.id}
+                type="button"
+                disabled={submitted}
+                onClick={() => onSelectRussian(selectedRussianId === color.id ? "" : color.id)}
+                className={`min-w-0 rounded-[1.15rem] border px-4 py-3 text-left transition focus:outline-none focus:ring-2 focus:ring-[var(--brand-cyan)] ${
+                  selectedRussianId === color.id
+                    ? "border-[var(--brand-teal)] bg-cyan-50 shadow-sm dark:bg-cyan-300/15"
+                    : isRight
+                      ? "border-emerald-300 bg-emerald-50 dark:bg-emerald-300/15"
+                      : isWrong
+                        ? "border-red-300 bg-red-50 dark:bg-red-300/15"
+                        : "border-slate-200 bg-slate-50 hover:border-[var(--brand-teal)] dark:border-white/10 dark:bg-white/5"
+                }`}
+              >
+                <span className="block truncate text-xl font-black" dir="ltr" lang="ru">{color.russian}</span>
+                <span className="mt-1 block truncate text-xs font-bold text-[var(--app-text-muted)]" {...uiTextProps(language)}>
+                  {assigned ? `${copy.pairedWith} ${meaning(assigned)}` : copy.notPaired}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="grid content-start gap-2">
+          {optionColors.map((color) => {
+            const usedBy = Object.entries(answers).find(([, colorId]) => colorId === color.id)?.[0];
+            return (
+              <button
+                key={color.id}
+                type="button"
+                disabled={submitted || !selectedRussianId}
+                onClick={() => onSelectColor(color.id)}
+                className="flex min-w-0 items-center gap-3 rounded-[1.15rem] border border-slate-200 bg-white p-2.5 text-left shadow-sm transition hover:border-[var(--brand-teal)] disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5"
+                aria-label={meaning(color)}
+              >
+                <ColorSwatchBlock color={color} size="small" />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-black text-[var(--brand-navy)] dark:text-[var(--app-text)]" {...uiTextProps(language)}>
+                    {meaning(color)}
+                  </span>
+                  <span className="mt-0.5 block truncate text-xs font-bold text-[var(--app-text-muted)]" {...uiTextProps(language)}>
+                    {usedBy ? copy.selected : copy.available}
+                  </span>
+                </span>
               </button>
             );
           })}
         </div>
       </div>
-      {submitted && showFeedback ? <Feedback correct={allCorrect} color={ids.map(getColor).find((color) => answers[color.id] !== color.id) ?? getColor(ids[0])} language={language} meaning={meaning} onContinue={onContinue} /> : null}
+
+      {submitted && showFeedback ? <Feedback correct={allCorrect} color={firstWrong} language={language} meaning={meaning} onContinue={onContinue} /> : null}
       {!submitted ? (
-        <button type="button" disabled={!complete} onClick={onSubmit} className="mt-5 w-full rounded-full bg-cyan-300 px-5 py-4 font-black text-slate-950 transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500" {...uiTextProps(language)}>
+        <button type="button" disabled={!complete} onClick={onSubmit} className="mt-5 w-full rounded-full bg-[var(--brand-cyan)] px-5 py-4 font-black text-[var(--brand-navy)] transition hover:bg-cyan-200 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500" {...uiTextProps(language)}>
           {copy.check}
         </button>
       ) : null}
@@ -602,20 +740,51 @@ function TypePanel({
   onContinue: () => void;
 }) {
   return (
-    <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
-      <div className="rounded-3xl border border-cyan-100 bg-white p-4 text-slate-950 shadow-2xl shadow-cyan-950/20 sm:p-6">
-        <h2 className="text-2xl font-black" {...uiTextProps(language)}>{copy.typeColorInRussian}</h2>
-        <div className="mt-5 flex items-center gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-          <ColorSwatch color={color} size="large" />
-          <p className="text-xl font-black" {...uiTextProps(language)}>{meaning(color)}</p>
+    <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem]">
+      <div className="rounded-[1.75rem] border border-white bg-white p-4 text-[var(--brand-navy)] shadow-[0_26px_70px_rgb(17_32_59_/_0.13)] dark:border-white/10 dark:bg-[#10223d] dark:text-[var(--app-text)] sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-black sm:text-3xl" {...uiTextProps(language)}>{copy.typeColorInRussian}</h2>
+            <p className="mt-1 text-sm font-semibold text-[var(--app-text-muted)]" {...uiTextProps(language)}>{copy.typeHint}</p>
+          </div>
+          <PronounceButton text={color.russian} ariaLabel={copy.playPronunciation} title={copy.playPronunciation} className="h-12 w-12 border-[var(--brand-cyan)] bg-cyan-50 text-[var(--brand-navy)] hover:bg-cyan-100 dark:bg-cyan-300/15 dark:text-cyan-100" />
+        </div>
+        <div className="mt-5 grid gap-4 rounded-[1.35rem] border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-white/5 sm:grid-cols-[13rem_minmax(0,1fr)] sm:p-4">
+          <ColorSwatchBlock color={color} size="type" showLabel />
+          <div className="flex min-w-0 flex-col justify-center">
+            <p className="text-sm font-black uppercase tracking-[0.16em] text-[var(--app-text-muted)]" {...uiTextProps(language)}>
+              {copy.meaning}
+            </p>
+            <p className="mt-1 text-2xl font-black" {...uiTextProps(language)}>
+              {meaning(color)}
+            </p>
+          </div>
         </div>
         <form onSubmit={onSubmit} className="mt-5">
-          <input ref={inputRef} value={answer} onChange={(event) => onAnswerChange(event.target.value)} disabled={Boolean(result)} lang="ru" dir="ltr" spellCheck={false} autoComplete="off" className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-3xl font-black text-slate-950 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200" />
+          <label htmlFor="colors-type-answer" className="block text-sm font-black text-[var(--app-text-muted)]" {...uiTextProps(language)}>
+            {copy.typeColorInRussian}
+          </label>
+          <input
+            ref={inputRef}
+            id="colors-type-answer"
+            value={answer}
+            onChange={(event) => onAnswerChange(event.target.value)}
+            disabled={Boolean(result)}
+            lang="ru"
+            dir="ltr"
+            spellCheck={false}
+            autoComplete="off"
+            className="mt-3 w-full rounded-[1.15rem] border border-slate-200 bg-white px-4 py-4 text-3xl font-black tracking-normal text-[var(--brand-navy)] outline-none transition focus:border-[var(--brand-teal)] focus:ring-2 focus:ring-cyan-200 disabled:opacity-75 dark:border-white/10 dark:bg-[#081323] dark:text-[var(--app-text)] sm:text-4xl"
+          />
           {result ? <Feedback correct={result.isCorrect} color={color} language={language} meaning={meaning} onContinue={onContinue} /> : null}
-          {!result ? <button type="submit" className="mt-5 w-full rounded-full bg-cyan-300 px-5 py-4 font-black text-slate-950 hover:bg-cyan-200" {...uiTextProps(language)}>{copy.check}</button> : null}
+          {!result ? (
+            <button type="submit" className="mt-5 w-full rounded-full bg-[var(--brand-cyan)] px-5 py-4 font-black text-[var(--brand-navy)] transition hover:bg-cyan-200" {...uiTextProps(language)}>
+              {copy.check}
+            </button>
+          ) : null}
         </form>
       </div>
-      <RussianKeyboard onKey={(key) => onAnswerChange(`${answer}${key}`)} onBackspace={() => onAnswerChange(answer.slice(0, -1))} onSpace={() => onAnswerChange(`${answer} `)} />
+      <RussianKeyboard onKey={(key) => onAnswerChange(`${answer}${key}`)} onBackspace={() => onAnswerChange(answer.slice(0, -1))} />
     </section>
   );
 }
@@ -662,102 +831,235 @@ function FinalPanel({
   onContinue: () => void;
 }) {
   return (
-    <section className="rounded-3xl border border-lime-100 bg-white p-4 text-slate-950 shadow-2xl shadow-lime-950/20 sm:p-6">
-      <p className="text-sm font-black text-cyan-700" {...uiTextProps(language)}>{copy.finalChallenge} {index + 1}/{total}</p>
-      {question.type === "tap" ? (
+    <section className="rounded-[1.75rem] border border-white bg-white p-4 text-[var(--brand-navy)] shadow-[0_26px_70px_rgb(17_32_59_/_0.13)] dark:border-white/10 dark:bg-[#10223d] dark:text-[var(--app-text)] sm:p-6">
+      <div className="mb-5 flex flex-col gap-3 rounded-[1.35rem] bg-[linear-gradient(135deg,rgb(183_229_49_/_0.22),rgb(87_212_232_/_0.14),rgb(248_251_255_/_0.92))] p-4 dark:bg-[linear-gradient(135deg,rgb(183_229_49_/_0.12),rgb(87_212_232_/_0.1),rgb(8_19_35_/_0.35))] sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-sm font-black text-[var(--brand-teal)]" {...uiTextProps(language)}>
+            {copy.finalChallenge}
+          </p>
+          <h2 className="mt-1 text-2xl font-black" {...uiTextProps(language)}>
+            {copy.question} {index + 1}/{total}
+          </h2>
+        </div>
+        <div className="h-3 overflow-hidden rounded-full bg-white/70 sm:w-56 dark:bg-white/10">
+          <div className="h-full rounded-full bg-[linear-gradient(90deg,var(--brand-teal),var(--brand-cyan),var(--brand-lime))]" style={{ width: `${((index + 1) / total) * 100}%` }} />
+        </div>
+      </div>
+
+      {question.type === "choose" ? (
         <PracticePanel title={copy.tapCorrectColor} detail={targetColor.russian} language={language}>
-          <ColorChoiceGrid target={targetColor} answer={answer} onChoose={onChoose} />
+          {answer ? <Feedback correct={answer.isCorrect} color={targetColor} language={language} meaning={meaning} onContinue={onContinue} /> : null}
+          <ColorChoiceGrid target={targetColor} answer={answer} language={language} meaning={meaning} onChoose={onChoose} />
         </PracticePanel>
       ) : null}
+
       {question.type === "listen" ? (
         <PracticePanel title={copy.listenAndChooseColor} detail="" language={language}>
-          <div className="mb-5 flex justify-center"><PronounceButton text={targetColor.russian} className="h-20 w-20 border-cyan-300 bg-cyan-50 text-cyan-800" /></div>
-          <ColorChoiceGrid target={targetColor} answer={answer} onChoose={onChoose} />
+          <div className="mb-5 flex justify-center">
+            <PronounceButton text={targetColor.russian} className="h-20 w-20 border-[var(--brand-cyan)] bg-cyan-50 text-[var(--brand-navy)] hover:bg-cyan-100 dark:bg-cyan-300/15 dark:text-cyan-100" />
+          </div>
+          {answer ? <Feedback correct={answer.isCorrect} color={targetColor} language={language} meaning={meaning} onContinue={onContinue} /> : null}
+          <ColorChoiceGrid target={targetColor} answer={answer} language={language} meaning={meaning} onChoose={onChoose} />
         </PracticePanel>
       ) : null}
+
       {question.type === "type" ? (
-        <form onSubmit={onTypeSubmit} className="mt-5">
-          <div className="flex items-center gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-            <ColorSwatch color={targetColor} size="large" />
-            <p className="text-xl font-black" {...uiTextProps(language)}>{meaning(targetColor)}</p>
+        <form onSubmit={onTypeSubmit} className="mt-2">
+          <h3 className="text-2xl font-black" {...uiTextProps(language)}>{copy.typeColorInRussian}</h3>
+          <div className="mt-4 grid gap-4 rounded-[1.35rem] border border-slate-200 bg-slate-50 p-3 dark:border-white/10 dark:bg-white/5 sm:grid-cols-[13rem_minmax(0,1fr)] sm:p-4">
+            <ColorSwatchBlock color={targetColor} size="type" showLabel />
+            <div className="flex min-w-0 flex-col justify-center">
+              <p className="text-sm font-black uppercase tracking-[0.16em] text-[var(--app-text-muted)]" {...uiTextProps(language)}>{copy.meaning}</p>
+              <p className="mt-1 text-2xl font-black" {...uiTextProps(language)}>{meaning(targetColor)}</p>
+            </div>
           </div>
-          <input value={typedAnswer} onChange={(event) => onTypedAnswerChange(event.target.value)} disabled={Boolean(answer)} lang="ru" dir="ltr" className="mt-4 w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-3xl font-black text-slate-950 outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-200" />
-          {!answer ? <button type="submit" className="mt-4 w-full rounded-full bg-cyan-300 px-5 py-4 font-black text-slate-950">{copy.check}</button> : null}
+          <input
+            value={typedAnswer}
+            onChange={(event) => onTypedAnswerChange(event.target.value)}
+            disabled={Boolean(answer)}
+            lang="ru"
+            dir="ltr"
+            spellCheck={false}
+            autoComplete="off"
+            className="mt-4 w-full rounded-[1.15rem] border border-slate-200 bg-white px-4 py-4 text-3xl font-black tracking-normal text-[var(--brand-navy)] outline-none transition focus:border-[var(--brand-teal)] focus:ring-2 focus:ring-cyan-200 disabled:opacity-75 dark:border-white/10 dark:bg-[#081323] dark:text-[var(--app-text)] sm:text-4xl"
+          />
+          {!answer ? (
+            <button type="submit" className="mt-4 w-full rounded-full bg-[var(--brand-cyan)] px-5 py-4 font-black text-[var(--brand-navy)] transition hover:bg-cyan-200" {...uiTextProps(language)}>
+              {copy.check}
+            </button>
+          ) : null}
         </form>
       ) : null}
+
       {question.type === "match" ? (
-        <MatchPanel copy={copy} language={language} ids={matchIds.slice(0, 4)} optionColors={finalMatchOptions} answers={matchAnswers} selectedRussianId={selectedRussianId} submitted={Boolean(answer)} meaning={meaning} onSelectRussian={onMatchRussian} onSelectColor={onMatchColor} onSubmit={onMatchSubmit} onContinue={() => {}} showFeedback={false} />
+        <MatchPanel
+          copy={copy}
+          language={language}
+          ids={finalMatchIds}
+          optionColors={finalMatchOptions}
+          answers={matchAnswers}
+          selectedRussianId={selectedRussianId}
+          submitted={Boolean(answer)}
+          meaning={meaning}
+          onSelectRussian={onMatchRussian}
+          onSelectColor={onMatchColor}
+          onSubmit={onMatchSubmit}
+          onContinue={() => {}}
+          showFeedback={false}
+        />
       ) : null}
+
       {answer ? <Feedback correct={answer.isCorrect} color={targetColor} language={language} meaning={meaning} onContinue={onContinue} /> : null}
     </section>
   );
 }
 
-function RussianKeyboard({ onKey, onBackspace, onSpace }: { onKey: (key: string) => void; onBackspace: () => void; onSpace: () => void }) {
+function RussianKeyboard({ onKey, onBackspace }: { onKey: (key: string) => void; onBackspace: () => void }) {
   return (
-    <div className="rounded-3xl border border-white/10 bg-white/10 p-4">
+    <aside className="rounded-[1.5rem] border border-white bg-white p-4 shadow-[0_18px_48px_rgb(17_32_59_/_0.08)] dark:border-white/10 dark:bg-white/8">
+      <p className="mb-3 text-sm font-black text-[var(--brand-navy)] dark:text-[var(--app-text)]">Русская клавиатура</p>
       <div className="grid gap-2">
         {russianKeyboardRows.map((row) => (
           <div key={row.join("")} className="flex justify-center gap-1.5">
             {row.map((key) => (
-              <button key={key} type="button" onClick={() => onKey(key)} className="h-10 min-w-0 flex-1 rounded-xl border border-white/10 bg-slate-900/90 text-lg font-black text-white transition hover:border-cyan-300/50" dir="ltr" lang="ru">{key}</button>
+              <button key={key} type="button" onClick={() => onKey(key)} className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-slate-50 text-lg font-black text-[var(--brand-navy)] transition hover:border-[var(--brand-teal)] hover:bg-cyan-50 dark:border-white/10 dark:bg-[#081323] dark:text-[var(--app-text)]" dir="ltr" lang="ru">
+                {key}
+              </button>
             ))}
           </div>
         ))}
-        <div className="grid grid-cols-[1fr_2fr_1fr] gap-2">
-          <button type="button" onClick={onBackspace} className="rounded-xl border border-white/10 bg-slate-900/90 px-3 py-3 text-sm font-black">Back</button>
-          <button type="button" onClick={onSpace} className="rounded-xl border border-white/10 bg-slate-900/90 px-3 py-3 text-sm font-black">Space</button>
-          <button type="button" onClick={() => onKey("ё")} className="rounded-xl border border-white/10 bg-slate-900/90 px-3 py-3 text-lg font-black" dir="ltr" lang="ru">ё</button>
+        <div className="grid grid-cols-[1fr_1fr] gap-2">
+          <button type="button" onClick={onBackspace} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-black text-[var(--brand-navy)] transition hover:border-red-300 dark:border-white/10 dark:bg-[#081323] dark:text-[var(--app-text)]">
+            Back
+          </button>
+          <button type="button" onClick={() => onKey("ё")} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-lg font-black text-[var(--brand-navy)] transition hover:border-[var(--brand-teal)] dark:border-white/10 dark:bg-[#081323] dark:text-[var(--app-text)]" dir="ltr" lang="ru">
+            ё
+          </button>
         </div>
       </div>
-    </div>
+    </aside>
   );
 }
 
-function Feedback({ correct, color, language, meaning, onContinue }: { correct: boolean; color: ColorWord; language: ExplanationLanguage; meaning: (color: ColorWord) => string; onContinue: () => void }) {
+function Feedback({
+  correct,
+  color,
+  language,
+  meaning,
+  onContinue,
+}: {
+  correct: boolean;
+  color: ColorWord;
+  language: ExplanationLanguage;
+  meaning: (color: ColorWord) => string;
+  onContinue: () => void;
+}) {
   const text = getUiText(language);
   const copy = colorCopy(language);
+
   return (
-    <div className={`mt-5 rounded-2xl border p-4 ${correct ? "border-emerald-300 bg-emerald-50" : "border-red-300 bg-red-50"}`} role="status">
+    <div className={`mb-4 mt-4 rounded-[1.15rem] border p-4 ${correct ? "border-emerald-300 bg-emerald-50 text-emerald-950 dark:bg-emerald-300/15 dark:text-emerald-100" : "border-red-300 bg-red-50 text-red-950 dark:bg-red-300/15 dark:text-red-100"}`} role="status">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="font-black" {...uiTextProps(language)}>{correct ? text.lesson.correct : text.lesson.tryAgain}</p>
-          <p className="mt-1 text-sm font-bold text-slate-700">
-            <span dir="ltr" lang="ru">{color.russian}</span> = <span {...uiTextProps(language)}>{meaning(color)}</span>
-          </p>
-          {!correct ? <p className="mt-1 text-sm text-red-700" {...uiTextProps(language)}>{copy.correctColor}: <span dir="ltr" lang="ru">{color.russian}</span></p> : null}
+        <div className="min-w-0">
+          <p className="font-black" {...uiTextProps(language)}>{correct ? text.lesson.correct : text.lesson.notQuite}</p>
+          {!correct ? (
+            <p className="mt-1 text-sm font-bold" {...uiTextProps(language)}>
+              {copy.correctColor}: <span className="font-black" dir="ltr" lang="ru">{color.russian}</span> = {meaning(color)}
+            </p>
+          ) : (
+            <p className="mt-1 text-sm font-bold">
+              <span dir="ltr" lang="ru">{color.russian}</span> = <span {...uiTextProps(language)}>{meaning(color)}</span>
+            </p>
+          )}
         </div>
-        <button type="button" onClick={onContinue} className="rounded-full bg-cyan-300 px-5 py-3 font-black text-slate-950 transition hover:bg-cyan-200" {...uiTextProps(language)}>{text.lesson.continue}</button>
+        <button type="button" onClick={onContinue} className="inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--brand-navy)] px-5 py-2.5 font-black text-[#f8fbff] transition hover:bg-[var(--brand-teal)] dark:bg-[var(--brand-lime)] dark:text-[var(--brand-navy)]" {...uiTextProps(language)}>
+          {text.lesson.continue}
+        </button>
       </div>
     </div>
   );
 }
 
-function ColorSwatch({ color, size = "normal" }: { color: ColorWord; size?: "small" | "normal" | "large" }) {
-  const sizeClass = size === "small" ? "h-12" : size === "large" ? "h-20" : "h-24";
+function ColorSwatchBlock({
+  color,
+  size = "choice",
+  showLabel = false,
+}: {
+  color: ColorWord;
+  size?: "small" | "choice" | "hero" | "type";
+  showLabel?: boolean;
+}) {
+  const sizeClass = {
+    small: "h-16 w-20",
+    choice: "h-28 w-full",
+    hero: "h-40 w-full",
+    type: "h-36 w-full",
+  }[size];
+  const needsBorder = color.id === "white" || color.id === "yellow";
+
   return (
-    <div className={`${sizeClass} w-full min-w-16 rounded-2xl border border-slate-200 shadow-inner`} style={{ backgroundColor: color.hex, boxShadow: `inset 0 0 0 3px ${color.ring}` }} aria-label={color.english} />
+    <div
+      className={`${sizeClass} relative min-w-0 overflow-hidden rounded-[1.15rem] ${needsBorder ? "border border-slate-300" : "border border-white/40"} shadow-inner`}
+      style={{
+        background: `linear-gradient(135deg, ${color.hex}, ${color.ring})`,
+        boxShadow: `inset 0 0 0 2px ${color.ring}, 0 14px 32px rgb(17 32 59 / 0.1)`,
+      }}
+      aria-label={color.english}
+    >
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgb(255_255_255_/_0.26),transparent_42%,rgb(17_32_59_/_0.12))]" />
+      {showLabel ? (
+        <div className="absolute inset-x-3 bottom-3 rounded-full bg-white/72 px-3 py-1.5 text-center text-sm font-black text-[var(--brand-navy)] backdrop-blur">
+          <span dir="ltr" lang="ru">{color.russian}</span>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
-function StageStepper({ stage, copy }: { stage: ColorStage; copy: ReturnType<typeof colorCopy> }) {
+function StageStepper({
+  stage,
+  copy,
+  onSelect,
+}: {
+  stage: ColorStage;
+  copy: ReturnType<typeof colorCopy>;
+  onSelect: (stage: ColorStage) => void;
+}) {
   const currentIndex = stageOrder.indexOf(stage);
   return (
-    <ol className="flex max-w-full gap-2 overflow-x-auto pb-1">
-      {stageOrder.map((step, index) => (
-        <li key={step} className={`shrink-0 rounded-full px-3 py-2 text-xs font-black ${index === currentIndex ? "bg-lime-300 text-slate-950" : index < currentIndex ? "bg-cyan-300/20 text-cyan-100" : "bg-slate-900/80 text-slate-400"}`}>
-          {getStageLabel(step, copy)}
-        </li>
-      ))}
+    <ol className="flex max-w-full gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:justify-end" aria-label={copy.stages}>
+      {stageOrder.map((step, index) => {
+        const isCurrent = index === currentIndex;
+        const isPast = index < currentIndex;
+        return (
+          <li key={step} className="shrink-0">
+            <button
+              type="button"
+              disabled={!isPast && !isCurrent}
+              onClick={() => onSelect(step)}
+              aria-current={isCurrent ? "step" : undefined}
+              className={`rounded-full border px-3 py-2 text-xs font-black transition ${
+                isCurrent
+                  ? "border-[var(--brand-lime)] bg-[var(--brand-navy)] text-[#f8fbff] shadow-sm dark:bg-[var(--brand-lime)] dark:text-[var(--brand-navy)]"
+                  : isPast
+                    ? "border-[var(--brand-cyan)] bg-cyan-50 text-[var(--brand-navy)] hover:border-[var(--brand-teal)] dark:bg-cyan-300/15 dark:text-cyan-100"
+                    : "border-slate-200 bg-white/70 text-slate-400 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
+              }`}
+            >
+              {getStageLabel(step, copy)}
+            </button>
+          </li>
+        );
+      })}
     </ol>
   );
 }
 
 function ResultPill({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-1 text-2xl font-black text-cyan-800">{value}</p>
+    <div className="rounded-[1.15rem] border border-slate-200 bg-slate-50 p-4 text-center dark:border-white/10 dark:bg-white/5">
+      <p className="text-sm font-bold text-[var(--app-text-muted)]">{label}</p>
+      <p className="mt-1 text-2xl font-black text-[var(--brand-teal)]">{value}</p>
     </div>
   );
 }
@@ -765,12 +1067,6 @@ function ResultPill({ label, value }: { label: string; value: string }) {
 function getColor(id: string) {
   const color = colors.find((candidate) => candidate.id === id);
   if (!color) throw new Error(`Unknown color: ${id}`);
-  return color;
-}
-
-function getColorByRussian(russian: string) {
-  const color = colors.find((candidate) => candidate.russian === russian);
-  if (!color) throw new Error(`Unknown Russian color: ${russian}`);
   return color;
 }
 
@@ -810,12 +1106,12 @@ function normalizeForComparison(value: string) {
   return value.trim().replaceAll("ё", "е").replaceAll("Ё", "Е").toLocaleLowerCase("ru-RU");
 }
 
-function getStageProgress(stage: ColorStage, tapIndex: number, listenIndex: number, matchedCount: number, typeIndex: number, finalIndex: number, finalTotal: number) {
+function getStageProgress(stage: ColorStage, chooseIndex: number, listenIndex: number, matchedCount: number, typeIndex: number, finalIndex: number, finalTotal: number) {
   const stageBase: Record<ColorStage, number> = {
     learn: 8,
-    tap: 24 + (tapIndex / tapQuestionIds.length) * 16,
-    listen: 42 + (listenIndex / listenQuestionIds.length) * 14,
-    match: 58 + (matchedCount / matchIds.length) * 12,
+    choose: 22 + (chooseIndex / chooseQuestionIds.length) * 16,
+    listen: 40 + (listenIndex / listenQuestionIds.length) * 14,
+    match: 56 + (matchedCount / matchIds.length) * 14,
     type: 72 + (typeIndex / typeQuestionIds.length) * 12,
     final: 86 + (finalIndex / Math.max(1, finalTotal)) * 14,
     complete: 100,
@@ -824,7 +1120,7 @@ function getStageProgress(stage: ColorStage, tapIndex: number, listenIndex: numb
 }
 
 function getFinalPrompt(question: FinalQuestion, copy: ReturnType<typeof colorCopy>) {
-  if (question.type === "tap") return copy.tapCorrectColor;
+  if (question.type === "choose") return copy.tapCorrectColor;
   if (question.type === "listen") return copy.listenAndChooseColor;
   if (question.type === "match") return copy.matchTheColor;
   return copy.typeColorInRussian;
@@ -833,7 +1129,7 @@ function getFinalPrompt(question: FinalQuestion, copy: ReturnType<typeof colorCo
 function getStageLabel(stage: ColorStage, copy: ReturnType<typeof colorCopy>) {
   const labels: Record<ColorStage, string> = {
     learn: copy.learn,
-    tap: copy.tap,
+    choose: copy.choose,
     listen: copy.listen,
     match: copy.match,
     type: copy.type,
@@ -845,30 +1141,41 @@ function getStageLabel(stage: ColorStage, copy: ReturnType<typeof colorCopy>) {
 
 function colorCopy(language: ExplanationLanguage) {
   const text = getUiText(language);
-  const lessonText = text.lesson;
   const ar = language === "ar";
   return {
-    russianTopic: "Цвета",
+    russianTopic: ar ? "ألوان بالروسية" : "Russian colors",
     learn: ar ? "تعلّم" : "Learn",
-    tap: ar ? "اختيار" : "Tap",
+    choose: ar ? "اختيار" : "Choose",
     listen: ar ? "استماع" : "Listen",
     match: ar ? "مطابقة" : "Match",
     type: ar ? "كتابة" : "Type",
     final: ar ? "التحدي" : "Final",
     complete: text.lesson.lessonComplete,
-    tapCorrectColor: lessonText.tapCorrectColor,
-    listenAndChooseColor: lessonText.listenAndChooseColor,
-    matchTheColor: lessonText.matchTheColor,
-    typeColorInRussian: lessonText.typeColorInRussian,
-    correctColor: lessonText.correctColor,
-    practiceColorsInWriting: lessonText.practiceColorsInWriting,
-    finalChallenge: lessonText.finalChallenge,
-    playPronunciation: lessonText.playPronunciation,
-    startPractice: lessonText.startPractice,
+    stages: ar ? "مراحل الدرس" : "Lesson stages",
+    learnColors: ar ? "تعلّم الألوان الأساسية" : "Learn the core colors",
+    learnHint: ar ? "انظر إلى اللون، اقرأ الكلمة الروسية، ثم استمع للنطق." : "Study the swatch, read the Russian word, then listen to the pronunciation.",
+    tapCorrectColor: ar ? "اضغط على اللون الصحيح" : "Tap the correct color",
+    listenAndChooseColor: ar ? "استمع واختر اللون" : "Listen and choose the color",
+    matchTheColor: ar ? "طابق الكلمة الروسية مع اللون" : "Match each Russian word to its color",
+    typeColorInRussian: ar ? "اكتب اللون بالروسية" : "Type the color in Russian",
+    typeHint: ar ? "اكتب الكلمة الروسية. يمكنك استخدام е بدل ё وسيتم قبولها." : "Type the Russian word. Using е instead of ё is accepted.",
+    meaning: ar ? "المعنى" : "Meaning",
+    correctColor: ar ? "الإجابة الصحيحة" : "Correct color",
+    practiceWriting: ar ? "تدريب الكتابة" : "Practice writing",
+    finalChallenge: ar ? "التحدي النهائي" : "Final challenge",
+    question: ar ? "السؤال" : "Question",
+    playPronunciation: text.lesson.playPronunciation,
+    startPractice: text.lesson.startPractice,
     check: ar ? "تحقق" : "Check",
-    matched: ar ? "تم الاختيار" : "Selected",
-    retryMissed: ar ? "أعد الأسئلة الخاطئة" : "Retry missed",
-    backToBasics: text.common.backToBasics,
-    restartLesson: ar ? "إعادة الدرس" : "Restart lesson",
+    chooseRussianFirst: ar ? "اختر كلمة روسية من اليسار أولاً." : "Choose a Russian word on the left first.",
+    chooseSwatch: ar ? "اختر اللون المطابق من اليمين." : "Choose the matching color on the right.",
+    pairedWith: ar ? "مطابق مع" : "Paired with",
+    notPaired: ar ? "لم تتم المطابقة بعد" : "Not paired yet",
+    selected: ar ? "تم اختياره" : "Selected",
+    available: ar ? "متاح" : "Available",
+    retryMissed: ar ? "أعد الأسئلة الخاطئة" : "Retry missed questions",
+    backToBasics: ar ? "العودة إلى الأساسيات" : "Back to Basics",
+    retry: ar ? "إعادة المحاولة" : "Retry",
+    completeMessage: ar ? "أنهيت درس الألوان. راجع النتيجة أو تابع التدريب." : "You finished the Colors lesson. Review your score or keep practicing.",
   };
 }
