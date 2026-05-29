@@ -33,6 +33,7 @@ export const uiText = {
       activeModule: "Active module",
       bodyParts: "Body Parts",
       colors: "Colors",
+      fruitsVegetables: "Fruits and Vegetables",
       writingPractice: "Writing Practice",
       basicsCompleted: "Basics completed",
       practiceWriting: "Practice writing",
@@ -196,6 +197,7 @@ export const uiText = {
       activeModule: "Active module",
       bodyParts: "Body Parts",
       colors: "Colors",
+      fruitsVegetables: "Fruits and Vegetables",
       writingPractice: "Writing Practice",
       basicsCompleted: "Basics completed",
       practiceWriting: "Practice writing",
@@ -302,6 +304,7 @@ export const uiText = {
       basics: "Basics",
       bodyParts: "Body Parts",
       colors: "Colors",
+      fruitsVegetables: "Fruits and Vegetables",
     },
     settings: {
       title: "Settings",
@@ -566,6 +569,7 @@ export const uiText = {
       scenario: "Scenario",
       bodyParts: "Body Parts",
       colors: "Colors",
+      fruitsVegetables: "Fruits and Vegetables",
       learnColorsInRussian: "Learn colors in Russian",
       tapCorrectColor: "Tap the correct color",
       listenAndChooseColor: "Listen and choose the color",
@@ -715,6 +719,7 @@ export const uiText = {
       activeModule: "الوحدة النشطة",
       bodyParts: "أجزاء الجسم",
       colors: "الألوان",
+      fruitsVegetables: "الخضار والفواكه",
       writingPractice: "تدريب الكتابة",
       basicsCompleted: "اكتملت الأساسيات",
       practiceWriting: "تدرّب على الكتابة",
@@ -877,6 +882,7 @@ export const uiText = {
       activeModule: "الوحدة النشطة",
       bodyParts: "أجزاء الجسم",
       colors: "الألوان",
+      fruitsVegetables: "الخضار والفواكه",
       writingPractice: "تدريب الكتابة",
       basicsCompleted: "اكتملت الأساسيات",
       practiceWriting: "تدرّب على الكتابة",
@@ -982,6 +988,7 @@ export const uiText = {
       basics: "الأساسيات",
       bodyParts: "أجزاء الجسم",
       colors: "الألوان",
+      fruitsVegetables: "الخضار والفواكه",
     },
     settings: {
       title: "الإعدادات",
@@ -1242,6 +1249,7 @@ export const uiText = {
       scenario: "موقف",
       bodyParts: "أجزاء الجسم",
       colors: "الألوان",
+      fruitsVegetables: "الخضار والفواكه",
       learnColorsInRussian: "تعلّم الألوان بالروسية",
       tapCorrectColor: "اضغط على اللون الصحيح",
       listenAndChooseColor: "استمع واختر اللون",
@@ -1421,6 +1429,7 @@ const arabicContentTitles: Record<string, string> = {
   "Left, Right, Straight": "يسار، يمين، إلى الأمام",
   "Body Parts": "أجزاء الجسم",
   "Colors": "الألوان",
+  "Fruits and Vegetables": "الخضار والفواكه",
   "Basics completed": "اكتملت الأساسيات",
   "Complete Introduce Yourself": "أكمل عرّف عن نفسك",
   "Defeat the World 1 Boss": "اهزم زعيم العالم 1",
@@ -1510,12 +1519,16 @@ const arabicContentDescriptions: Record<string, string> = {
     "تعلّم أهم أجزاء الجسم بالروسية من خلال خريطة تفاعلية للجسم.",
   "Learn colors in Russian with vivid swatches, listening, matching, and typing practice.":
     "تعلّم الألوان بالروسية من خلال عينات ألوان واضحة والاستماع والمطابقة والكتابة.",
+  "Learn Russian fruit and vegetable words with sorting, matching, listening, and typing practice.":
+    "تعلّم كلمات الفواكه والخضار بالروسية من خلال الفرز والمطابقة والاستماع والكتابة.",
   "Learn essential Russian basics through interactive visual lessons.":
     "تعلّم أساسيات روسية مهمة من خلال دروس بصرية تفاعلية.",
   "Start with Body Parts.":
     "ابدأ بأجزاء الجسم.",
   "Start with Body Parts, then learn Colors.":
     "ابدأ بأجزاء الجسم، ثم تعلّم الألوان.",
+  "Start with Body Parts, then learn Colors, Fruits, and Vegetables.":
+    "ابدأ بأجزاء الجسم، ثم تعلّم الألوان والفواكه والخضار.",
   "Basics completed. Practice writing or review mistakes.":
     "اكتملت الأساسيات. تدرّب على الكتابة أو راجع أخطاءك.",
   "Recognize simple food words for everyday meals.":

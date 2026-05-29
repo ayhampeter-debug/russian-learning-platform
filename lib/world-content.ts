@@ -130,6 +130,9 @@ function buildActiveWorldsFromContent(contentWorlds: World[]) {
   const colorsLesson =
     contentWorlds.flatMap((world) => world.lessons).find((lesson) => lesson.id === "colors") ??
     basicsWorld.lessons.find((lesson) => lesson.id === "colors");
+  const fruitsVegetablesLesson =
+    contentWorlds.flatMap((world) => world.lessons).find((lesson) => lesson.id === "fruits-vegetables") ??
+    basicsWorld.lessons.find((lesson) => lesson.id === "fruits-vegetables");
   const basicsLessons = [
     {
       ...bodyPartsLesson,
@@ -143,6 +146,17 @@ function buildActiveWorldsFromContent(contentWorlds: World[]) {
           {
             ...colorsLesson,
             number: "2",
+            stageId: "basics",
+            status: "Unlocked" as const,
+            locked: false,
+          },
+        ]
+      : []),
+    ...(fruitsVegetablesLesson
+      ? [
+          {
+            ...fruitsVegetablesLesson,
+            number: "3",
             stageId: "basics",
             status: "Unlocked" as const,
             locked: false,

@@ -49,6 +49,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { BodyPartsGame } from "./BodyPartsGame";
 import { ColorsLessonGame } from "./ColorsLessonGame";
+import { FruitsVegetablesGame } from "./FruitsVegetablesGame";
 
 const startingHearts = 5;
 
@@ -271,6 +272,10 @@ export function LessonSessionClient({ lesson }: { lesson: Lesson }) {
 
   if (lesson.id === "colors") {
     return <ColorsLessonGame lesson={lesson} />;
+  }
+
+  if (lesson.id === "fruits-vegetables") {
+    return <FruitsVegetablesGame lesson={lesson} />;
   }
 
   if (!hasStarted && !isFinished) {

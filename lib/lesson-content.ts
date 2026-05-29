@@ -195,6 +195,7 @@ function getVocabulary(value: unknown): VocabularyItem[] {
       {
         russian,
         english,
+        arabic: typeof record.arabic === "string" ? record.arabic : undefined,
         note: typeof record.note === "string" ? record.note : undefined,
       },
     ];

@@ -20,6 +20,7 @@ type WritingWord = {
   lessonTitle: string;
   russian: string;
   english: string;
+  arabic?: string;
   note?: string;
 };
 
@@ -95,7 +96,7 @@ export function WritingPracticeClient() {
         questionText: getPromptText(mode, activeWord, language),
         userAnswer: answer.trim() || writingText.noAnswer,
         correctAnswer: normalizeRussianText(activeWord.russian),
-        explanation: `${normalizeRussianText(activeWord.russian)} = ${localizeMeaning(activeWord.english, language)}`,
+        explanation: `${normalizeRussianText(activeWord.russian)} = ${getWordMeaning(activeWord, language)}`,
         language,
       });
     }
@@ -129,7 +130,7 @@ export function WritingPracticeClient() {
       questionText: getPromptText(mode, activeWord, language),
       userAnswer: writingText.skipped,
       correctAnswer: target,
-      explanation: `${target} = ${localizeMeaning(activeWord.english, language)}`,
+      explanation: `${target} = ${getWordMeaning(activeWord, language)}`,
       language,
     });
     setStatus("wrong");
@@ -420,7 +421,7 @@ function PromptCard({
       {mode === "meaning" ? (
         <div className="mt-4">
           <p className="text-3xl font-black leading-tight text-cyan-100 sm:text-5xl" {...explanationTextProps(language)}>
-            {localizeMeaning(word.english, language)}
+            {getWordMeaning(word, language)}
           </p>
           {word.note ? (
             <p className="mt-3 text-sm text-slate-400" {...explanationTextProps(language)}>
@@ -593,7 +594,7 @@ function ResultScreen({
               <div key={`${attempt.word.id}-${attempt.answer}`} className="rounded-2xl border border-white/10 bg-slate-900/80 p-4">
                 <p className="text-2xl font-black text-cyan-100" dir="ltr" lang="ru">{normalizeRussianText(attempt.word.russian)}</p>
                 <p className="mt-1 text-sm text-slate-300" {...explanationTextProps(language)}>
-                  {localizeMeaning(attempt.word.english, language)}
+                  {getWordMeaning(attempt.word, language)}
                 </p>
                 <p className="mt-2 text-xs text-red-100" {...uiTextProps(language)}>
                   {writingText.yourAnswer}: <span dir="ltr" lang="ru">{attempt.answer}</span>
@@ -661,6 +662,7 @@ function buildWritingWords(): WritingWord[] {
             lessonTitle: lesson.title,
             russian,
             english,
+            arabic: item.arabic,
             note: item.note,
           },
         ];
@@ -702,7 +704,7 @@ function normalizeForComparison(value: string) {
 
 function getPromptText(mode: PracticeMode, word: WritingWord, language: ExplanationLanguage) {
   if (mode === "meaning") {
-    return localizeMeaning(word.english, language);
+    return getWordMeaning(word, language);
   }
 
   if (mode === "listen") {
@@ -710,6 +712,10 @@ function getPromptText(mode: PracticeMode, word: WritingWord, language: Explanat
   }
 
   return normalizeRussianText(word.russian);
+}
+
+function getWordMeaning(word: WritingWord, language: ExplanationLanguage) {
+  return language === "ar" && word.arabic ? word.arabic : localizeMeaning(word.english, language);
 }
 
 function getModeLabel(mode: PracticeMode, writingText: ReturnType<typeof getUiText>["writing"]) {

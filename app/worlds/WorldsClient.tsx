@@ -199,21 +199,24 @@ function BasicsLessonsSection({
           <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-700">
             {text.common.activeModule}
           </p>
-          <h3 className="mt-2 text-2xl font-black sm:text-3xl">Basics</h3>
-          <p className="mt-2 text-sm font-semibold text-slate-500">دروسان بصريان للبدء بسرعة.</p>
+          <h3 className="mt-2 text-2xl font-black sm:text-3xl">{text.common.basics}</h3>
+          <p className="mt-2 text-sm font-semibold text-slate-500">
+            {language === "ar" ? "دروس بصرية تفاعلية لبناء الأساسيات." : "Interactive visual lessons for core basics."}
+          </p>
         </div>
         <span className="w-fit rounded-full border border-cyan-200 bg-cyan-50 px-4 py-2 text-sm font-black text-cyan-800">
           {completedLessonCount}/{world.lessons.length} {text.worlds.lessonsComplete}
         </span>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         {world.lessons.map((lesson) => (
           <BasicsLessonCard
             key={lesson.id}
             lesson={lesson}
             state={getLessonDisplayState(lesson, progress)}
             locked={getLessonProgressState(lesson, progress).locked}
+            text={text}
             language={language}
           />
         ))}
@@ -226,17 +229,27 @@ function BasicsLessonCard({
   lesson,
   state,
   locked,
+  text,
   language,
 }: {
   lesson: Lesson;
   state: "Completed" | "Current" | "Available" | "Locked";
   locked: boolean;
+  text: UiText;
   language: ExplanationLanguage;
 }) {
-  const content = getBasicsLessonContent(lesson);
+  const content = getBasicsLessonContent(lesson, language);
   const completed = state === "Completed";
-  const status = completed ? "مكتمل" : state === "Current" ? "تابع" : "ابدأ";
-  const ctaLabel = completed ? "راجع الدرس" : state === "Current" ? "تابع الدرس" : "ابدأ الدرس";
+  const status = completed
+    ? text.common.completed
+    : state === "Current"
+      ? text.worlds.currentContinue
+      : text.common.start;
+  const ctaLabel = completed
+    ? text.worlds.review
+    : state === "Current"
+      ? text.common.continue
+      : text.common.start;
 
   return (
     <article
@@ -259,6 +272,16 @@ function BasicsLessonCard({
               className="relative mx-auto h-full w-auto object-contain object-bottom drop-shadow-[0_16px_24px_rgb(15_23_42_/_0.16)]"
             />
           </>
+        ) : lesson.id === "fruits-vegetables" ? (
+          <div className="grid h-full grid-cols-4 gap-3 p-5">
+            {["bg-red-400", "bg-yellow-300", "bg-orange-400", "bg-green-400", "bg-lime-300", "bg-purple-500", "bg-emerald-500", "bg-amber-300"].map((swatch) => (
+              <span
+                key={swatch}
+                className={`rounded-full border border-white/70 shadow-[0_12px_24px_rgb(15_23_42_/_0.13)] ${swatch}`}
+                aria-hidden="true"
+              />
+            ))}
+          </div>
         ) : (
           <div className="grid h-full grid-cols-4 gap-3 p-5">
             {["bg-red-400", "bg-blue-500", "bg-emerald-400", "bg-yellow-300", "bg-violet-500", "bg-pink-400", "bg-orange-400", "bg-slate-700"].map((swatch) => (
@@ -282,7 +305,7 @@ function BasicsLessonCard({
         </p>
 
         <div className="mt-5 grid grid-cols-3 gap-2 text-center text-xs font-black text-slate-600">
-          <span className="rounded-2xl bg-slate-100 px-2 py-2">{lesson.exercises.length} خطوات</span>
+          <span className="rounded-2xl bg-slate-100 px-2 py-2">{lesson.exercises.length} {language === "ar" ? "خطوات" : "steps"}</span>
           <span className="rounded-2xl bg-cyan-50 px-2 py-2 text-cyan-800">{lesson.xpReward} XP</span>
           <span className="rounded-2xl bg-lime-50 px-2 py-2 text-lime-800">{status}</span>
         </div>
@@ -293,7 +316,7 @@ function BasicsLessonCard({
             aria-disabled="true"
             className="mt-5 w-full cursor-not-allowed rounded-full bg-slate-200 px-5 py-3 text-center text-sm font-black text-slate-500"
           >
-            مقفل
+            {text.common.locked}
           </button>
         ) : (
           <Link
@@ -308,18 +331,40 @@ function BasicsLessonCard({
   );
 }
 
-function getBasicsLessonContent(lesson: Lesson) {
-  if (lesson.id === "colors") {
-    return {
-      title: "Colors / الألوان",
-      description: "تعرّف على أسماء الألوان بالروسية من خلال التمارين البصرية.",
-    };
+function getBasicsLessonContent(lesson: Lesson, language: ExplanationLanguage) {
+  if (lesson.id === "fruits-vegetables") {
+    return language === "ar"
+      ? {
+          title: "الخضار والفواكه",
+          description: "تعلّم أسماء الفواكه والخضار بالروسية من خلال الفرز والمطابقة والاستماع والكتابة.",
+        }
+      : {
+          title: "Fruits and Vegetables",
+          description: "Learn Russian produce words through sorting, matching, listening, and typing.",
+        };
   }
 
-  return {
-    title: "Body Parts / أجزاء الجسم",
-    description: "تعلم أسماء أجزاء الجسم بالروسية بطريقة تفاعلية.",
-  };
+  if (lesson.id === "colors") {
+    return language === "ar"
+      ? {
+          title: "الألوان",
+          description: "تعرّف على أسماء الألوان بالروسية من خلال التمارين البصرية.",
+        }
+      : {
+          title: "Colors",
+          description: "Learn Russian color names through vivid visual practice.",
+        };
+  }
+
+  return language === "ar"
+    ? {
+        title: "أجزاء الجسم",
+        description: "تعلم أسماء أجزاء الجسم بالروسية بطريقة تفاعلية.",
+      }
+    : {
+        title: "Body Parts",
+        description: "Learn Russian body part names through an interactive visual map.",
+      };
 }
 
 function getNextWorldStageLessonId(world: World, stageId: string, progress: SavedProgress) {
